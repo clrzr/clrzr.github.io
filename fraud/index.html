@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fraud Management System — Case Study</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a; --surface: #111111; --border: #1e1e1e; --border-light: #2a2a2a;
+      --text: #e8e6e0; --text-muted: #6b6860; --text-dim: #3a3835;
+      --accent: #c8a96e; --accent-dim: #8a7048; --accent-glow: rgba(200,169,110,0.06);
+      --green: #4a7c59; --green-dim: rgba(74,124,89,0.12);
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; font-weight: 300; line-height: 1.7; font-size: 14px; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.5; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+    nav { padding: 20px 0; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,10,0.94); backdrop-filter: blur(12px); z-index: 100; }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+    .nav-brand { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); text-decoration: none; }
+    .nav-back { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; padding: 6px 12px; border-radius: 3px; transition: color 0.2s, background 0.2s; }
+    .nav-back:hover { color: var(--text); background: var(--border); }
+    .nav-back::before { content: '← '; }
+
+    /* HERO */
+    .hero { padding: 80px 0 72px; border-bottom: 1px solid var(--border); }
+    .hero-tag { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; opacity: 0; animation: fadeUp 0.5s ease forwards 0.1s; }
+    .hero-title { font-family: 'Syne', sans-serif; font-size: clamp(36px, 6vw, 72px); font-weight: 800; line-height: 0.95; letter-spacing: -0.03em; color: var(--text); margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s ease forwards 0.2s; }
+    .hero-title em { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; color: var(--accent); }
+    .hero-pills { display: flex; gap: 8px; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.6s ease forwards 0.35s; }
+    .pill { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); border: 1px solid var(--border-light); padding: 4px 10px; border-radius: 2px; }
+    .pill.green { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+
+    /* BODY LAYOUT */
+    .case-body { display: grid; grid-template-columns: 1fr 340px; gap: 64px; padding: 72px 0; }
+
+    /* NARRATIVE */
+    .narrative { display: flex; flex-direction: column; gap: 48px; }
+    .narrative-block { display: flex; flex-direction: column; gap: 12px; }
+    .block-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-dim); padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .block-text { font-size: 14px; color: var(--text-muted); line-height: 1.9; }
+    .block-text + .block-text { margin-top: 14px; }
+    .block-text em { color: var(--text); font-style: italic; }
+
+    /* PULL QUOTE */
+    .pull-quote { border-left: 2px solid var(--accent); padding: 2px 0 2px 24px; margin: 8px 0; }
+    .pull-quote p { font-family: 'Instrument Serif', serif; font-style: italic; font-size: clamp(17px, 2vw, 21px); color: var(--text); line-height: 1.6; }
+
+    /* SIDEBAR */
+    .sidebar { display: flex; flex-direction: column; gap: 2px; align-self: start; position: sticky; top: 80px; }
+    .sidebar-card { background: var(--surface); border: 1px solid var(--border-light); padding: 24px; margin-bottom: 2px; }
+    .sidebar-card-title { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+    .decision-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .decision-item:first-of-type { padding-top: 0; }
+    .decision-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .decision-what { font-size: 12px; color: var(--text); margin-bottom: 5px; line-height: 1.45; }
+    .decision-why { font-size: 12px; color: var(--text-muted); line-height: 1.65; }
+
+    /* NAV BETWEEN CASES */
+    .case-nav { display: flex; justify-content: space-between; align-items: center; padding: 40px 0; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 16px; }
+    .case-nav-link { text-decoration: none; display: flex; flex-direction: column; gap: 6px; }
+    .case-nav-link.next { align-items: flex-end; }
+    .case-nav-dir { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); }
+    .case-nav-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-muted); transition: color 0.2s; }
+    .case-nav-link:hover .case-nav-title { color: var(--text); }
+
+    footer { padding: 44px 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 16px; }
+    .footer-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
+    .footer-note { font-size: 11px; color: var(--text-dim); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 860px) {
+      .case-body { grid-template-columns: 1fr; gap: 48px; }
+      .sidebar { position: static; }
+    }
+    @media (max-width: 540px) { .wrap { padding: 0 20px; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-inner">
+      <a href="../" class="nav-brand">TPM &amp; Architect</a>
+      <a href="../" class="nav-back">All work</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="hero">
+    <p class="hero-tag">Case Study · Fraud Prevention · Risk Systems</p>
+    <h1 class="hero-title">Fraud Management<br /><em>System</em></h1>
+    <div class="hero-pills">
+      <span class="pill green">Production</span>
+      <span class="pill">Continuous risk profiling</span>
+      <span class="pill">GPS velocity detection</span>
+      <span class="pill">Async signal pipeline</span>
+    </div>
+  </div>
+
+  <div class="case-body">
+    <div class="narrative reveal">
+
+      <div class="narrative-block">
+        <p class="block-label">The broken assumption</p>
+        <p class="block-text">Most fraud systems are gates. A user tries to do something, the system checks a list, and either lets them through or blocks them. That model has a fundamental weakness: it only knows what it has been explicitly told to look for. A sufficiently novel attack pattern — one that doesn't match any existing rule — passes straight through.</p>
+        <p class="block-text">The second problem with the gate model is timing. By the time a user reaches a payment execution checkpoint, the system is seeing that action in isolation. It knows nothing about the login five minutes ago, the location the intent was created from, the device they're on. It makes a binary decision with almost no context.</p>
+      </div>
+
+      <div class="narrative-block">
+        <p class="block-label">The insight</p>
+        <p class="block-text">The question a fraud system should ask isn't just <em>is this transaction suspicious?</em> It's <em>is this transaction suspicious for this user, right now, given everything we know about them?</em> That shift — from static rules to contextual understanding — changed everything about the architecture.</p>
+        <p class="block-text">Instead of checking at the moment of action, the system should be continuously building a picture of who the user is. Their patterns. Their behaviours. Their normal. And every action in the system is an opportunity to update that picture — not just payment events, but logins, device changes, location shifts.</p>
+      </div>
+
+      <div class="pull-quote">
+        <p>The fraud system is not a checkpoint. It is a continuously running background process that happens to inform checkpoints.</p>
+      </div>
+
+      <div class="narrative-block">
+        <p class="block-label">What we built</p>
+        <p class="block-text">Every meaningful action in the system emits a signal to the fraud service. Not the raw data — the signal. The fact of what happened, when, and the context around it. A user logs in: the fraud service receives the login event, timestamp, device identifier, location. A user initiates a payment: the fraud service receives intent creation and location at that moment. A user confirms a transaction: location again, at confirmation.</p>
+        <p class="block-text">None of this puts the fraud service in the critical path of those actions. It receives signals asynchronously, processes them, and updates its risk profile for that user in the background. As signals arrive, the profile is recalculated in real time. The service doesn't wait to be asked — it emits the updated score downstream the moment a profile changes. The payment service receives and caches it.</p>
+        <p class="block-text">By the time a transaction reaches execution, the fraud service has already been watching. The risk score the payment system consults is not computed at the moment of execution. It is the result of everything that happened before.</p>
+      </div>
+
+      <div class="narrative-block">
+        <p class="block-label">The concrete detail — GPS velocity</p>
+        <p class="block-text">When a payment intent is created, the device location is captured. When the user confirms the transaction, the location is captured again. The system evaluates the distance between those two points relative to the time elapsed between them.</p>
+        <p class="block-text">If a user created a payment intent in Lagos and confirmed it from Abuja four minutes later, something is wrong. The check isn't about the distance alone — it's about whether that distance is physically possible given the time between the two events. No human moves 500km in four minutes.</p>
+        <p class="block-text">This catches a specific attack pattern: device compromise where an attacker on a separate device attempts to confirm a transaction the legitimate user initiated. The legitimate user is still in Lagos. The attacker, with access to the session, is somewhere else entirely. The velocity check surfaces that discrepancy as a risk signal before execution.</p>
+      </div>
+
+      <div class="narrative-block">
+        <p class="block-label">The principle</p>
+        <p class="block-text">The difference between a gate and this system is that a gate only knows what it was told. This system knows what it has observed. By execution time, it has seen the login. It has processed the GPS signals. It has watched the pattern of the session. The risk score isn't a spot check — it's a continuous assessment that happens to surface at the moment it's needed.</p>
+        <p class="block-text">That is the difference between a fraud system that reacts and one that understands.</p>
+      </div>
+
+    </div>
+
+    <aside class="sidebar reveal">
+      <div class="sidebar-card">
+        <p class="sidebar-card-title">Key decisions</p>
+        <div class="decision-item">
+          <p class="decision-what">Fraud service async — never on the critical path</p>
+          <p class="decision-why">Synchronous fraud checks add latency to every transaction. Running continuously in the background means execution is a cache lookup, not a computation.</p>
+        </div>
+        <div class="decision-item">
+          <p class="decision-what">Cached score as primary path, live fallback if cold</p>
+          <p class="decision-why">Fast by default. If the cache is cold for any reason, a direct call to the fraud service is the fallback. Either way, the payment system honours the result without override.</p>
+        </div>
+        <div class="decision-item">
+          <p class="decision-what">Profile recalculated on every signal, not on request</p>
+          <p class="decision-why">The service doesn't wait to be polled. Every incoming signal updates the profile and emits a new score downstream. Dependent services always have the most current view.</p>
+        </div>
+        <div class="decision-item">
+          <p class="decision-what">Velocity check on location delta, not location alone</p>
+          <p class="decision-why">Distance without time is meaningless. The check is whether the distance between two locations is physically possible given the elapsed time — which targets compromise, not travel.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="case-nav">
+    <a href="../" class="case-nav-link">
+      <span class="case-nav-dir">← Back</span>
+      <span class="case-nav-title">All Work</span>
+    </a>
+    <a href="../payments/" class="case-nav-link next">
+      <span class="case-nav-dir">Next →</span>
+      <span class="case-nav-title">Payment Intent Architecture</span>
+    </a>
+  </div>
+
+  <footer>
+    <span class="footer-name">Technical PM &amp; Systems Architect</span>
+    <span class="footer-note">Hosted on GitHub Pages</span>
+  </footer>
+</div>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), 80); obs.unobserve(e.target); } });
+  }, { threshold: 0.06 });
+  reveals.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
