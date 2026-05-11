@@ -4,104 +4,111 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Platform Infrastructure — Case Study</title>
+  <meta name="description" content="Multi-cloud production infrastructure across GCP, AWS, and Cloudflare — sized to match the software running on it, live for over 400 days." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0a0a0a; --surface: #111111; --border: #1e1e1e; --border-light: #2a2a2a;
-      --text: #e8e6e0; --text-muted: #6b6860; --text-dim: #3a3835;
-      --accent: #c8a96e; --accent-dim: #8a7048; --accent-glow: rgba(200,169,110,0.06);
-      --green: #4a7c59; --green-dim: rgba(74,124,89,0.12);
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f5f2ec;--surface:#fff;--surface-warm:#faf8f4;
+      --border:#e2ddd5;--border-light:#ede9e1;
+      --text:#1a1714;--text-body:#3d3830;--text-muted:#7a7268;--text-dim:#b5afa5;
+      --accent:#b85c38;--accent-bg:rgba(184,92,56,.07);
+      --green:#4a7c59;--green-bg:rgba(74,124,89,.10);
+      --sh-sm:0 1px 4px rgba(26,23,20,.06),0 2px 12px rgba(26,23,20,.04);
+      --sh-md:0 2px 8px rgba(26,23,20,.07),0 8px 24px rgba(26,23,20,.05);
+      --r:6px;--rp:100px;
     }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; font-weight: 300; line-height: 1.7; font-size: 14px; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-    body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.5; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
-    nav { padding: 20px 0; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,10,0.94); backdrop-filter: blur(12px); z-index: 100; }
-    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
-    .nav-brand { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); text-decoration: none; }
-    .nav-back { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; padding: 6px 12px; border-radius: 3px; transition: color 0.2s, background 0.2s; }
-    .nav-back:hover { color: var(--text); background: var(--border); }
-    .nav-back::before { content: '← '; }
-
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    p{color:var(--text-body)}
+    a{color:inherit}
+    body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+    .wrap{max-width:1060px;margin:0 auto;padding:0 36px}
+    nav{padding:18px 0;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(245,242,236,.92);backdrop-filter:blur(16px);z-index:100}
+    .nav-inner{display:flex;justify-content:space-between;align-items:center}
+    .nav-brand{display:flex;align-items:center;gap:10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);text-decoration:none;letter-spacing:.04em}
+    .nav-arrow{display:inline-block;width:28px;height:1px;background:var(--accent);position:relative;flex-shrink:0}
+    .nav-arrow::after{content:'';position:absolute;right:0;top:-3px;width:6px;height:6px;border-top:1px solid var(--accent);border-right:1px solid var(--accent);transform:rotate(45deg)}
+    .nav-back{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;padding:5px 12px;border-radius:var(--r);border:1px solid var(--border);transition:color .18s,background .18s}
+    .nav-back::before{content:'← '}
+    .nav-back:hover{color:var(--text);background:var(--border-light)}
     /* HERO */
-    .hero { padding: 80px 0 72px; border-bottom: 1px solid var(--border); }
-    .hero-tag { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; opacity: 0; animation: fadeUp 0.5s ease forwards 0.1s; }
-    .hero-title { font-family: 'Syne', sans-serif; font-size: clamp(36px, 6vw, 72px); font-weight: 800; line-height: 0.95; letter-spacing: -0.03em; color: var(--text); margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s ease forwards 0.2s; }
-    .hero-title em { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; color: var(--accent); }
-    .hero-pills { display: flex; gap: 8px; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.6s ease forwards 0.35s; }
-    .pill { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); border: 1px solid var(--border-light); padding: 4px 10px; border-radius: 2px; }
-    .pill.green { color: var(--green); border-color: var(--green); background: var(--green-dim); }
-
-    /* STATS ROW */
-    .stats-row { display: flex; align-items: center; gap: 40px; flex-wrap: wrap; padding: 48px 0; border-bottom: 1px solid var(--border); }
-    .stat { display: flex; flex-direction: column; gap: 5px; }
-    .stat-num { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: var(--accent); letter-spacing: -0.03em; }
-    .stat-label { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
-    .stat-div { width: 1px; height: 52px; background: var(--border-light); }
-
-    /* NARRATIVE */
-    .narrative-section { padding: 64px 0; border-bottom: 1px solid var(--border); }
-    .narrative-section:last-of-type { border-bottom: none; }
-    .section-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-dim); padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
-    .section-header-row { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 32px; flex-wrap: wrap; }
-    .section-provider { font-family: 'Syne', sans-serif; font-size: clamp(20px, 2.5vw, 28px); font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
-    .section-sublabel { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
-
-    .narrative-body { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
-    .narrative-text { font-size: 14px; color: var(--text-muted); line-height: 1.9; }
-    .narrative-text + .narrative-text { margin-top: 14px; }
-    .narrative-text em { color: var(--text); font-style: italic; }
-
-    /* SERVICE ITEMS */
-    .service-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); }
-    .service-item { background: var(--bg); padding: 20px 24px; }
-    .service-name { font-size: 12px; color: var(--text); margin-bottom: 4px; }
-    .service-desc { font-size: 12px; color: var(--text-muted); line-height: 1.65; }
-
+    .hero{padding:76px 0 68px;border-bottom:1px solid var(--border)}
+    .eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:28px;opacity:0;animation:fadeUp .5s ease forwards .08s}
+    .eyebrow-line{width:28px;height:1px;background:var(--accent);flex-shrink:0}
+    .eyebrow-text{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+    h1{font-family:'Playfair Display',serif;font-size:clamp(38px,6.5vw,76px);font-weight:700;line-height:.93;letter-spacing:-.02em;color:var(--text);margin-bottom:32px;opacity:0;animation:fadeUp .6s ease forwards .18s}
+    h1 em{font-style:italic;font-weight:400;color:var(--accent)}
+    .pills{display:flex;gap:7px;flex-wrap:wrap;opacity:0;animation:fadeUp .6s ease forwards .3s}
+    .pill{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);border:1px solid var(--border);padding:4px 10px;border-radius:var(--rp);background:var(--surface-warm)}
+    .pill.live{color:var(--green);border-color:rgba(74,124,89,.3);background:var(--green-bg)}
+    /* STATS */
+    .stats-row{display:flex;align-items:stretch;flex-wrap:wrap;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);overflow:hidden;margin:56px 0;box-shadow:var(--sh-sm)}
+    .stat{display:flex;flex-direction:column;gap:5px;padding:28px 32px;border-right:1px solid var(--border);flex:1;min-width:120px}
+    .stat:last-child{border-right:none}
+    .stat-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--accent);letter-spacing:-.02em;line-height:1}
+    .stat-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.5;letter-spacing:.04em}
+    /* SECTIONS */
+    .ns{padding:64px 0;border-bottom:1px solid var(--border)}
+    .ns:last-of-type{border-bottom:none}
+    .ns-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;margin-bottom:36px;flex-wrap:wrap}
+    .ns-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+    h2{font-family:'Playfair Display',serif;font-size:clamp(20px,2.5vw,28px);font-weight:600;letter-spacing:-.02em;color:var(--text)}
+    .ns-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim)}
+    .ns-body{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+    .nt{font-size:16.5px;color:var(--text-body);line-height:1.85}
+    .nt+.nt{margin-top:12px}
+    .nt em{color:var(--text);font-style:italic}
+    /* SERVICE LIST */
+    .sl{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+    .si{background:var(--surface);padding:18px 22px}
+    .si:hover{background:var(--surface-warm)}
+    .sn{font-size:14px;color:var(--text);margin-bottom:4px;font-weight:400}
+    .sd{font-size:13.5px;color:var(--text-muted);line-height:1.7}
     /* PULL QUOTE */
-    .pull-quote { border-left: 2px solid var(--accent); padding: 2px 0 2px 24px; margin: 32px 0; }
-    .pull-quote p { font-family: 'Instrument Serif', serif; font-style: italic; font-size: clamp(16px, 2vw, 20px); color: var(--text); line-height: 1.6; }
-
-    .case-nav { display: flex; justify-content: space-between; align-items: center; padding: 40px 0; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 16px; }
-    .case-nav-link { text-decoration: none; display: flex; flex-direction: column; gap: 6px; }
-    .case-nav-link.next { align-items: flex-end; }
-    .case-nav-dir { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); }
-    .case-nav-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-muted); transition: color 0.2s; }
-    .case-nav-link:hover .case-nav-title { color: var(--text); }
-    footer { padding: 44px 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 16px; }
-    .footer-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
-    .footer-note { font-size: 11px; color: var(--text-dim); }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.65s ease, transform 0.65s ease; }
-    .reveal.visible { opacity: 1; transform: none; }
-    @media (max-width: 768px) {
-      .narrative-body { grid-template-columns: 1fr; gap: 32px; }
-      .stats-row { gap: 28px; }
-      .stat-div { display: none; }
-    }
-    @media (max-width: 540px) { .wrap { padding: 0 20px; } }
+    .pq{border-left:2px solid var(--accent);padding:4px 0 4px 24px;margin:32px 0}
+    .pq p{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(16px,2vw,20px);color:var(--text);line-height:1.6}
+    /* CASE NAV */
+    .case-nav{display:flex;justify-content:space-between;align-items:center;padding:44px 0;border-top:1px solid var(--border);flex-wrap:wrap;gap:16px}
+    .cnl{text-decoration:none;display:flex;flex-direction:column;gap:6px}
+    .cnl.next{align-items:flex-end}
+    .cnd{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)}
+    .cnt{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--text-muted);transition:color .2s}
+    .cnl:hover .cnt{color:var(--accent)}
+    footer{padding:44px 0;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);flex-wrap:wrap;gap:16px}
+    .fn{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted)}
+    .fnt{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media(max-width:860px){.ns-body{grid-template-columns:1fr;gap:32px}}
+    @media(max-width:640px){.stats-row{flex-direction:column}.stat{border-right:none;border-bottom:1px solid var(--border)}.stat:last-child{border-bottom:none}}
+    @media(max-width:540px){.wrap{padding:0 22px}}
   </style>
 </head>
 <body>
-
 <nav>
   <div class="wrap">
     <div class="nav-inner">
-      <a href="../" class="nav-brand">TPM &amp; Architect</a>
-      <a href="../" class="nav-back">All work</a>
+      <a href="../" class="nav-brand" id="nav-home"><span class="nav-arrow" aria-hidden="true"></span>Michael</a>
+      <div style="display:flex;gap:2px">
+        <a href="../product-thinking/" class="nav-back" style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--text-muted);padding:5px 12px;border-radius:var(--r);text-decoration:none">Product Thinking</a>
+        <a href="../engineering/" class="nav-back" style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--text-muted);padding:5px 12px;border-radius:var(--r);text-decoration:none">Engineering</a>
+        <a href="../products/" class="nav-back" style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--text-muted);padding:5px 12px;border-radius:var(--r);text-decoration:none">Products</a>
+        <a href="../about/" class="nav-back" style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--text-muted);padding:5px 12px;border-radius:var(--r);text-decoration:none">About</a>
+      </div>
     </div>
   </div>
 </nav>
 
 <div class="wrap">
   <div class="hero">
-    <p class="hero-tag">Cloud · Infrastructure · DevOps</p>
-    <h1 class="hero-title">Platform<br /><em>Infrastructure</em></h1>
-    <div class="hero-pills">
-      <span class="pill green">Live · 400+ days</span>
+    <div class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span><span class="eyebrow-text">Cloud · Infrastructure · DevOps</span></div>
+    <h1>Platform<br /><em>Infrastructure</em></h1>
+    <div class="pills">
+      <span class="pill live">Live · 400+ days</span>
       <span class="pill">GCP · AWS · Cloudflare</span>
       <span class="pill">99%+ uptime</span>
       <span class="pill">Multi-cloud</span>
@@ -113,162 +120,149 @@
       <span class="stat-num">400+</span>
       <span class="stat-label">Days continuous uptime<br/>primary instance</span>
     </div>
-    <div class="stat-div"></div>
     <div class="stat">
       <span class="stat-num">99%+</span>
       <span class="stat-label">Production uptime<br/>all services</span>
     </div>
-    <div class="stat-div"></div>
     <div class="stat">
       <span class="stat-num">6–7</span>
       <span class="stat-label">Active VMs under<br/>ongoing management</span>
     </div>
-    <div class="stat-div"></div>
     <div class="stat">
       <span class="stat-num">10 min</span>
       <span class="stat-label">Daily maintenance window<br/>automated, self-restoring</span>
     </div>
-    <div class="stat-div"></div>
     <div class="stat">
       <span class="stat-num">3</span>
       <span class="stat-label">Cloud providers<br/>in production</span>
     </div>
   </div>
 
-  <!-- PHILOSOPHY OF INFRA -->
-  <div class="narrative-section reveal">
-    <p class="section-label">The approach</p>
-    <div class="narrative-body">
+  <!-- APPROACH -->
+  <div class="ns reveal">
+    <p class="ns-lbl">The approach</p>
+    <div class="ns-body">
       <div>
-        <p class="narrative-text">Infrastructure decisions don't live in isolation from the software running on them. The two are designed together — or they should be. The thread utilisation of a service informs its server sizing. Whether a process is serial or parallel determines what kind of instance makes sense to run it on. A serial process with low throughput requirements and no latency constraints doesn't need a multi-core machine. A high-call-volume service where throughput matters gets parallelised, and the server gets sized to match.</p>
-        <p class="narrative-text">This shows up in cost optimisation in a way that's hard to achieve if you're sizing infrastructure independently of the code. Right-sizing isn't a billing exercise. It's a consequence of understanding what the software actually does at runtime.</p>
+        <p class="nt">Infrastructure decisions don't live in isolation from the software running on them. I designed the two together. When I was specifying instance types for the platform, I looked at what each service was actually doing at runtime before I picked anything. A process with low throughput requirements and no latency constraints doesn't need a multi-core machine. A high-call-volume service where throughput matters gets parallelised, and the server gets sized to match. Right-sizing isn't a billing exercise — it's a consequence of understanding what the software actually does.</p>
       </div>
       <div>
-        <p class="narrative-text">The primary production instance has been live for over 400 days. It runs on a 10-minute daily maintenance window — automated backups and essential system tasks execute during that window, after which the instance restores itself and resumes full operation automatically. Outside that window: guaranteed uptime, 23 hours and 50 minutes every day.</p>
-        <p class="narrative-text">The CI/CD pipeline was built from scratch using GitHub Actions. A developer pushes code. The action triggers, builds the service, packages it as a Docker image, pushes to the registry, and calls the deployment platform, which pulls the updated image and brings the service live. End to end, no manual steps.</p>
+        <p class="nt">The primary production instance has been live for over 400 days. It runs on a 10-minute daily maintenance window — automated backups and essential system tasks execute during that window, after which the instance restores itself and resumes full operation automatically. Outside that window: guaranteed uptime, 23 hours and 50 minutes every day.</p>
+        <p class="nt">The CI/CD pipeline was built from scratch using GitHub Actions. A developer pushes code. The action triggers, builds the service, packages it as a Docker image, pushes to the registry, and calls the deployment platform, which pulls the updated image and brings the service live. End to end, no manual steps.</p>
       </div>
     </div>
   </div>
 
   <!-- GCP -->
-  <div class="narrative-section reveal">
-    <div class="section-header-row">
-      <h2 class="section-provider">Google Cloud Platform</h2>
-      <span class="section-sublabel">Primary production environment</span>
+  <div class="ns reveal">
+    <div class="ns-head">
+      <h2>Google Cloud Platform</h2>
+      <span class="ns-sub">Primary production environment</span>
     </div>
-    <div class="narrative-body">
+    <div class="ns-body">
       <div>
-        <p class="narrative-text">GCP is the primary production environment. Compute Engine hosts stateful services — the primary instance has been running continuously for over 400 days with the automated maintenance window described above. Cloud Run hosts the containerised microservices that make up the platform, pulled and deployed automatically through the GitHub Actions pipeline.</p>
-        <p class="narrative-text">Firebase supports real-time and authentication flows within the platform. The combination of Cloud Run for stateless services and Compute Engine for stateful ones reflects a deliberate choice: use managed, scalable containers where you can, reserve persistent VM compute for what genuinely requires it.</p>
+        <p class="nt">GCP is the primary production environment. Compute Engine hosts stateful services — the primary instance has been running continuously for over 400 days with the automated maintenance window described above. Cloud Run hosts the containerised microservices, pulled and deployed automatically through the GitHub Actions pipeline.</p>
+        <p class="nt">Firebase supports real-time data and authentication flows. The combination of Cloud Run for stateless services and Compute Engine for stateful ones was a deliberate choice: use managed, scalable containers where you can, and reserve persistent VM compute for what genuinely requires it.</p>
       </div>
-      <div class="service-list">
-        <div class="service-item">
-          <p class="service-name">Compute Engine</p>
-          <p class="service-desc">Stateful services. Primary instance live 400+ days. 10-min automated maintenance window — self-restoring after each run.</p>
+      <div class="sl">
+        <div class="si">
+          <p class="sn">Compute Engine</p>
+          <p class="sd">Stateful services. Primary instance live 400+ days. 10-min automated maintenance window — self-restoring after each run.</p>
         </div>
-        <div class="service-item">
-          <p class="service-name">Cloud Run</p>
-          <p class="service-desc">Containerised microservices. Auto-deployed via GitHub Actions pipeline: push → build → Docker image → registry → live.</p>
+        <div class="si">
+          <p class="sn">Cloud Run</p>
+          <p class="sd">Containerised microservices. Auto-deployed via GitHub Actions: push → build → Docker image → registry → live.</p>
         </div>
-        <div class="service-item">
-          <p class="service-name">Firebase</p>
-          <p class="service-desc">Real-time data and authentication flows.</p>
+        <div class="si">
+          <p class="sn">Firebase</p>
+          <p class="sd">Real-time data and authentication flows.</p>
         </div>
-        <div class="service-item">
-          <p class="service-name">Cost optimisation</p>
-          <p class="service-desc">Server sizing informed by thread utilisation of the software running on it. Right-sized deliberately — not over-provisioned by default.</p>
+        <div class="si">
+          <p class="sn">Cost optimisation</p>
+          <p class="sd">Server sizing informed by thread utilisation of the software running on it — not over-provisioned by default.</p>
         </div>
       </div>
     </div>
   </div>
 
   <!-- AWS -->
-  <div class="narrative-section reveal">
-    <div class="section-header-row">
-      <h2 class="section-provider">Amazon Web Services</h2>
-      <span class="section-sublabel">Business OS compute &amp; document processing</span>
+  <div class="ns reveal">
+    <div class="ns-head">
+      <h2>Amazon Web Services</h2>
+      <span class="ns-sub">Business OS compute &amp; document processing</span>
     </div>
-    <div class="narrative-body">
+    <div class="ns-body">
       <div>
-        <p class="narrative-text">The Business OS layer runs on AWS. EC2 handles compute. S3 handles document and file storage, and is the entry point for the document processing pipeline: files land in S3, Textract extracts structured data from them, and that data flows into the application layer automatically.</p>
-        <p class="narrative-text">This matters for the Business OS specifically because a core part of its value is translating informal business documentation into structured financial data. Textract is what makes that pipeline work at scale without manual intervention. Bedrock provides AI model access within the platform services where it's needed.</p>
+        <p class="nt">The Business OS layer runs on AWS. EC2 handles compute. S3 handles document and file storage, and is the entry point for the document processing pipeline: files land in S3, Textract extracts structured data from them, and that data flows into the application layer automatically.</p>
+        <p class="nt">This matters for the Business OS because a core part of its value is translating informal business documentation into structured financial data. Textract is what makes that pipeline work at scale without manual intervention. Bedrock provides AI model access within platform services where it's needed.</p>
       </div>
-      <div class="service-list">
-        <div class="service-item">
-          <p class="service-name">EC2</p>
-          <p class="service-desc">Core compute for Business OS service layer.</p>
+      <div class="sl">
+        <div class="si">
+          <p class="sn">EC2</p>
+          <p class="sd">Core compute for Business OS service layer.</p>
         </div>
-        <div class="service-item">
-          <p class="service-name">S3</p>
-          <p class="service-desc">Document and file storage. Entry point for the Textract processing pipeline.</p>
+        <div class="si">
+          <p class="sn">S3</p>
+          <p class="sd">Document and file storage. Entry point for the Textract processing pipeline.</p>
         </div>
-        <div class="service-item">
-          <p class="service-name">Textract</p>
-          <p class="service-desc">Automated document processing — unstructured documents in, structured data out, fed directly to the application layer.</p>
+        <div class="si">
+          <p class="sn">Textract</p>
+          <p class="sd">Automated document processing — unstructured documents in, structured data out, fed directly to the application layer.</p>
         </div>
-        <div class="service-item">
-          <p class="service-name">Bedrock</p>
-          <p class="service-desc">AI model deployment and integration within platform services.</p>
+        <div class="si">
+          <p class="sn">Bedrock</p>
+          <p class="sd">AI model deployment and integration within platform services.</p>
         </div>
       </div>
     </div>
   </div>
 
   <!-- CLOUDFLARE -->
-  <div class="narrative-section reveal">
-    <div class="section-header-row">
-      <h2 class="section-provider">Cloudflare</h2>
-      <span class="section-sublabel">Edge, security &amp; auxiliary infrastructure</span>
+  <div class="ns reveal">
+    <div class="ns-head">
+      <h2>Cloudflare</h2>
+      <span class="ns-sub">Edge, security &amp; auxiliary infrastructure</span>
     </div>
-    <div class="narrative-body">
+    <div class="ns-body">
       <div>
-        <p class="narrative-text">Cloudflare handles the edge layer, security, and several specific infrastructure problems that its services are uniquely well-suited for. The PEP pipeline is one example: a Cloudflare Worker reaches out to Politically Exposed Persons databases on a schedule, pulls the data, cleans and structures it, and stores it in a D1 edge database. The due diligence service queries D1 during KYC verification flows. The alternative — running this as a traditional backend job and routing every query through a central database — adds unnecessary latency to a step that's already on the user-facing critical path.</p>
-        <p class="narrative-text">The Spectrum configuration solves a specific problem with Nextcloud Talk, the platform's internal video calling feature. Talk uses WebRTC for peer-to-peer connections. Where direct peer connections can't be established, TURN/STUN relay is required — but TURN/STUN relies on non-HTTP TCP/UDP traffic, which doesn't route through standard Cloudflare proxy. Spectrum proxies that traffic, keeping Talk fully functional behind the Cloudflare layer.</p>
+        <p class="nt">Cloudflare handles the edge layer, security, and several specific infrastructure problems its services are uniquely well-suited for. The PEP pipeline is one example: a Cloudflare Worker reaches out to Politically Exposed Persons databases on a schedule, pulls the data, cleans and structures it, and stores it in a D1 edge database. The due diligence service queries D1 during KYC verification flows — at edge latency, without routing every query through a central backend.</p>
+        <p class="nt">The Spectrum configuration solves a specific problem with Nextcloud Talk, the platform's internal video calling feature. Talk uses WebRTC for peer-to-peer connections. Where direct peer connections can't be established, TURN/STUN relay is required — but TURN/STUN relies on non-HTTP TCP/UDP traffic, which doesn't route through standard Cloudflare proxy. Spectrum proxies that traffic, keeping Talk fully functional behind the Cloudflare layer.</p>
       </div>
-      <div class="service-list">
-        <div class="service-item">
-          <p class="service-name">R2 — Backup pipeline</p>
-          <p class="service-desc">Database backups scheduled, packaged, and stored in R2. Recovery point outside the primary cloud environment — essential for genuine resilience.</p>
+      <div class="sl">
+        <div class="si">
+          <p class="sn">R2 — Backup pipeline</p>
+          <p class="sd">Database backups scheduled, packaged, and stored in R2. Recovery point outside the primary cloud environment — essential for genuine resilience.</p>
         </div>
-        <div class="service-item">
-          <p class="service-name">D1 + Workers</p>
-          <p class="service-desc">Worker pipeline pulls PEP data on schedule, cleans and structures it, stores in D1 edge database. Queried by due diligence service during KYC flows at edge latency.</p>
+        <div class="si">
+          <p class="sn">D1 + Workers</p>
+          <p class="sd">Worker pipeline pulls PEP data on schedule, cleans and structures it, stores in D1 edge database. Queried by due diligence service during KYC flows at edge latency.</p>
         </div>
-        <div class="service-item">
-          <p class="service-name">Spectrum</p>
-          <p class="service-desc">Proxies WebRTC TURN/STUN relay traffic (non-HTTP TCP/UDP) for Nextcloud Talk, keeping internal video calling fully functional through the Cloudflare layer.</p>
+        <div class="si">
+          <p class="sn">Spectrum</p>
+          <p class="sd">Proxies WebRTC TURN/STUN relay traffic (non-HTTP TCP/UDP) for Nextcloud Talk, keeping internal video calling functional through the Cloudflare layer.</p>
         </div>
-        <div class="service-item">
-          <p class="service-name">WAF</p>
-          <p class="service-desc">Web Application Firewall rules configured across platform application endpoints and a separate WordPress property.</p>
+        <div class="si">
+          <p class="sn">WAF</p>
+          <p class="sd">Web Application Firewall rules configured across platform application endpoints and a separate WordPress property.</p>
         </div>
       </div>
     </div>
   </div>
 
   <div class="case-nav reveal">
-    <a href="../kyc/" class="case-nav-link">
-      <span class="case-nav-dir">← Previous</span>
-      <span class="case-nav-title">Identity, KYC &amp; Device Safety</span>
-    </a>
-    <a href="../" class="case-nav-link next">
-      <span class="case-nav-dir">Back to start</span>
-      <span class="case-nav-title">All Work</span>
-    </a>
+    <a href="../kyc/" class="cnl" id="nav-prev"><span class="cnd">← Previous</span><span class="cnt">Identity, KYC &amp; Device Safety</span></a>
+    <a href="../" class="cnl next" id="nav-next"><span class="cnd">Back to start</span><span class="cnt">All Work</span></a>
   </div>
 
   <footer>
-    <span class="footer-name">Technical PM &amp; Systems Architect</span>
-    <span class="footer-note">Hosted on GitHub Pages</span>
+    <span class="fn">Technical PM &amp; Systems Architect</span>
+    <span class="fnt">Hosted on GitHub Pages</span>
   </footer>
 </div>
-
 <script>
-  const reveals = document.querySelectorAll('.reveal');
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), 80); obs.unobserve(e.target); } });
   }, { threshold: 0.06 });
-  reveals.forEach(el => obs.observe(el));
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 </script>
 </body>
 </html>

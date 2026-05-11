@@ -3,89 +3,100 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Identity, KYC & Device Safety — Case Study</title>
+  <title>Identity, KYC &amp; Device Safety — Case Study</title>
+  <meta name="description" content="Three architectural decisions that started as product and safety calls: one-device policy, async KYC, and PII isolation with a single owner." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0a0a0a; --surface: #111111; --border: #1e1e1e; --border-light: #2a2a2a;
-      --text: #e8e6e0; --text-muted: #6b6860; --text-dim: #3a3835;
-      --accent: #c8a96e; --accent-dim: #8a7048; --accent-glow: rgba(200,169,110,0.06);
-      --green: #4a7c59; --green-dim: rgba(74,124,89,0.12);
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f5f2ec;--surface:#fff;--surface-warm:#faf8f4;
+      --border:#e2ddd5;--border-light:#ede9e1;
+      --text:#1a1714;--text-body:#3d3830;--text-muted:#7a7268;--text-dim:#b5afa5;
+      --accent:#b85c38;--accent-bg:rgba(184,92,56,.07);
+      --green:#4a7c59;--green-bg:rgba(74,124,89,.10);
+      --sh-sm:0 1px 4px rgba(26,23,20,.06),0 2px 12px rgba(26,23,20,.04);
+      --r:6px;--rp:100px;
     }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; font-weight: 300; line-height: 1.7; font-size: 14px; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-    body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.5; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
-    nav { padding: 20px 0; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,10,0.94); backdrop-filter: blur(12px); z-index: 100; }
-    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
-    .nav-brand { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); text-decoration: none; }
-    .nav-back { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; padding: 6px 12px; border-radius: 3px; transition: color 0.2s, background 0.2s; }
-    .nav-back:hover { color: var(--text); background: var(--border); }
-    .nav-back::before { content: '← '; }
-    .hero { padding: 80px 0 72px; border-bottom: 1px solid var(--border); }
-    .hero-tag { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; opacity: 0; animation: fadeUp 0.5s ease forwards 0.1s; }
-    .hero-title { font-family: 'Syne', sans-serif; font-size: clamp(36px, 6vw, 72px); font-weight: 800; line-height: 0.95; letter-spacing: -0.03em; color: var(--text); margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s ease forwards 0.2s; }
-    .hero-title em { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; color: var(--accent); }
-    .hero-pills { display: flex; gap: 8px; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.6s ease forwards 0.35s; }
-    .pill { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); border: 1px solid var(--border-light); padding: 4px 10px; border-radius: 2px; }
-    .pill.green { color: var(--green); border-color: var(--green); background: var(--green-dim); }
-    .case-body { display: grid; grid-template-columns: 1fr 340px; gap: 64px; padding: 72px 0; }
-    .narrative { display: flex; flex-direction: column; gap: 48px; }
-    .narrative-block { display: flex; flex-direction: column; gap: 12px; }
-    .block-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-dim); padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-    .block-text { font-size: 14px; color: var(--text-muted); line-height: 1.9; }
-    .block-text + .block-text { margin-top: 14px; }
-    .block-text em { color: var(--text); font-style: italic; }
-    .block-text strong { color: var(--text); font-weight: 400; }
-    .pull-quote { border-left: 2px solid var(--accent); padding: 2px 0 2px 24px; margin: 8px 0; }
-    .pull-quote p { font-family: 'Instrument Serif', serif; font-style: italic; font-size: clamp(17px, 2vw, 21px); color: var(--text); line-height: 1.6; }
-    /* Sub-sections within narrative */
-    .sub-section { background: var(--surface); border: 1px solid var(--border-light); padding: 28px 32px; display: flex; flex-direction: column; gap: 12px; }
-    .sub-label { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
-    .sidebar { display: flex; flex-direction: column; gap: 2px; align-self: start; position: sticky; top: 80px; }
-    .sidebar-card { background: var(--surface); border: 1px solid var(--border-light); padding: 24px; margin-bottom: 2px; }
-    .sidebar-card-title { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
-    .decision-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
-    .decision-item:first-of-type { padding-top: 0; }
-    .decision-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .decision-what { font-size: 12px; color: var(--text); margin-bottom: 5px; line-height: 1.45; }
-    .decision-why { font-size: 12px; color: var(--text-muted); line-height: 1.65; }
-    .case-nav { display: flex; justify-content: space-between; align-items: center; padding: 40px 0; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 16px; }
-    .case-nav-link { text-decoration: none; display: flex; flex-direction: column; gap: 6px; }
-    .case-nav-link.next { align-items: flex-end; }
-    .case-nav-dir { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); }
-    .case-nav-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-muted); transition: color 0.2s; }
-    .case-nav-link:hover .case-nav-title { color: var(--text); }
-    footer { padding: 44px 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 16px; }
-    .footer-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
-    .footer-note { font-size: 11px; color: var(--text-dim); }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.65s ease, transform 0.65s ease; }
-    .reveal.visible { opacity: 1; transform: none; }
-    @media (max-width: 860px) { .case-body { grid-template-columns: 1fr; gap: 48px; } .sidebar { position: static; } }
-    @media (max-width: 540px) { .wrap { padding: 0 20px; } }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    p{color:var(--text-body)}
+    a{color:inherit}
+    body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+    .wrap{max-width:1060px;margin:0 auto;padding:0 36px}
+    nav{padding:18px 0;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(245,242,236,.92);backdrop-filter:blur(16px);z-index:100}
+    .nav-inner{display:flex;justify-content:space-between;align-items:center}
+    .nav-brand{display:flex;align-items:center;gap:10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);text-decoration:none;letter-spacing:.04em}
+    .nav-arrow{display:inline-block;width:28px;height:1px;background:var(--accent);position:relative;flex-shrink:0}
+    .nav-arrow::after{content:'';position:absolute;right:0;top:-3px;width:6px;height:6px;border-top:1px solid var(--accent);border-right:1px solid var(--accent);transform:rotate(45deg)}
+    .nav-back{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;padding:5px 12px;border-radius:var(--r);border:1px solid var(--border);transition:color .18s,background .18s}
+    .nav-back::before{content:'← '}
+    .nav-back:hover{color:var(--text);background:var(--border-light)}
+    .hero{padding:76px 0 68px;border-bottom:1px solid var(--border)}
+    .eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:28px;opacity:0;animation:fadeUp .5s ease forwards .08s}
+    .eyebrow-line{width:28px;height:1px;background:var(--accent);flex-shrink:0}
+    .eyebrow-text{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+    h1{font-family:'Playfair Display',serif;font-size:clamp(38px,6.5vw,76px);font-weight:700;line-height:.93;letter-spacing:-.02em;color:var(--text);margin-bottom:32px;opacity:0;animation:fadeUp .6s ease forwards .18s}
+    h1 em{font-style:italic;font-weight:400;color:var(--accent)}
+    .pills{display:flex;gap:7px;flex-wrap:wrap;opacity:0;animation:fadeUp .6s ease forwards .3s}
+    .pill{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);border:1px solid var(--border);padding:4px 10px;border-radius:var(--rp);background:var(--surface-warm)}
+    .pill.live{color:var(--green);border-color:rgba(74,124,89,.3);background:var(--green-bg)}
+    .case-body{display:grid;grid-template-columns:1fr 300px;gap:64px;padding:72px 0}
+    .narrative{display:flex;flex-direction:column;gap:52px}
+    .nb{display:flex;flex-direction:column;gap:14px}
+    .lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:4px}
+    .bt{font-size:16.5px;color:var(--text-body);line-height:1.85}
+    .bt+.bt{margin-top:12px}
+    .bt em{color:var(--text);font-style:italic}
+    .bt strong{color:var(--text);font-weight:500}
+    .pq{border-left:2px solid var(--accent);padding:4px 0 4px 24px;margin:4px 0}
+    .pq p{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(17px,2vw,21px);color:var(--text);line-height:1.6}
+    .sidebar{display:flex;flex-direction:column;gap:12px;align-self:start;position:sticky;top:80px}
+    .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--sh-sm)}
+    .sc-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
+    .di{padding:13px 0;border-bottom:1px solid var(--border-light)}
+    .di:first-of-type{padding-top:0}
+    .di:last-child{border-bottom:none;padding-bottom:0}
+    .dw{font-size:13.5px;color:var(--text);margin-bottom:5px;line-height:1.4}
+    .dy{font-size:13px;color:var(--text-muted);line-height:1.7}
+    .case-nav{display:flex;justify-content:space-between;align-items:center;padding:44px 0;border-top:1px solid var(--border);flex-wrap:wrap;gap:16px}
+    .cnl{text-decoration:none;display:flex;flex-direction:column;gap:6px}
+    .cnl.next{align-items:flex-end}
+    .cnd{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)}
+    .cnt{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--text-muted);transition:color .2s}
+    .cnl:hover .cnt{color:var(--accent)}
+    footer{padding:44px 0;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);flex-wrap:wrap;gap:16px}
+    .fn{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted)}
+    .fnt{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media(max-width:860px){.case-body{grid-template-columns:1fr;gap:48px}.sidebar{position:static}}
+    @media(max-width:540px){.wrap{padding:0 22px}}
   </style>
 </head>
 <body>
-
 <nav>
   <div class="wrap">
     <div class="nav-inner">
-      <a href="../" class="nav-brand">TPM &amp; Architect</a>
-      <a href="../" class="nav-back">All work</a>
+      <a href="../" class="nav-brand" id="nav-home"><span class="nav-arrow" aria-hidden="true"></span>Michael</a>
+      <div style="display:flex;gap:2px">
+        <a href="../product-thinking/" class="nav-back" id="nav-pt" style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--text-muted);padding:5px 12px;border-radius:var(--r);text-decoration:none">Product Thinking</a>
+        <a href="../engineering/" class="nav-back" style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--text-muted);padding:5px 12px;border-radius:var(--r);text-decoration:none">Engineering</a>
+        <a href="../products/" class="nav-back" style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--text-muted);padding:5px 12px;border-radius:var(--r);text-decoration:none">Products</a>
+        <a href="../about/" class="nav-back" style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--text-muted);padding:5px 12px;border-radius:var(--r);text-decoration:none">About</a>
+      </div>
     </div>
   </div>
 </nav>
 
 <div class="wrap">
   <div class="hero">
-    <p class="hero-tag">Case Study · Identity · KYC · Device Safety</p>
-    <h1 class="hero-title">Identity, KYC<br />&amp; <em>Device Safety</em></h1>
-    <div class="hero-pills">
-      <span class="pill green">Production</span>
+    <div class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span><span class="eyebrow-text">Case Study · Identity · KYC · Device Safety</span></div>
+    <h1>Identity, KYC<br />&amp; <em>Device Safety</em></h1>
+    <div class="pills">
+      <span class="pill live">Production</span>
       <span class="pill">Async KYC pipeline</span>
       <span class="pill">One-device policy</span>
       <span class="pill">PII isolation</span>
@@ -95,96 +106,89 @@
   <div class="case-body">
     <div class="narrative reveal">
 
-      <div class="narrative-block">
-        <p class="block-label">The broken assumption</p>
-        <p class="block-text">Most financial apps treat identity as a compliance problem. Pass KYC, get access. That framing produces systems that are synchronous by default, binary in their outcomes, and optimised for checking a regulatory box rather than protecting a real user. Three specific problems made that framing untenable — and each one led somewhere the standard approach doesn't go.</p>
+      <div class="nb">
+        <p class="lbl">Three questions that drove the architecture</p>
+        <p class="bt">When I was thinking through identity, onboarding, and user data for the platform, I kept coming back to three specific questions that the standard "pass KYC, get access" model didn't answer well.</p>
+        <p class="bt"><strong>What happens to a user's money if they lose their phone?</strong> <strong>What happens to a user's relationship with the product if KYC goes down during onboarding?</strong> <strong>What's the blast radius if something goes wrong elsewhere in the system?</strong> Each question led somewhere interesting.</p>
       </div>
 
-      <div class="narrative-block">
-        <p class="block-label">Problem one — what happens when a user loses their phone</p>
-        <p class="block-text">The question that started this wasn't architectural. It was a user story that kept coming back: <em>a user loses their main device. Someone else picks it up. The app is still authenticated. What happens to their money?</em></p>
-        <p class="block-text">That question had an obvious answer. But most systems at the time weren't enforcing it. The standard pattern was to let multiple devices stay active, with deactivation as an optional user action. Relying on a user in a panicked moment to remember to deactivate a lost device is not a safety mechanism. It is the absence of one.</p>
-        <p class="block-text">The solution was a strict one-device policy. A mobile financial services application is only active on one device at a time. The moment a user activates on a new device, the previous one is automatically invalidated — no action required from the user, no grace period, no overlap. Migration requires full re-authentication: not just a PIN, but verification that the person holding the new device is actually the account owner. On a new device, transaction limits apply for the first 24 hours. Trust is re-established gradually, not assumed.</p>
+      <div class="nb">
+        <p class="lbl">Problem one — the lost phone scenario</p>
+        <p class="bt">This one started with a user story I couldn't stop thinking about: a user loses their main device. Someone picks it up. The app is still authenticated. What happens to their money?</p>
+        <p class="bt">If the app is still authenticated on that device, the answer is uncomfortable. So before writing a single line of architecture, I had to answer a harder question: when a user migrates to a new device, should the old one retain any access at all? The answer was no. Obviously no. But most systems at the time weren't enforcing it — the standard pattern was to let multiple devices stay active, with deactivation as an optional user action. Relying on a panicked user to remember to deactivate a lost device is not a safety mechanism. It is the absence of one.</p>
+        <p class="bt">The solution was a strict one-device policy. A mobile financial services application is only active on one device at a time. The moment a user activates on a new device, the previous one is automatically invalidated — no action required from the user, no grace period, no overlap. Migration requires full re-authentication: not just a PIN, but the kind of verification that confirms the person holding the new device is actually the account owner. On a new device, a ₦20,000 transaction cap applies for the first 24 hours. Trust is re-established gradually, not assumed.</p>
 
-        <div class="pull-quote">
-          <p>This was a product and safety decision before it was a regulatory one. The CBN formally mandated exactly this pattern in March 2026. The system had been built this way for years prior — not because the regulation existed, but because the user story demanded it.</p>
+        <div class="pq">
+          <p>This was a product and safety decision before it became regulation. The CBN formally mandated exactly this pattern in March 2026. The system had been built this way for years prior — not because the regulation existed, but because the user story demanded it.</p>
         </div>
       </div>
 
-      <div class="narrative-block">
-        <p class="block-label">Problem two — KYC provider downtime was a retention problem</p>
-        <p class="block-text">KYC providers in Nigeria go down. When they do, the standard response is: user cannot proceed, come back later. Most teams treat this as an infrastructure problem. It is actually a retention problem — and the numbers are worse than they look.</p>
-        <p class="block-text">A user who just downloaded the app, completed onboarding, and hit a wall at KYC has no context for what went wrong. They don't know a provider is down. They don't know it's temporary. What they know is that the app stopped working. That impression — <em>this app is broken</em> — is almost impossible to recover from. Most users will not come back. They uninstall.</p>
-        <p class="block-text">But there's a second, quieter problem. Because the failure was synchronous, the system never collected anything useful from the user. No email address. No phone number. No way to reach them if the issue resolved itself an hour later. The relationship ends before it begins, invisibly, and the system has no record of who was lost or why.</p>
-        <p class="block-text">The insight was simple: decouple onboarding from KYC synchronicity. When a user submits their identity data, the system runs two fast local checks immediately — does this ID already exist in the system, and does it look structurally valid? Both checks run against already-indexed data and return in milliseconds. If they pass, the user moves through onboarding without waiting.</p>
-        <p class="block-text">The KYC verification job runs in the background as an async process. Three outcomes are handled cleanly: if the provider succeeds, the user is fully provisioned. If the provider fails due to a system error, the job automatically switches to a backup provider and retries — the user never knows. If the user's data is wrong, they proceed with limited access and a persistent notification guiding them to correct it.</p>
-        <p class="block-text">The consequence that matters most: by letting the user move through onboarding before KYC resolves, the system has successfully collected their email address and phone number. If something goes wrong downstream — a provider fault that takes hours to resolve, a data correction the user needs to make — the system can now reach them. The door stays open. The relationship continues. A synchronous failure loses the user silently. An async flow keeps the conversation going.</p>
+      <div class="nb">
+        <p class="lbl">Problem two — KYC downtime was a retention problem</p>
+        <p class="bt">KYC providers in Nigeria go down. When they do, the standard response is: user cannot proceed, come back later. Most teams treat this as an infrastructure problem. It is actually a retention problem — and the numbers are worse than they look.</p>
+        <p class="bt">A user who just downloaded the app, completed onboarding, and hit a wall at KYC has no context for what went wrong. They don't know a provider is down. They don't know it's temporary. What they know is that the app stopped working. That impression — <em>this app is broken</em> — is almost impossible to recover from. Most users will not come back.</p>
+        <p class="bt">There's also a quieter problem: because the failure is synchronous, the system never collected anything useful from the user. No email address. No phone number. No way to reach them if the issue resolved itself an hour later. The relationship ends before it begins, and the system has no record of who was lost or why.</p>
+        <p class="bt">The insight was simple: decouple onboarding from KYC synchronicity. When a user submits their identity data — BVN, NIN — the system runs two fast local checks immediately. Does this ID already exist in the system? Does it look structurally valid? Both checks run against already-indexed data and return in milliseconds. If they pass, the user moves through onboarding without waiting.</p>
+        <p class="bt">The KYC verification job runs in the background as an async process. Three outcomes are handled cleanly: if the provider succeeds, the user is fully provisioned. If the provider fails due to a system error, the job automatically switches to a backup provider and retries — the user never knows. If the user's data is wrong, they proceed with limited access and a persistent notification guiding them to correct it. When they fix it, verification runs again.</p>
+        <p class="bt">The consequence that matters most: by letting the user move through onboarding before KYC resolves, the system successfully collects their email address and phone number. If something goes wrong downstream, the system can now reach them. The door stays open. A synchronous failure loses the user silently. An async flow keeps the conversation going.</p>
       </div>
 
-      <div class="narrative-block">
-        <p class="block-label">Problem three — PII needs its own architecture</p>
-        <p class="block-text">User PII — names, identity numbers, addresses, government IDs — is the most sensitive data in a financial system. Most systems spread it across services. A field here, a reference there, queried directly by whatever service needs it at the time. The blast radius of any compromise is the entire system.</p>
-        <p class="block-text">A single service owns all PII. One service. One access path. Every other service routes requests through it — no other service queries the identity database directly, no PII fields stored in other services. Within that service, data is hashed for indexing (searches are fast without exposing raw values) and AES-encrypted at rest. The two properties — searchability and security — are not in tension. Both are preserved.</p>
-        <p class="block-text">If something fails elsewhere in the system, user data is not part of the collateral. The blast radius is contained by the architecture, not managed after the fact.</p>
+      <div class="nb">
+        <p class="lbl">Problem three — PII needs its own architecture</p>
+        <p class="bt">User PII — names, identity numbers, addresses, government IDs — is the most sensitive data in a financial system. The default approach spreads it around: a field here, a reference there, queried directly by whatever service needs it at the time. The blast radius of any compromise is the entire system.</p>
+        <p class="bt">I gave PII a single owner. One service. One access path. Every other service routes requests through it — no other service queries the identity database directly, no PII fields stored elsewhere. Within that service, data is hashed for indexing (searches are fast without exposing raw values) and AES-encrypted at rest. Searchability and security are not in tension. Both are preserved.</p>
+        <p class="bt">If something fails elsewhere in the system, user data is not part of the collateral. The blast radius is contained by the architecture, not managed after the fact.</p>
       </div>
 
-      <div class="narrative-block">
-        <p class="block-label">The principle</p>
-        <p class="block-text">Three different problems. Three different solutions. But the same underlying instinct: don't make the user pay for system failures, and don't make safety an afterthought dressed up as a feature. Device safety was a product decision before it became regulation. Async KYC was a retention decision before it was a technical pattern. PII isolation was a trust decision before it was a compliance requirement. The architecture is just what those decisions look like in code.</p>
+      <div class="nb">
+        <p class="lbl">The through line</p>
+        <p class="bt">Three different problems. Three different solutions. But the same underlying instinct in each one: don't make the user pay for system failures, and don't make safety an afterthought dressed up as a feature. Device safety was a product decision before it became regulation. Async KYC was a retention decision before it was a technical pattern. PII isolation was a trust decision before it was a compliance requirement. The architecture is just what those decisions look like in code.</p>
       </div>
 
     </div>
 
     <aside class="sidebar reveal">
-      <div class="sidebar-card">
-        <p class="sidebar-card-title">Key decisions</p>
-        <div class="decision-item">
-          <p class="decision-what">One device at a time — hard enforcement</p>
-          <p class="decision-why">New device activation immediately invalidates the previous one. Full re-auth required. 24-hour transaction cap on new devices. Built from a user story, not a compliance checklist.</p>
+      <div class="sc">
+        <p class="sc-title">Key decisions</p>
+        <div class="di">
+          <p class="dw">One device at a time — hard enforcement</p>
+          <p class="dy">New device activation immediately invalidates the previous one. Full re-auth required. 24-hour transaction cap on new devices. Built from a user story, not a compliance checklist.</p>
         </div>
-        <div class="decision-item">
-          <p class="decision-what">Async KYC with automatic provider failover</p>
-          <p class="decision-why">Local format and duplicate check runs instantly. KYC job runs in background. Provider error triggers automatic switch to backup — the user never sees it happen.</p>
+        <div class="di">
+          <p class="dw">Async KYC with automatic provider failover</p>
+          <p class="dy">Local format and duplicate check runs instantly. KYC job runs in background. Provider error triggers automatic switch to backup — the user never sees it happen.</p>
         </div>
-        <div class="decision-item">
-          <p class="decision-what">Partial access over hard blocking on KYC failure</p>
-          <p class="decision-why">Wrong KYC data doesn't eject the user. They can explore the app, can't transact, and see a persistent correction prompt. The system keeps the door open and can reach them by email or SMS.</p>
+        <div class="di">
+          <p class="dw">Partial access over hard blocking on KYC failure</p>
+          <p class="dy">Wrong KYC data doesn't eject the user. They can explore the app, can't transact, and see a persistent correction prompt. The system keeps the door open.</p>
         </div>
-        <div class="decision-item">
-          <p class="decision-what">Collect contact details before KYC resolves</p>
-          <p class="decision-why">The async flow means onboarding completes before verification finishes. Email and phone are captured regardless of KYC outcome — so provider downtime never means a user is lost silently.</p>
+        <div class="di">
+          <p class="dw">Collect contact details before KYC resolves</p>
+          <p class="dy">The async flow means onboarding completes before verification finishes. Email and phone are captured regardless of KYC outcome — so provider downtime never means a user is lost silently.</p>
         </div>
-        <div class="decision-item">
-          <p class="decision-what">Single PII owner — hash for index, AES for storage</p>
-          <p class="decision-why">No other service queries identity data directly. Blast radius structurally contained. Searchability and security both preserved without tradeoff.</p>
+        <div class="di">
+          <p class="dw">Single PII owner — hash for index, AES for storage</p>
+          <p class="dy">No other service queries identity data directly. Blast radius structurally contained. Searchability and security both preserved without tradeoff.</p>
         </div>
       </div>
     </aside>
   </div>
 
   <div class="case-nav">
-    <a href="../payments/" class="case-nav-link">
-      <span class="case-nav-dir">← Previous</span>
-      <span class="case-nav-title">Payment Intent Architecture</span>
-    </a>
-    <a href="../infrastructure/" class="case-nav-link next">
-      <span class="case-nav-dir">Next →</span>
-      <span class="case-nav-title">Platform Infrastructure</span>
-    </a>
+    <a href="../payments/" class="cnl" id="nav-prev"><span class="cnd">← Previous</span><span class="cnt">Payment Intent Architecture</span></a>
+    <a href="../infrastructure/" class="cnl next" id="nav-next"><span class="cnd">Next →</span><span class="cnt">Platform Infrastructure</span></a>
   </div>
 
   <footer>
-    <span class="footer-name">Technical PM &amp; Systems Architect</span>
-    <span class="footer-note">Hosted on GitHub Pages</span>
+    <span class="fn">Technical PM &amp; Systems Architect</span>
+    <span class="fnt">Hosted on GitHub Pages</span>
   </footer>
 </div>
-
 <script>
-  const reveals = document.querySelectorAll('.reveal');
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), 80); obs.unobserve(e.target); } });
   }, { threshold: 0.06 });
-  reveals.forEach(el => obs.observe(el));
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 </script>
 </body>
 </html>

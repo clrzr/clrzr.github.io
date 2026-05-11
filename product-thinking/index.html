@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Thinking — Michael</title>
+  <meta name="description" content="Case studies in product thinking — KYC, Payments, and Fraud Risk. First-principles product management in fintech." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f2ec; --surface: #ffffff; --surface-warm: #faf8f4;
+      --border: #e2ddd5; --border-light: #ede9e1;
+      --text: #1a1714; --text-body: #3d3830; --text-muted: #7a7268; --text-dim: #b5afa5;
+      --accent: #b85c38; --accent-bg: rgba(184,92,56,0.07);
+      --shadow-sm: 0 1px 4px rgba(26,23,20,0.06), 0 2px 12px rgba(26,23,20,0.04);
+      --shadow-md: 0 2px 8px rgba(26,23,20,0.07), 0 8px 24px rgba(26,23,20,0.05);
+      --radius: 6px;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.7; font-size: 16px; -webkit-font-smoothing: antialiased; }
+    p { color: var(--text-body); }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1060px; margin: 0 auto; padding: 0 36px; }
+
+    nav {
+      padding: 18px 0; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0;
+      background: rgba(245,242,236,0.92); backdrop-filter: blur(16px); z-index: 100;
+    }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+    .nav-brand { display: flex; align-items: center; gap: 10px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; }
+    .nav-brand-arrow { display: inline-block; width: 28px; height: 1px; background: var(--accent); position: relative; flex-shrink: 0; }
+    .nav-brand-arrow::after { content: ''; position: absolute; right: 0; top: -3px; width: 6px; height: 6px; border-top: 1px solid var(--accent); border-right: 1px solid var(--accent); transform: rotate(45deg); }
+    .nav-links { display: flex; gap: 2px; }
+    .nav-link { font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-muted); padding: 5px 12px; border-radius: var(--radius); transition: color 0.18s, background 0.18s; }
+    .nav-link:hover, .nav-link.active { color: var(--text); background: var(--border-light); }
+
+    header { padding: 72px 0 80px; border-bottom: 1px solid var(--border); }
+    .eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .eyebrow-line { width: 32px; height: 1px; background: var(--accent); }
+    .eyebrow-text { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(40px, 6vw, 72px); font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: var(--text); margin-bottom: 28px; }
+    .header-sub { max-width: 560px; font-size: 18px; color: var(--text-body); line-height: 1.8; }
+
+    .studies-list { padding: 72px 0; display: flex; flex-direction: column; gap: 1px; }
+    .study-row {
+      display: grid; grid-template-columns: 80px 1fr auto;
+      align-items: center; gap: 40px;
+      padding: 40px 0; border-bottom: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .study-row:last-child { border-bottom: none; }
+    .study-row:hover .study-title { color: var(--accent); }
+    .study-num { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text-dim); letter-spacing: 0.08em; }
+    .study-body { display: flex; flex-direction: column; gap: 10px; }
+    .study-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+    .study-title { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 32px); font-weight: 600; color: var(--text); line-height: 1.15; transition: color 0.2s; }
+    .study-desc { font-size: 15.5px; color: var(--text-body); line-height: 1.8; max-width: 600px; }
+    .study-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted); padding: 12px 20px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .study-link:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+
+    @media (max-width: 680px) {
+      .study-row { grid-template-columns: 1fr; gap: 16px; }
+      .study-num { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a href="../" class="nav-brand">
+      <span class="nav-brand-arrow"></span> Michael
+    </a>
+    <div class="nav-links">
+      <a href="../product-thinking/" class="nav-link active">Product Thinking</a>
+      <a href="../engineering/" class="nav-link">Engineering</a>
+      <a href="../products/" class="nav-link">Products</a>
+      <a href="../about/" class="nav-link">About</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">
+      <div class="eyebrow-line"></div>
+      <span class="eyebrow-text">Case Studies</span>
+    </div>
+    <h1>Product<br><em style="font-style:italic;font-weight:400;color:var(--accent)">Thinking</em></h1>
+    <p class="header-sub">Three case studies in first-principles product management — each starting from a single question I couldn't stop thinking about.</p>
+  </header>
+
+  <div class="studies-list">
+
+    <div class="study-row">
+      <span class="study-num">01</span>
+      <div class="study-body">
+        <p class="study-tag">Identity &amp; Device Safety System</p>
+        <h2 class="study-title">Product Thinking, Compliance &amp; User Retention</h2>
+        <p class="study-desc">I had one user story I couldn't stop thinking about: a user loses their phone and someone picks it up. That question led to a strict one-device policy, an async KYC pipeline that keeps users off the critical path, and a PII architecture that gives sensitive data a single owner with one access path.</p>
+      </div>
+      <a href="../kyc/" class="study-link">Read case study →</a>
+    </div>
+
+    <div class="study-row">
+      <span class="study-num">02</span>
+      <div class="study-body">
+        <p class="study-tag">Payment Intent Architecture</p>
+        <h2 class="study-title">Product &amp; Engineering Thinking for Payments</h2>
+        <p class="study-desc">Before I touched architecture, I spent time watching how users actually interacted with payment apps. One thing kept showing up: the products people trusted always showed the destination before the amount. I designed the entire payment flow around that insight.</p>
+      </div>
+      <a href="../payments/" class="study-link">Read case study →</a>
+    </div>
+
+    <div class="study-row">
+      <span class="study-num">03</span>
+      <div class="study-body">
+        <p class="study-tag">Fraud Risk &amp; Profiling</p>
+        <h2 class="study-title">Product Thinking &amp; Engineering for Fraud Management</h2>
+        <p class="study-desc">I noticed the fraud score was always computed at the moment a decision was needed — which meant the system only knew what it had time to check right then. I built something different: a service that watches continuously in the background, so by the time a transaction reaches execution, the risk score is already waiting.</p>
+      </div>
+      <a href="../fraud/" class="study-link">Read case study →</a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
