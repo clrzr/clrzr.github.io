@@ -246,17 +246,39 @@
       color: var(--text-body);
       line-height: 1.7;
     }
+    .do-story {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.75;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-light);
+      font-style: italic;
+    }
     
     .think-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      max-width: 640px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
     }
-    .think-grid p {
-      font-size: 18px;
+    .think-model {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+    .think-model h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+    .think-model p {
+      font-size: 15px;
       color: var(--text-body);
-      line-height: 1.7;
+      line-height: 1.8;
     }
     .think-grid ul {
       list-style: none;
@@ -529,7 +551,7 @@
       .wrap { padding: 0 24px; }
       .engineering-grid { grid-template-columns: 1fr; }
       .products-grid { grid-template-columns: 1fr; }
-      .signals-grid, .what-i-do-grid { grid-template-columns: 1fr; }
+      .signals-grid, .what-i-do-grid, .think-grid { grid-template-columns: 1fr; }
     }
 
   </style>
@@ -579,10 +601,10 @@
       <h2 class="section-title">Selected Signals</h2>
     </div>
     <div class="signals-grid">
-      <div class="signal-item">Sustained 400+ day uptime on production systems</div>
-      <div class="signal-item">Designed backend payment flows handling real transaction routing and failure cases</div>
-      <div class="signal-item">Reduced infrastructure waste through utilization-based sizing</div>
-      <div class="signal-item">Worked across compliance, risk, and system reliability constraints</div>
+      <div class="signal-item"><strong>400+ days</strong> continuous uptime on primary production infrastructure. 10-minute daily maintenance window, automated recovery.</div>
+      <div class="signal-item"><strong>6-week delivery</strong> — government EDMS contract for the National Universities Commission. Prototype in 2 weeks. Full production in 6. Solo.</div>
+      <div class="signal-item"><strong>1,428× ROI</strong> — ₦7K cold outreach investment → ₦10M in closed revenue. Pipeline I designed.</div>
+      <div class="signal-item"><strong>8 microservices</strong> in production across GCP, AWS, and Cloudflare. Payments, KYC, fraud, identity, bookkeeping. Built solo.</div>
     </div>
   </section>
 
@@ -595,18 +617,22 @@
       <div class="do-item">
         <h3>Design payment and financial systems</h3>
         <p>Build and structure systems that handle real transaction flows, failure cases, and regulatory constraints.</p>
+        <p class="do-story">I watched how users interacted with payment apps before I touched architecture. One pattern kept showing up: the products people trusted always showed the destination before the amount. That observation became the entire Payment Intent Architecture.</p>
       </div>
       <div class="do-item">
         <h3>Own systems end-to-end</h3>
         <p>From product definition to architecture to deployment decisions — not just specs.</p>
+        <p class="do-story">On the NUC government contract, I wrote the PRD, designed the architecture, built the system, and deployed it to production. Prototype in 2 weeks, delivered in 6. Solo.</p>
       </div>
       <div class="do-item">
         <h3>Optimize for uptime and cost</h3>
         <p>Make tradeoffs between reliability, performance, and infrastructure spend.</p>
+        <p class="do-story">I sized servers based on the thread utilisation of the software actually running on them — not a provider default. Deployed a private cloud that cut collaboration costs to ₦4,000/user, achieving 98%+ savings.</p>
       </div>
       <div class="do-item">
         <h3>Bridge product and engineering</h3>
         <p>Translate business needs into systems that can actually be built and maintained.</p>
+        <p class="do-story">Our users aren't accountants. So the Business OS lets them record sales and purchases in their own language — the system handles double-entry bookkeeping automatically. Users never touch a chart of accounts.</p>
       </div>
     </div>
   </section>
@@ -617,14 +643,18 @@
       <h2 class="section-title">How I Think</h2>
     </div>
     <div class="think-grid">
-      <p>I don't separate product from systems.</p>
-      <p>Every product decision has infrastructure, cost, and reliability implications.</p>
-      <p>I focus on building systems that:</p>
-      <ul>
-        <li>don't break under load</li>
-        <li>are cost-aware from the start</li>
-        <li>can evolve without constant rewrites</li>
-      </ul>
+      <div class="think-model">
+        <h3>Watch before you build</h3>
+        <p>Before I designed the payment architecture, I spent time watching how users interacted with existing payment products. The best products always showed the user where the money was going before they entered the amount. That observation became the foundation — not a framework, not a pattern. Just: users need to see where the money is going before they commit.</p>
+      </div>
+      <div class="think-model">
+        <h3>Reframe the problem</h3>
+        <p>The obvious question for Business OS was "how do we make accounting easier to learn?" That's the wrong question. The right one: "what is accounting actually doing?" Answer: structured activity recording. Business owners already record activities. The product's job is to be the translation layer — accept business events, produce correct accounting. No training required.</p>
+      </div>
+      <div class="think-model">
+        <h3>Let the work negotiate scope</h3>
+        <p>On the NUC contract, the client came in with a large scope. I didn't negotiate it down. I said: pick one feature. We built it in two weeks and showed them the working thing. By the third sprint, they'd voluntarily removed 3 features from their own list — not because we asked, but because seeing the real product changed what they thought they needed. Delivered in 45 days.</p>
+      </div>
     </div>
   </section>
 
@@ -856,20 +886,20 @@
       title: 'Payment Infrastructure System',
       desc: 'Backend system for handling transaction routing, processing, and reliability under real usage.',
       bullets: [
-        'Designed transaction flow and failure handling logic',
-        'Structured system for reliability under real usage conditions',
-        'Balanced performance with infrastructure cost constraints'
+        'Unified all payment types (transfer, QR, bill, contactless) under a single Payment Intent abstraction',
+        'Validation runs in parallel while user decides amount — execution is near-instant on confirm',
+        'Intent ID is the idempotency key throughout — same ID for tracing, retries, and reconciliation'
       ],
       img: 'images/product-edms[1280x720].webp'
     },
     'bookkeeping': {
       tag: 'Data Architecture',
       title: 'Financial Record System',
-      desc: 'Internal system for managing and structuring financial data.',
+      desc: 'Users record business events in their own language. System handles double-entry bookkeeping automatically.',
       bullets: [
-        'Built backend structure for financial data consistency',
-        'Designed workflows for accuracy and traceability',
-        'Focused on long-term maintainability over quick hacks'
+        'Users record sales and purchases naturally — system produces correct journal entries, ledger updates, and financial reports',
+        'Same data becomes loan marketplace underwriting input — richer than credit bureau data, backed by explicit user consent',
+        'Designed transparency layer for users who want to see accounting output without making it the primary experience'
       ],
       img: 'images/product-bookkeeping[1280x720].webp'
     },
@@ -878,9 +908,9 @@
       title: 'Consumer Payment Interface',
       desc: 'Frontend application built to withstand unreliable networks and high transaction volume.',
       bullets: [
-        'Designed resilience patterns for intermittent connectivity',
-        'Structured error handling to prevent duplicate transactions',
-        'Built deterministic state management for transaction workflows'
+        'Built one-device policy and re-auth on migration before CBN mandated it in March 2026',
+        'Async KYC with automatic provider failover — onboarding never blocks on provider downtime',
+        'Collects user contact before KYC resolves, enabling re-engagement if verification fails'
       ],
       img: 'images/product-payment-app[1280x720].webp'
     }
