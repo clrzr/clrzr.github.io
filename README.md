@@ -1,3 +1,8 @@
-# Technical Product Manager & Systems Architect
+# Technical Product Manager
+I design software architectures, build, and deploy products.
+My work spans 4 main categories:
 
-I design software architectures, build them, and put them in front of real users. The work spans fintech infrastructure, cloud deployments, AI-assisted development, and hardware-software integration
+1. **Fintech Infrastructure** - payments, KYC, fraud detection
+2. **Cloud Deployments** - Docker, Kubernetes, CI/CD pipelines
+3. **AI-Assisted Development** - agentic AI, automated testing
+4. **Hardware-Software Integration** - embedded systems, IoT

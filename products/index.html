@@ -58,11 +58,13 @@
     }
     .shipped-card:hover { box-shadow: var(--shadow-md); border-color: #d4cfc8; transform: translateY(-3px); }
     .shipped-image {
-      width: 100%; aspect-ratio: 4/3;
+      width: 100%; aspect-ratio: 16/9;
       background: var(--surface-warm); border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
     }
-    .shipped-image::after { content: '/Visual'; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; }
+    .shipped-image img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: 1; }
+    .shipped-image::after { content: '/Visual'; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; position: absolute; z-index: 0; }
     .shipped-body { padding: 28px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; }
     .shipped-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
     .shipped-title { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 600; color: var(--text); }
@@ -79,7 +81,7 @@
     .modal-overlay.open { opacity: 1; pointer-events: all; }
     .modal-box {
       background: var(--surface); border-radius: var(--radius);
-      box-shadow: var(--shadow-md); max-width: 880px; width: 100%;
+      box-shadow: var(--shadow-md); max-width: 960px; width: 100%;
       position: relative; transform: translateY(20px);
       transition: transform 0.28s ease; overflow: hidden;
     }
@@ -93,22 +95,25 @@
       z-index: 10; transition: all 0.2s;
     }
     .modal-close:hover { background: var(--border-light); color: var(--text); }
-    .modal-split { display: grid; grid-template-columns: 1fr 1fr; }
+    .modal-split { display: flex; flex-direction: column; }
     .modal-visual {
-      aspect-ratio: 1; background: var(--surface-warm);
-      border-right: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center; min-height: 360px;
+      aspect-ratio: 16/9; width: 100%;
+      background: var(--surface-warm);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
     }
     .modal-visual::after { content: '/Visual'; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
     .modal-body { padding: 48px 40px; display: flex; flex-direction: column; gap: 16px; justify-content: center; }
     .modal-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
     .modal-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: var(--text); line-height: 1.2; }
     .modal-desc { font-size: 15.5px; color: var(--text-body); line-height: 1.8; }
+    .modal-desc p { margin-bottom: 12px; }
+    .modal-desc ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .modal-desc li { position: relative; padding-left: 20px; }
+    .modal-desc li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-family: 'DM Mono', monospace; }
     @media (max-width: 860px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 640px) {
       .products-grid { grid-template-columns: 1fr; }
-      .modal-split { grid-template-columns: 1fr; }
-      .modal-visual { border-right: none; border-bottom: 1px solid var(--border); min-height: 220px; }
     }
   </style>
 </head>
@@ -129,57 +134,57 @@
 <div class="wrap">
   <header>
     <div class="eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">Shipped</span></div>
-    <h1>Products I've<br><em style="font-style:italic;font-weight:400;color:var(--accent)">Shipped</em></h1>
-    <p class="header-sub">Six products taken from brief through to production. Click any product to see a quick overview.</p>
+    <h1>Systems I've<br><em style="font-style:italic;font-weight:400;color:var(--accent)">Built</em></h1>
+    <p class="header-sub">Six systems taken from brief through to production. Click any system to see a quick overview.</p>
   </header>
 
   <div class="products-grid">
     <div class="shipped-card" data-product="edms">
-      <div class="shipped-image"></div>
+      <div class="shipped-image"><img src="../images/product-edms[1280x720].webp" alt="" /></div>
       <div class="shipped-body">
-        <p class="shipped-tag">Document Management</p>
-        <h2 class="shipped-title">EDMS Product</h2>
-        <p class="shipped-desc">Enterprise Document Management System</p>
+        <p class="shipped-tag">Payment Routing</p>
+        <h2 class="shipped-title">Payment Infrastructure System</h2>
+        <p class="shipped-desc">Backend system for handling transaction routing, processing, and reliability under real usage.</p>
       </div>
     </div>
     <div class="shipped-card" data-product="bookkeeping">
-      <div class="shipped-image"></div>
+      <div class="shipped-image"><img src="../images/product-bookkeeping[1280x720].webp" alt="" /></div>
       <div class="shipped-body">
-        <p class="shipped-tag">Financial Tools</p>
-        <h2 class="shipped-title">Bookkeeping Product</h2>
-        <p class="shipped-desc">Automated financial record management</p>
+        <p class="shipped-tag">Data Architecture</p>
+        <h2 class="shipped-title">Financial Record System</h2>
+        <p class="shipped-desc">Internal system for managing and structuring financial data.</p>
       </div>
     </div>
     <div class="shipped-card" data-product="pm-tool">
-      <div class="shipped-image"></div>
+      <div class="shipped-image"><img src="../images/product-pm-tool[1280x720].webp" alt="" /></div>
       <div class="shipped-body">
         <p class="shipped-tag">Internal Tooling</p>
-        <h2 class="shipped-title">Product Management Tool</h2>
-        <p class="shipped-desc">Internal workflow and lifecycle management</p>
+        <h2 class="shipped-title">Internal Lifecycle Platform</h2>
+        <p class="shipped-desc">Internal workflow and lifecycle management for tracking product delivery.</p>
       </div>
     </div>
     <div class="shipped-card" data-product="hse">
-      <div class="shipped-image"></div>
+      <div class="shipped-image"><img src="../images/product-hse[1280x720].webp" alt="" /></div>
       <div class="shipped-body">
         <p class="shipped-tag">Compliance</p>
-        <h2 class="shipped-title">HSE Product</h2>
-        <p class="shipped-desc">Health, Safety and Environment compliance tool</p>
+        <h2 class="shipped-title">Compliance Management System</h2>
+        <p class="shipped-desc">Health, Safety and Environment compliance auditing system.</p>
       </div>
     </div>
     <div class="shipped-card" data-product="resource-tool">
-      <div class="shipped-image"></div>
+      <div class="shipped-image"><img src="../images/product-resource-tool[1280x720].webp" alt="" /></div>
       <div class="shipped-body">
         <p class="shipped-tag">Internal Tooling</p>
-        <h2 class="shipped-title">Internal Resource Tool</h2>
-        <p class="shipped-desc">Team allocation and resource planning</p>
+        <h2 class="shipped-title">Resource Allocation Engine</h2>
+        <p class="shipped-desc">System for forecasting and structuring team capacity across projects.</p>
       </div>
     </div>
     <div class="shipped-card" data-product="payment-app">
-      <div class="shipped-image"></div>
+      <div class="shipped-image"><img src="../images/product-payment-app[1280x720].webp" alt="" /></div>
       <div class="shipped-body">
-        <p class="shipped-tag">Payments</p>
-        <h2 class="shipped-title">Payment App</h2>
-        <p class="shipped-desc">Consumer-facing payment application</p>
+        <p class="shipped-tag">Interface Engineering</p>
+        <h2 class="shipped-title">Consumer Payment Interface</h2>
+        <p class="shipped-desc">Frontend application built to withstand unreliable networks and high transaction volume.</p>
       </div>
     </div>
   </div>
@@ -194,7 +199,7 @@
       <div class="modal-body">
         <p class="modal-tag" id="modal-tag"></p>
         <h2 class="modal-title" id="modal-title"></h2>
-        <p class="modal-desc" id="modal-desc"></p>
+        <div class="modal-desc" id="modal-desc"></div>
       </div>
     </div>
   </div>
@@ -202,22 +207,91 @@
 
 <script>
   const products = {
-    'edms':         { tag: 'Document Management', title: 'EDMS Product', desc: 'Enterprise Document Management System — multi-tenant, license-based workspace isolation. Each institution operates independently; revoking access is an operational action, not a code change.' },
-    'bookkeeping':  { tag: 'Financial Tools', title: 'Bookkeeping Product', desc: 'Built around an accounting abstraction layer. Users record events in their own language; the system handles the double-entry bookkeeping and produces financial reports automatically.' },
-    'pm-tool':      { tag: 'Internal Tooling', title: 'Product Management Tool', desc: 'An internal workflow and lifecycle management tool for tracking product work from discovery through to delivery. Write-up coming soon.' },
-    'hse':          { tag: 'Compliance', title: 'HSE Product', desc: 'A Health, Safety and Environment compliance tool. Built but not yet shipped. More details coming soon.' },
-    'resource-tool':{ tag: 'Internal Tooling', title: 'Internal Resource Tool', desc: 'Team allocation and resource planning system. More details coming soon.' },
-    'payment-app':  { tag: 'Payments', title: 'Payment App', desc: 'Consumer-facing payment application built on the Payment Intent Architecture — one unified primitive for QR, bill, and transfer payments. Supports physical access control triggers on confirmed transactions.' }
+    'edms': {
+      tag: 'Payment Routing',
+      title: 'Payment Infrastructure System',
+      desc: 'Backend system for handling transaction routing, processing, and reliability under real usage.',
+      bullets: [
+        'Designed transaction flow and failure handling logic',
+        'Structured system for reliability under real usage conditions',
+        'Balanced performance with infrastructure cost constraints'
+      ],
+      img: '../images/product-edms[1280x720].webp'
+    },
+    'bookkeeping': {
+      tag: 'Data Architecture',
+      title: 'Financial Record System',
+      desc: 'Internal system for managing and structuring financial data.',
+      bullets: [
+        'Built backend structure for financial data consistency',
+        'Designed workflows for accuracy and traceability',
+        'Focused on long-term maintainability over quick hacks'
+      ],
+      img: '../images/product-bookkeeping[1280x720].webp'
+    },
+    'pm-tool': {
+      tag: 'Internal Tooling',
+      title: 'Internal Lifecycle Platform',
+      desc: 'Internal workflow and lifecycle management for tracking product delivery.',
+      bullets: [
+        'Designed end-to-end visibility for the product lifecycle',
+        'Structured cross-functional collaboration and state tracking',
+        'Built deterministic workflows to replace manual handover'
+      ],
+      img: '../images/product-pm-tool[1280x720].webp'
+    },
+    'hse': {
+      tag: 'Compliance',
+      title: 'Compliance Management System',
+      desc: 'Health, Safety and Environment compliance auditing system.',
+      bullets: [
+        'Designed reporting architecture for strict compliance audits',
+        'Built structured data capture for field operations',
+        'Ensured traceability and non-repudiation of records'
+      ],
+      img: '../images/product-hse[1280x720].webp'
+    },
+    'resource-tool': {
+      tag: 'Internal Tooling',
+      title: 'Resource Allocation Engine',
+      desc: 'System for forecasting and structuring team capacity across projects.',
+      bullets: [
+        'Designed logic for predicting capacity utilization',
+        'Built internal tracking to minimize idle downtime',
+        'Structured reporting for cross-project cost allocation'
+      ],
+      img: '../images/product-resource-tool[1280x720].webp'
+    },
+    'payment-app': {
+      tag: 'Interface Engineering',
+      title: 'Consumer Payment Interface',
+      desc: 'Frontend application built to withstand unreliable networks and high transaction volume.',
+      bullets: [
+        'Designed resilience patterns for intermittent connectivity',
+        'Structured error handling to prevent duplicate transactions',
+        'Built deterministic state management for transaction workflows'
+      ],
+      img: '../images/product-payment-app[1280x720].webp'
+    }
   };
 
   const modal = document.getElementById('product-modal');
+  const modalVis = document.querySelector('.modal-visual');
   document.querySelectorAll('.shipped-card[data-product]').forEach(card => {
     card.addEventListener('click', () => {
       const p = products[card.dataset.product];
       if (!p) return;
       document.getElementById('modal-tag').textContent = p.tag;
       document.getElementById('modal-title').textContent = p.title;
-      document.getElementById('modal-desc').textContent = p.desc;
+      
+      let descHtml = `<p>${p.desc}</p>`;
+      if (p.bullets && p.bullets.length > 0) {
+        descHtml += `<ul>${p.bullets.map(b => `<li>${b}</li>`).join('')}</ul>`;
+      }
+      document.getElementById('modal-desc').innerHTML = descHtml;
+      modalVis.innerHTML = `<img src="${p.img}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;z-index:1;" />`;
+      modalVis.style.position = 'relative';
+      modalVis.style.overflow = 'hidden';
       modal.setAttribute('aria-hidden', 'false');
       modal.classList.add('open');
     });
