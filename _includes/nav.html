@@ -1,0 +1,12 @@
+<nav>
+  <div class="wrap nav-inner">
+    <a href="/" class="nav-brand">
+      Michael <span class="nav-brand-arrow"></span> Portfolio
+    </a>
+    <div class="nav-links">
+      {% for link in site.data.nav %}
+        <a href="{{ link.href }}" class="nav-link{% if page.url == link.href %} active{% endif %}">{{ link.label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</nav>

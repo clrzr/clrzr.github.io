@@ -1,0 +1,45 @@
+{% assign entry = include.entry %}
+<div class="tl-entry">
+  <div class="tl-header">
+    <div class="tl-dot{% if entry.skill_thread %} skill{% endif %}"></div>
+    <div class="tl-meta">
+      <span class="tl-date">{{ entry.date }}</span>
+      {% if entry.current %}<span class="tl-badge current">Current</span>{% endif %}
+      {% if entry.skill_thread %}<span class="tl-badge">Skill Thread</span>{% endif %}
+    </div>
+    <h3 class="tl-role">{{ entry.role }}</h3>
+    <p class="tl-org">{{ entry.org }}</p>
+    <p class="tl-summary">{{ entry.summary }}</p>
+  </div>
+  <div class="tl-detail">
+    <ul class="tl-bullets">
+      {% for bullet in entry.bullets %}
+        <li>{{ bullet }}</li>
+      {% endfor %}
+    </ul>
+
+    {% if entry.featured_url %}
+    <a href="{{ entry.featured_url }}" class="tl-featured" target="_blank" rel="noopener noreferrer">
+      <div class="tl-featured-icon">→</div>
+      <div>
+        <div class="tl-featured-title">{{ entry.featured_title }}</div>
+        <div class="tl-featured-url">{{ entry.featured_url_display }}</div>
+      </div>
+    </a>
+    {% endif %}
+
+    {% if entry.canva_embed %}
+    <div class="tl-embed">
+      <iframe loading="lazy" src="{{ entry.canva_embed }}" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+    </div>
+    {% endif %}
+
+    {% if entry.images %}
+    <div class="tl-gallery">
+      {% for image in entry.images %}
+        <img src="/images/{{ image.src }}" alt="{{ image.alt }}" />
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>

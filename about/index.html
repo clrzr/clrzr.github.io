@@ -1,839 +1,169 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About — Michael</title>
-  <meta name="description"
-    content="About Michael — Technical Product Operator designing and shipping production fintech systems." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap"
-    rel="stylesheet" />
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #f5f2ec;
-      --surface: #ffffff;
-      --surface-warm: #faf8f4;
-      --border: #e2ddd5;
-      --border-light: #ede9e1;
-      --text: #1a1714;
-      --text-body: #3d3830;
-      --text-muted: #7a7268;
-      --text-dim: #b5afa5;
-      --accent: #b85c38;
-      --accent-bg: rgba(184, 92, 56, 0.07);
-      --shadow-sm: 0 1px 4px rgba(26, 23, 20, 0.06), 0 2px 12px rgba(26, 23, 20, 0.04);
-      --shadow-md: 0 2px 8px rgba(26, 23, 20, 0.07), 0 8px 24px rgba(26, 23, 20, 0.05);
-      --radius: 6px;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-      line-height: 1.7;
-      font-size: 16px;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    p {
-      color: var(--text-body);
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .wrap {
-      max-width: 1060px;
-      margin: 0 auto;
-      padding: 0 36px;
-    }
-
-    nav {
-      padding: 18px 0;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      background: rgba(245, 242, 236, 0.92);
-      backdrop-filter: blur(16px);
-      z-index: 100;
-    }
-
-    .nav-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 0.04em;
-    }
-
-    .nav-brand-arrow {
-      display: inline-block;
-      width: 28px;
-      height: 1px;
-      background: var(--accent);
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .nav-brand-arrow::after {
-      content: '';
-      position: absolute;
-      right: 0;
-      top: -3px;
-      width: 6px;
-      height: 6px;
-      border-top: 1px solid var(--accent);
-      border-right: 1px solid var(--accent);
-      transform: rotate(45deg);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2px;
-    }
-
-    .nav-link {
-      font-size: 11px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      padding: 5px 12px;
-      border-radius: var(--radius);
-      transition: color 0.18s, background 0.18s;
-    }
-
-    .nav-link:hover,
-    .nav-link.active {
-      color: var(--text);
-      background: var(--border-light);
-    }
-
-    header {
-      padding: 72px 0 80px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .hero-split {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: 60px;
-      align-items: center;
-    }
-
-    .eyebrow {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .eyebrow-line {
-      width: 32px;
-      height: 1px;
-      background: var(--accent);
-    }
-
-    .eyebrow-text {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(40px, 6vw, 72px);
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -0.02em;
-      color: var(--text);
-      margin-bottom: 28px;
-    }
-
-    .header-bio {
-      font-size: 17px;
-      color: var(--text-body);
-      line-height: 1.85;
-      max-width: 520px;
-    }
-
-    .hero-image {
-      aspect-ratio: 3/4;
-      background: var(--surface-warm);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .hero-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-    }
-
-    .hero-image span {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      z-index: 0;
-    }
-
-    /* ─── TIMELINE ─────────────────────────────────── */
-    .timeline-section {
-      padding: 80px 0;
-    }
-
-    .timeline-header {
-      margin-bottom: 60px;
-    }
-
-    .timeline-header h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(24px, 3vw, 36px);
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-
-    .timeline {
-      position: relative;
-      padding-left: 48px;
-    }
-
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 7px;
-      top: 8px;
-      bottom: 0;
-      width: 1px;
-      background: var(--border);
-    }
-
-    .tl-entry {
-      position: relative;
-      margin-bottom: 32px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid transparent;
-    }
-
-    .tl-entry:last-child {
-      margin-bottom: 0;
-      border-bottom: none;
-    }
-
-    .tl-header {
-      cursor: pointer;
-    }
-
-    .tl-header:hover .tl-role {
-      color: var(--accent);
-    }
-
-    .tl-dot {
-      position: absolute;
-      left: -48px;
-      top: 6px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      background: var(--surface);
-      transition: border-color 0.2s, background 0.2s;
-    }
-
-    .tl-entry:hover .tl-dot {
-      border-color: var(--accent);
-      background: var(--accent-bg);
-    }
-
-    .tl-entry.open .tl-dot {
-      border-color: var(--accent);
-      background: var(--accent);
-    }
-
-    .tl-dot.skill {
-      border-style: dashed;
-      border-width: 2px;
-    }
-
-    .tl-entry.open .tl-dot.skill {
-      background: var(--surface);
-      border-style: solid;
-      border-color: var(--accent);
-    }
-
-    .tl-meta {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-
-    .tl-date {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-    }
-
-    .tl-badge {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 3px 9px;
-      border-radius: 100px;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      background: var(--surface-warm);
-    }
-
-    .tl-badge.current {
-      border-color: rgba(184, 92, 56, 0.4);
-      color: var(--accent);
-      background: var(--accent-bg);
-    }
-
-    .tl-role {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 4px;
-      line-height: 1.2;
-      transition: color 0.2s;
-    }
-
-    .tl-org {
-      font-size: 15px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .tl-summary {
-      font-size: 15.5px;
-      color: var(--text-body);
-      line-height: 1.6;
-      max-width: 640px;
-    }
-
-    /* ─── EXPANDABLE DETAIL ─────────────────────────── */
-    .tl-detail {
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
-    }
-
-    .tl-entry.open .tl-detail {
-      margin-top: 24px;
-      opacity: 1;
-      /* max-height is set via JS for smooth animation */
-    }
-
-    .tl-bullets {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 24px;
-      max-width: 720px;
-    }
-
-    .tl-bullets li {
-      position: relative;
-      padding-left: 20px;
-      font-size: 15.5px;
-      color: var(--text-body);
-      line-height: 1.6;
-    }
-
-    .tl-bullets li::before {
-      content: '→';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-      font-family: 'DM Mono', monospace;
-    }
-
-    /* ─── GALLERY ───────────────────────────────────── */
-    .tl-gallery {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 12px;
-      /* For scrollbar */
-      margin-bottom: 12px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) var(--surface-warm);
-    }
-
-    .tl-gallery::-webkit-scrollbar {
-      height: 6px;
-    }
-
-    .tl-gallery::-webkit-scrollbar-track {
-      background: var(--surface-warm);
-      border-radius: 4px;
-    }
-
-    .tl-gallery::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 4px;
-    }
-
-    .tl-gallery img {
-      height: 160px;
-      width: auto;
-      border-radius: var(--radius);
-      object-fit: cover;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .tl-gallery img:hover {
-      transform: scale(1.02);
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* ─── EMBED & FEATURED ──────────────────────────── */
-    .tl-embed {
-      width: 100%;
-      max-width: 720px;
-      aspect-ratio: 16/9;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      margin-bottom: 24px;
-    }
-
-    .tl-embed iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .tl-featured {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 24px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 24px;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .tl-featured:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .tl-featured-title {
-      font-weight: 500;
-      font-size: 15px;
-      color: var(--text);
-    }
-
-    .tl-featured-url {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    /* ─── LIGHTBOX ──────────────────────────────────── */
-    .lightbox-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      background: rgba(15, 13, 11, 0.9);
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .lightbox-overlay.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .lightbox-img {
-      max-width: 90vw;
-      max-height: 90vh;
-      object-fit: contain;
-      border-radius: var(--radius);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    }
-
-    .lightbox-close {
-      position: absolute;
-      top: 24px;
-      right: 24px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 18px;
-      transition: background 0.2s;
-    }
-
-    .lightbox-close:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    @media (max-width: 720px) {
-      .hero-split {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-image {
-        display: none;
-      }
-
-      .wrap {
-        padding: 0 24px;
-      }
-
-      .tl-gallery img {
-        height: 120px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-  <nav>
-    <div class="wrap nav-inner">
-      <a href="../" class="nav-brand"><span class="nav-brand-arrow"></span> Michael</a>
-      <div class="nav-links">
-        <a href="../product-thinking/" class="nav-link">Product Thinking</a>
-        <a href="../engineering/" class="nav-link">Engineering</a>
-        <a href="../products/" class="nav-link">Products</a>
-        <a href="../about/" class="nav-link active">About</a>
+---
+layout: base
+title: "About — Michael"
+description: "About Michael — Technical Product Operator designing and shipping production fintech systems."
+---
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f2ec; --surface: #ffffff; --surface-warm: #faf8f4;
+    --border: #e2ddd5; --border-light: #ede9e1;
+    --text: #1a1714; --text-body: #3d3830; --text-muted: #7a7268; --text-dim: #b5afa5;
+    --accent: #b85c38; --accent-bg: rgba(184,92,56,0.07);
+    --shadow-sm: 0 1px 4px rgba(26,23,20,0.06), 0 2px 12px rgba(26,23,20,0.04);
+    --shadow-md: 0 2px 8px rgba(26,23,20,0.07), 0 8px 24px rgba(26,23,20,0.05);
+    --radius: 6px;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.7; font-size: 16px; -webkit-font-smoothing: antialiased; }
+  p { color: var(--text-body); }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 36px; }
+
+  nav { padding: 18px 0; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(245,242,236,0.92); backdrop-filter: blur(16px); z-index: 100; }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+  .nav-brand { display: flex; align-items: center; gap: 10px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; }
+  .nav-brand-arrow { display: inline-block; width: 28px; height: 1px; background: var(--accent); position: relative; flex-shrink: 0; }
+  .nav-brand-arrow::after { content: ''; position: absolute; right: 0; top: -3px; width: 6px; height: 6px; border-top: 1px solid var(--accent); border-right: 1px solid var(--accent); transform: rotate(45deg); }
+  .nav-links { display: flex; gap: 2px; }
+  .nav-link { font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-muted); padding: 5px 12px; border-radius: var(--radius); transition: color 0.18s, background 0.18s; }
+  .nav-link:hover, .nav-link.active { color: var(--text); background: var(--border-light); }
+
+  header { padding: 72px 0 80px; border-bottom: 1px solid var(--border); }
+  .hero-split { display: grid; grid-template-columns: 1fr 280px; gap: 60px; align-items: center; }
+  .eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .eyebrow-line { width: 32px; height: 1px; background: var(--accent); }
+  .eyebrow-text { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-family: 'Playfair Display', serif; font-size: clamp(40px, 6vw, 72px); font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: var(--text); margin-bottom: 28px; }
+  .header-bio { font-size: 17px; color: var(--text-body); line-height: 1.85; max-width: 520px; }
+  .hero-image { aspect-ratio: 3/4; background: var(--surface-warm); border: 1px solid var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); overflow: hidden; position: relative; }
+  .hero-image img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: 1; }
+  .hero-image span { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.1em; z-index: 0; }
+
+  .timeline-section { padding: 80px 0; }
+  .timeline-header { margin-bottom: 60px; }
+  .timeline-header h2 { font-family: 'Playfair Display', serif; font-size: clamp(24px, 3vw, 36px); font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
+
+  .timeline { position: relative; padding-left: 48px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 0; width: 1px; background: var(--border); }
+  .tl-entry { position: relative; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid transparent; }
+  .tl-entry:last-child { margin-bottom: 0; border-bottom: none; }
+  .tl-header { cursor: pointer; }
+  .tl-header:hover .tl-role { color: var(--accent); }
+  .tl-dot { position: absolute; left: -48px; top: 6px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border); background: var(--surface); transition: border-color 0.2s, background 0.2s; }
+  .tl-entry:hover .tl-dot { border-color: var(--accent); background: var(--accent-bg); }
+  .tl-entry.open .tl-dot { border-color: var(--accent); background: var(--accent); }
+  .tl-dot.skill { border-style: dashed; border-width: 2px; }
+  .tl-entry.open .tl-dot.skill { background: var(--surface); border-style: solid; border-color: var(--accent); }
+  .tl-meta { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; flex-wrap: wrap; }
+  .tl-date { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
+  .tl-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; border: 1px solid var(--border); color: var(--text-muted); background: var(--surface-warm); }
+  .tl-badge.current { border-color: rgba(184,92,56,0.4); color: var(--accent); background: var(--accent-bg); }
+  .tl-role { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.2; transition: color 0.2s; }
+  .tl-org { font-size: 15px; color: var(--text-muted); margin-bottom: 8px; }
+  .tl-summary { font-size: 15.5px; color: var(--text-body); line-height: 1.6; max-width: 640px; }
+
+  .tl-detail { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease; }
+  .tl-entry.open .tl-detail { margin-top: 24px; opacity: 1; }
+
+  .tl-bullets { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; max-width: 720px; }
+  .tl-bullets li { position: relative; padding-left: 20px; font-size: 15.5px; color: var(--text-body); line-height: 1.6; }
+  .tl-bullets li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-family: 'DM Mono', monospace; }
+
+  .tl-gallery { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 12px; scrollbar-width: thin; scrollbar-color: var(--border) var(--surface-warm); }
+  .tl-gallery::-webkit-scrollbar { height: 6px; }
+  .tl-gallery::-webkit-scrollbar-track { background: var(--surface-warm); border-radius: 4px; }
+  .tl-gallery::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .tl-gallery img { height: 160px; width: auto; border-radius: var(--radius); object-fit: cover; cursor: pointer; border: 1px solid var(--border); transition: transform 0.2s, box-shadow 0.2s; }
+  .tl-gallery img:hover { transform: scale(1.02); box-shadow: var(--shadow-sm); }
+
+  .tl-embed { width: 100%; max-width: 720px; aspect-ratio: 16/9; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
+  .tl-embed iframe { width: 100%; height: 100%; border: none; }
+
+  .tl-featured { display: inline-flex; align-items: center; gap: 12px; padding: 16px 24px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius); box-shadow: var(--shadow-sm); margin-bottom: 24px; transition: transform 0.2s, box-shadow 0.2s; }
+  .tl-featured:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .tl-featured-title { font-weight: 500; font-size: 15px; color: var(--text); }
+  .tl-featured-url { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-muted); }
+
+  .lightbox-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(15,13,11,0.9); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .lightbox-overlay.active { opacity: 1; pointer-events: all; }
+  .lightbox-img { max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: var(--radius); box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+  .lightbox-close { position: absolute; top: 24px; right: 24px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: background 0.2s; }
+  .lightbox-close:hover { background: rgba(255,255,255,0.2); }
+
+  @media (max-width: 720px) {
+    .hero-split { grid-template-columns: 1fr; }
+    .hero-image { display: none; }
+    .wrap { padding: 0 24px; }
+    .tl-gallery img { height: 120px; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="hero-split">
+      <div>
+        <div class="eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">About Me</span></div>
+        <h1>Michael</h1>
+        <p class="header-bio">Technical Product Operator. I build fintech infrastructure, design production systems, and own the full journey — from product definition to deployment. I don't separate product from systems; I build solutions that handle real constraints, scale predictably, and make business sense.</p>
+      </div>
+      <div class="hero-image">
+        <span>/Photo</span>
+        <img src="/images/headshot[480x600].webp" alt="Michael Headshot" />
       </div>
     </div>
-  </nav>
+  </header>
 
-  <div class="wrap">
-    <header>
-      <div class="hero-split">
-        <div>
-          <div class="eyebrow">
-            <div class="eyebrow-line"></div><span class="eyebrow-text">About Me</span>
-          </div>
-          <h1>Michael</h1>
-          <p class="header-bio">
-            Technical Product Operator. I build fintech infrastructure, design production systems, and own the full
-            journey — from product definition to deployment. I don't separate product from systems; I build solutions
-            that handle real constraints, scale predictably, and make business sense.
-          </p>
-        </div>
-        <div class="hero-image">
-          <span>/Photo</span>
-          <img src="../images/headshot[480x600].webp" alt="Michael Headshot" />
-        </div>
-      </div>
-    </header>
-
-    <div class="timeline-section">
-      <div class="timeline-header">
-        <h2>Career Timeline</h2>
-      </div>
-
-      <div class="timeline">
-
-        <!-- Entry 1: Kwab -->
-        <div class="tl-entry">
-          <div class="tl-header">
-            <div class="tl-dot current"></div>
-            <div class="tl-meta">
-              <span class="tl-date">2024 — Present</span>
-              <span class="tl-badge current">Current</span>
-            </div>
-            <h3 class="tl-role">Co-Founder &amp; Technical Lead</h3>
-            <p class="tl-org">Kwab.</p>
-            <p class="tl-summary">Built a full fintech backend solo — payments, KYC, fraud, identity, bookkeeping. 8
-              microservices. Multi-cloud. In production.</p>
-          </div>
-          <div class="tl-detail">
-            <ul class="tl-bullets">
-              <li>Designed Payment Intent Architecture that unified all transaction types under one flow</li>
-              <li>Implemented async KYC with provider failover — zero onboarding drop-offs from downtime</li>
-              <li>Anticipated CBN one-device mandate months before regulation</li>
-              <li>150+ waitlisted users, 10 community testers, Angel round raised</li>
-              <li>400+ day uptime on primary infrastructure</li>
-            </ul>
-            <div class="tl-gallery">
-              <img src="../images/about-kwab-1[800x600].webp" alt="Kwab Platform" />
-              <img src="../images/about-kwab-2[800x600].webp" alt="Kwab Architecture" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Entry 2: TIIER -->
-        <div class="tl-entry">
-          <div class="tl-header">
-            <div class="tl-dot"></div>
-            <div class="tl-meta">
-              <span class="tl-date">2020 — Present</span>
-            </div>
-            <h3 class="tl-role">Principal Software Engineer &amp; Founder</h3>
-            <p class="tl-org">TIIER</p>
-            <p class="tl-summary">Delivered enterprise systems for government and industrial clients. Also designed a
-              sales pipeline that delivered a 1,428× ROI.</p>
-          </div>
-          <div class="tl-detail">
-            <ul class="tl-bullets">
-              <li>Founded TIIER originally to make high-end compute accessible to Africans. Explored applications across
-                AI, data engineering, and animation.</li>
-              <li>NUC EDMS — prototype in 2 weeks, production in 6 weeks. Government contract. Solo.</li>
-              <li>HSE incident tracking — field capture, automated routing, immutable audit trail</li>
-              <li>License management infrastructure for multi-tenant client workspaces</li>
-              <li>Client voluntarily reduced scope by 3 features after seeing working software every 2 weeks</li>
-              <li>Designed a cold outreach pipeline from scratch: ₦7,000 investment → ₦10,000,000 in closed revenue
-                (1,428× ROI).</li>
-            </ul>
-            <div class="tl-gallery">
-              <img src="../images/about-tiier-1[800x600].webp" alt="NUC System" />
-              <img src="../images/about-tiier-2[800x600].webp" alt="HSE Interface" />
-              <img src="../images/about-sales-1[800x600].webp" alt="Sales Pipeline" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Entry 3: Heirs Energies -->
-        <div class="tl-entry">
-          <div class="tl-header">
-            <div class="tl-dot"></div>
-            <div class="tl-meta">
-              <span class="tl-date">Jul 2023 — Dec 2023</span>
-            </div>
-            <h3 class="tl-role">IT Ops Support</h3>
-            <p class="tl-org">Heirs Energies</p>
-            <p class="tl-summary">Designed the escalation algorithm for internal approval flows.</p>
-          </div>
-          <div class="tl-detail">
-            <ul class="tl-bullets">
-              <li>Built the logic for variable thresholds and multi-level escalation paths across department approval
-                flows</li>
-              <li>Improved UI and produced user guide for adoption</li>
-            </ul>
-            <div class="tl-gallery">
-              <img src="../images/about-heirs-1[800x600].webp" alt="Heirs Energies Ops" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Entry 4: Hardware Design (Skill Thread) -->
-        <div class="tl-entry">
-          <div class="tl-header">
-            <div class="tl-dot skill"></div>
-            <div class="tl-meta">
-              <span class="tl-date">2020 — Present</span>
-              <span class="tl-badge">Skill Thread</span>
-            </div>
-            <h3 class="tl-role">Hardware &amp; Physical Product Design</h3>
-            <p class="tl-org">Independent</p>
-            <p class="tl-summary">Won a hardware design competition. Designed production-ready furniture. A separate
-              discipline, same thinking.</p>
-          </div>
-          <div class="tl-detail">
-            <ul class="tl-bullets">
-              <li>Won hardware design competition — prototype display panel. Mechanical design, component selection,
-                physical build.</li>
-              <li>Designed furniture (chair, table) in SolidWorks — fully realised 3D designs, detailed enough to
-                manufacture</li>
-              <li>"The thinking that goes into physical product design and software product design are more similar than
-                they are different. Both start with a user, a constraint, and a problem to solve."</li>
-            </ul>
-
-            <a href="https://hardwarethings.org/super-display" class="tl-featured" target="_blank"
-              rel="noopener noreferrer">
-              <div class="tl-featured-icon">→</div>
-              <div>
-                <div class="tl-featured-title">WTN Challenge by Michael Ikirodah</div>
-                <div class="tl-featured-url">hardwarethings.org/super-display</div>
-              </div>
-            </a>
-
-            <div class="tl-embed">
-              <iframe loading="lazy" src="https://www.canva.com/design/DAFBJQdpPds/jQ0UNlc8zeaLd9F7KG5VqA/view?embed"
-                allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
-            </div>
-
-            <div class="tl-gallery">
-              <img src="../images/about-hardware-1[800x600].webp" alt="Hardware Prototype" />
-              <img src="../images/about-hardware-2[800x600].webp" alt="Hardware Competition" />
-              <img src="../images/about-hardware-3[800x600].webp" alt="SolidWorks Render 1" />
-              <img src="../images/about-hardware-4[800x600].webp" alt="SolidWorks Render 2" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Entry 5: Murranno Music -->
-        <div class="tl-entry">
-          <div class="tl-header">
-            <div class="tl-dot"></div>
-            <div class="tl-meta">
-              <span class="tl-date">Jun 2022 — Nov 2022</span>
-            </div>
-            <h3 class="tl-role">A&amp;R Operations Lead</h3>
-            <p class="tl-org">Murranno Music</p>
-            <p class="tl-summary">Created the talent scouting process. First seven-figure deal.</p>
-          </div>
-          <div class="tl-detail">
-            <ul class="tl-bullets">
-              <li>Developed and implemented a structured talent scouting process</li>
-              <li>Led artist development team to secure the company's first seven-figure deal</li>
-              <li>"Not tech. Same instinct — find the constraint, design around it, deliver."</li>
-            </ul>
-            <div class="tl-gallery">
-              <img src="../images/about-music-1[800x600].webp" alt="Murranno Music" />
-            </div>
-          </div>
-        </div>
-
-
-
-        <!-- Entry 7: FMN Group -->
-        <div class="tl-entry">
-          <div class="tl-header">
-            <div class="tl-dot"></div>
-            <div class="tl-meta">
-              <span class="tl-date">Jul 2018 — Dec 2018</span>
-            </div>
-            <h3 class="tl-role">QA Analyst</h3>
-            <p class="tl-org">The FMN Group</p>
-            <p class="tl-summary">Found 200 cartons of defective product across 5 production lines.</p>
-          </div>
-          <div class="tl-detail">
-            <ul class="tl-bullets">
-              <li>Championed bi-weekly QDI analysis on the factory floor</li>
-              <li>Discovered 10+ pallets (~200 cartons) of defective products across 5 production lines</li>
-              <li>"Started on a factory floor. The instinct to find what's broken and fix it has been there from the
-                beginning."</li>
-            </ul>
-            <div class="tl-gallery">
-              <img src="../images/about-fmn-1[800x600].webp" alt="FMN QA Analysis" />
-            </div>
-          </div>
-        </div>
-
-      </div>
+  <div class="timeline-section">
+    <div class="timeline-header">
+      <h2>Career Timeline</h2>
+    </div>
+    <div class="timeline">
+      {% for entry in site.data.timeline %}
+        {% include timeline-entry.html entry=entry %}
+      {% endfor %}
     </div>
   </div>
+</div>
 
-  <!-- Lightbox Overlay -->
-  <div class="lightbox-overlay" id="lightbox">
-    <button class="lightbox-close" id="lightbox-close" aria-label="Close">✕</button>
-    <img class="lightbox-img" id="lightbox-img" src="" alt="Full size view" />
-  </div>
+<!-- Lightbox -->
+<div class="lightbox-overlay" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close" aria-label="Close">✕</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="Full size view" />
+</div>
 
-  <script>
-    // Accordion Timeline
-    document.querySelectorAll('.tl-header').forEach(header => {
-      header.addEventListener('click', () => {
-        const entry = header.parentElement;
-        const detail = entry.querySelector('.tl-detail');
-
-        const isOpen = entry.classList.contains('open');
-
-        // Close all others
-        document.querySelectorAll('.tl-entry').forEach(el => {
-          el.classList.remove('open');
-          const dt = el.querySelector('.tl-detail');
-          if (dt) dt.style.maxHeight = null;
-        });
-
-        if (!isOpen) {
-          entry.classList.add('open');
-          detail.style.maxHeight = detail.scrollHeight + 100 + "px"; // +100 for padding leeway
-        }
+<script>
+  document.querySelectorAll('.tl-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const entry = header.parentElement;
+      const detail = entry.querySelector('.tl-detail');
+      const isOpen = entry.classList.contains('open');
+      document.querySelectorAll('.tl-entry').forEach(el => {
+        el.classList.remove('open');
+        const dt = el.querySelector('.tl-detail');
+        if (dt) dt.style.maxHeight = null;
       });
+      if (!isOpen) {
+        entry.classList.add('open');
+        detail.style.maxHeight = detail.scrollHeight + 100 + 'px';
+      }
     });
+  });
 
-    // Lightbox
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxClose = document.getElementById('lightbox-close');
-
-    document.querySelectorAll('.tl-gallery img').forEach(img => {
-      img.addEventListener('click', (e) => {
-        e.stopPropagation(); // prevent accordion toggle if clicking on image inside open panel
-        lightboxImg.src = img.src;
-        lightbox.classList.add('active');
-      });
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+  document.querySelectorAll('.tl-gallery img').forEach(img => {
+    img.addEventListener('click', e => {
+      e.stopPropagation();
+      lightboxImg.src = img.src;
+      lightbox.classList.add('active');
     });
-
-    function closeLightbox() {
-      lightbox.classList.remove('active');
-      setTimeout(() => { lightboxImg.src = ''; }, 300);
-    }
-
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
-    });
-  </script>
-
-</body>
-
-</html>
+  });
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    setTimeout(() => { lightboxImg.src = ''; }, 300);
+  }
+</script>

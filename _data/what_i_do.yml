@@ -1,0 +1,15 @@
+- title: "Design payment and financial systems"
+  body: "Build and structure systems that handle real transaction flows, failure cases, and regulatory constraints."
+  story: "I watched how users interacted with payment apps before I touched architecture. One pattern kept showing up: the products people trusted always showed the destination before the amount. That observation became the entire Payment Intent Architecture."
+
+- title: "Own systems end-to-end"
+  body: "From product definition to architecture to deployment decisions — not just specs."
+  story: "On the NUC government contract, I wrote the PRD, designed the architecture, built the system, and deployed it to production. Prototype in 2 weeks, delivered in 6. Solo."
+
+- title: "Optimize for uptime and cost"
+  body: "Make tradeoffs between reliability, performance, and infrastructure spend."
+  story: "I sized servers based on the thread utilisation of the software actually running on them — not a provider default. Deployed a private cloud that cut collaboration costs to ₦4,000/user, achieving 98%+ savings."
+
+- title: "Bridge product and engineering"
+  body: "Translate business needs into systems that can actually be built and maintained."
+  story: "Our users aren't accountants. So the Business OS lets them record sales and purchases in their own language — the system handles double-entry bookkeeping automatically. Users never touch a chart of accounts."

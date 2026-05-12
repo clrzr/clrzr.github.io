@@ -1,0 +1,14 @@
+- title: "Product Thinking, Compliance & User Retention"
+  desc: "I had one user story I couldn't stop thinking about: a user loses their phone and someone picks it up. That question led to a strict one-device policy, an async KYC pipeline that keeps users off the critical path, and a PII architecture that protects user data."
+  href: "/kyc/"
+  img: "images/carousel-kyc[540x540].webp"
+
+- title: "Product & Engineering Thinking for Payments"
+  desc: "Before I touched architecture, I spent time watching how users actually interacted with payment apps. One thing kept showing up: the products people trusted always showed the destination before the amount."
+  href: "/payments/"
+  img: "images/carousel-payments[540x540].webp"
+
+- title: "Product Thinking & Engineering for Fraud Management"
+  desc: "I noticed the fraud score was always computed at the moment a decision was needed — which meant the system only knew what it had time to check right then. I built something different: a service that watches continuously in the background."
+  href: "/fraud/"
+  img: "images/carousel-fraud[540x540].webp"

@@ -1,576 +1,116 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Michael — Technical PM & Systems Architect</title>
-  <meta name="description" content="Technical Product Operator. I design and ship production fintech systems, working across product, architecture, and infrastructure." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:           #f5f2ec;
-      --surface:      #ffffff;
-      --surface-warm: #faf8f4;
-      --border:       #e2ddd5;
-      --border-light: #ede9e1;
-      --text:         #1a1714;
-      --text-body:    #3d3830;
-      --text-muted:   #7a7268;
-      --text-dim:     #b5afa5;
-      --accent:       #b85c38;
-      --accent-light: #c97a5a;
-      --accent-bg:    rgba(184, 92, 56, 0.07);
-      --green:        #4a7c59;
-      --green-bg:     rgba(74, 124, 89, 0.10);
-      --shadow-sm:    0 1px 4px rgba(26,23,20,0.06), 0 2px 12px rgba(26,23,20,0.04);
-      --shadow-md:    0 2px 8px rgba(26,23,20,0.07), 0 8px 24px rgba(26,23,20,0.05);
-      --radius:       6px;
-      --radius-pill:  100px;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-      line-height: 1.7;
-      font-size: 16px;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
-    p { color: var(--text-body); }
-    a { color: inherit; }
-
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
-    }
-
-    .wrap { max-width: 1060px; margin: 0 auto; padding: 0 36px; }
-
-    /* ─── NAV ─────────────────────────────────────────── */
-    nav {
-      padding: 18px 0;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      background: rgba(245, 242, 236, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      z-index: 100;
-    }
-    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      font-weight: 400;
-      color: var(--text-muted);
-      text-decoration: none;
-      letter-spacing: 0.04em;
-    }
-    .nav-brand-arrow {
-      display: inline-block;
-      width: 28px;
-      height: 1px;
-      background: var(--accent);
-      position: relative;
-      flex-shrink: 0;
-    }
-    .nav-brand-arrow::after {
-      content: '';
-      position: absolute;
-      right: 0;
-      top: -3px;
-      width: 6px;
-      height: 6px;
-      border-top: 1px solid var(--accent);
-      border-right: 1px solid var(--accent);
-      transform: rotate(45deg);
-    }
-    .nav-links { display: flex; gap: 2px; }
-    .nav-link {
-      font-size: 11px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      text-decoration: none;
-      padding: 5px 12px;
-      border-radius: var(--radius);
-      transition: color 0.18s, background 0.18s;
-    }
-    .nav-link:hover { color: var(--text); background: var(--border-light); }
-
-    /* ─── HERO ────────────────────────────────────────── */
-    header {
-      padding: 84px 0 92px;
-      border-bottom: 1px solid var(--border);
-    }
-    .hero-split {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 60px;
-      align-items: center;
-    }
-    .header-eyebrow {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 30px;
-    }
-    .eyebrow-line {
-      width: 32px;
-      height: 1px;
-      background: var(--accent);
-      flex-shrink: 0;
-    }
-    .eyebrow-text {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-    h1.header-name {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(48px, 7vw, 84px);
-      font-weight: 700;
-      line-height: 0.92;
-      letter-spacing: -0.02em;
-      color: var(--text);
-      margin-bottom: 36px;
-    }
-    h1.header-name em {
-      font-style: italic;
-      font-weight: 400;
-      color: var(--accent);
-    }
-    .header-desc {
-      font-size: 18px;
-      color: var(--text-body);
-      line-height: 1.85;
-    }
-    .hero-image-placeholder {
-      aspect-ratio: 4/5;
-      background: var(--surface-warm);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-    .hero-image-placeholder img {
-      width: 100%; height: 100%; object-fit: cover;
-    }
-    .hero-image-placeholder span {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    /* ─── SECTIONS ────────────────────────────────────── */
-    section { padding: 88px 0; border-bottom: 1px solid var(--border); }
-    section:last-of-type { border-bottom: none; }
-
-    .section-header {
-      display: flex;
-      align-items: baseline;
-      gap: 20px;
-      margin-bottom: 52px;
-    }
-    .section-num {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--text-dim);
-      letter-spacing: 0.08em;
-      flex-shrink: 0;
-      padding-top: 3px;
-    }
-    h2.section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(22px, 3vw, 32px);
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      color: var(--text);
-      line-height: 1.15;
-    }
-
-    /* ─── SKILLS / WHAT I DO ──────────────────────────── */
-    .signals-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin-top: 20px;
-    }
-    .signal-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 32px;
-      font-size: 17px;
-      color: var(--text-body);
-      line-height: 1.6;
-      box-shadow: var(--shadow-sm);
-    }
-    
-    .what-i-do-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 40px;
-    }
-    .do-item h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 12px;
-    }
-    .do-item p {
-      font-size: 16px;
-      color: var(--text-body);
-      line-height: 1.7;
-    }
-    .do-story {
-      font-size: 14.5px;
-      color: var(--text-muted);
-      line-height: 1.75;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border-light);
-      font-style: italic;
-    }
-    
-    .think-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
-    }
-    .think-model {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 32px;
-      box-shadow: var(--shadow-sm);
-    }
-    .think-model h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 14px;
-    }
-    .think-model p {
-      font-size: 15px;
-      color: var(--text-body);
-      line-height: 1.8;
-    }
-    .think-grid ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 8px;
-    }
-    .think-grid li {
-      font-size: 17px;
-      color: var(--text-body);
-      padding-left: 20px;
-      position: relative;
-    }
-    .think-grid li::before {
-      content: '→';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-      font-family: 'DM Mono', monospace;
-    }
-
-    /* ─── PRODUCT THINKING (CAROUSEL) ─────────────────── */
-    .carousel-block {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
-    .carousel-image {
-      aspect-ratio: 1;
-      background: var(--surface-warm);
-      border-right: 1px solid var(--border);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .carousel-image img {
-      width: 100%; height: 100%; object-fit: cover;
-      position: absolute; inset: 0; z-index: 1;
-    }
-    .carousel-visual-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      z-index: 0;
-    }
-    .carousel-arrows {
-      position: absolute;
-      top: 50%;
-      left: 0; right: 0;
-      transform: translateY(-50%);
-      display: flex;
-      justify-content: space-between;
-      padding: 0 20px;
-      z-index: 2;
-    }
-    .carousel-arrow {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.2s;
-    }
-    .carousel-arrow:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .carousel-dots {
-      position: absolute;
-      bottom: 24px;
-      left: 0; right: 0;
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-    }
-    .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--border);
-    }
-    .dot.active { background: var(--accent); }
-    
-    .carousel-content {
-      padding: 64px 48px 64px 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .carousel-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.2;
-      margin-bottom: 24px;
-    }
-    .carousel-desc {
-      font-size: 16px;
-      color: var(--text-body);
-      line-height: 1.8;
-      margin-bottom: 36px;
-    }
-    .read-more {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: color 0.2s;
-    }
-    .read-more:hover { color: var(--accent-light); }
-
-    /* ─── ENGINEERING ─────────────────────────────────── */
-    .engineering-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    .engineering-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 36px;
-      display: flex;
-      flex-direction: column;
-      transition: all 0.22s ease;
-      text-decoration: none;
-      color: inherit;
-      position: relative;
-    }
-    .engineering-card:hover {
-      box-shadow: var(--shadow-md);
-      border-color: #d4cfc8;
-      transform: translateY(-2px);
-    }
-    .card-arrow {
-      position: absolute;
-      top: 36px;
-      right: 36px;
-      width: 28px;
-      height: 28px;
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-dim);
-      font-size: 13px;
-    }
-    .engineering-card:hover .card-arrow {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-bg);
-    }
-    .card-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 18px;
-    }
-    .card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 21px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.2;
-      margin-bottom: 16px;
-      padding-right: 40px;
-    }
-    .card-desc {
-      font-size: 15.5px;
-      color: var(--text-body);
-      line-height: 1.85;
-    }
-    .stub { background: var(--surface-warm); }
-
-    /* ─── PRODUCTS ────────────────────────────────────── */
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-    }
-    .shipped-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: all 0.25s ease;
-      cursor: pointer;
-      text-decoration: none;
-    }
-    .shipped-card:hover {
-      box-shadow: var(--shadow-md);
-      border-color: #d4cfc8;
-      transform: translateY(-3px);
-    }
-    .shipped-image {
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: var(--surface-warm);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
-    }
-    .shipped-image img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: 1; }
-    .shipped-image::after {
-      content: '/Visual';
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      position: absolute; z-index: 0;
-    }
-    .shipped-body {
-      padding: 24px;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .shipped-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-    .shipped-desc {
-      font-size: 13.5px;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    .shipped-card.see-all {
-      background: var(--accent);
-      color: white;
-      justify-content: center;
-      border: none;
-    }
-    .shipped-card.see-all .shipped-title { color: white; font-size: 20px; }
-    .shipped-card.see-all .shipped-desc { color: rgba(255,255,255,0.8); }
-
-    /* ─── RESPONSIVE ──────────────────────────────────── */
-    @media (max-width: 960px) {
-      .hero-split { grid-template-columns: 1fr; gap: 40px; }
-      .carousel-block { grid-template-columns: 1fr; gap: 0; }
-      .carousel-image { border-right: none; border-bottom: 1px solid var(--border); }
-      .carousel-content { padding: 40px; }
-      .products-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 600px) {
-      .wrap { padding: 0 24px; }
-      .engineering-grid { grid-template-columns: 1fr; }
-      .products-grid { grid-template-columns: 1fr; }
-      .signals-grid, .what-i-do-grid, .think-grid { grid-template-columns: 1fr; }
-    }
-
-  </style>
-</head>
-<body>
-
-<nav>
-  <div class="wrap nav-inner">
-    <a href="/" class="nav-brand">
-      Michael <span class="nav-brand-arrow"></span> Portfolio
-    </a>
-    <div class="nav-links">
-      <a href="/product-thinking/" class="nav-link">Product Thinking</a>
-      <a href="/engineering/" class="nav-link">Engineering</a>
-      <a href="/products/" class="nav-link">Products</a>
-      <a href="/about/" class="nav-link">About</a>
-    </div>
-  </div>
-</nav>
+---
+layout: base
+title: "Michael — Technical PM & Systems Architect"
+description: "Technical Product Operator. I design and ship production fintech systems, working across product, architecture, and infrastructure."
+---
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f2ec; --surface: #ffffff; --surface-warm: #faf8f4;
+    --border: #e2ddd5; --border-light: #ede9e1;
+    --text: #1a1714; --text-body: #3d3830; --text-muted: #7a7268; --text-dim: #b5afa5;
+    --accent: #b85c38; --accent-light: #c97a5a; --accent-bg: rgba(184,92,56,0.07);
+    --green: #4a7c59; --green-bg: rgba(74,124,89,0.10);
+    --shadow-sm: 0 1px 4px rgba(26,23,20,0.06), 0 2px 12px rgba(26,23,20,0.04);
+    --shadow-md: 0 2px 8px rgba(26,23,20,0.07), 0 8px 24px rgba(26,23,20,0.05);
+    --radius: 6px; --radius-pill: 100px;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.7; font-size: 16px; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  p { color: var(--text-body); }
+  a { color: inherit; }
+  body::after { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9999; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 36px; }
+  nav { padding: 18px 0; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(245,242,236,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 100; }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+  .nav-brand { display: flex; align-items: center; gap: 10px; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400; color: var(--text-muted); text-decoration: none; letter-spacing: 0.04em; }
+  .nav-brand-arrow { display: inline-block; width: 28px; height: 1px; background: var(--accent); position: relative; flex-shrink: 0; }
+  .nav-brand-arrow::after { content: ''; position: absolute; right: 0; top: -3px; width: 6px; height: 6px; border-top: 1px solid var(--accent); border-right: 1px solid var(--accent); transform: rotate(45deg); }
+  .nav-links { display: flex; gap: 2px; }
+  .nav-link { font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; padding: 5px 12px; border-radius: var(--radius); transition: color 0.18s, background 0.18s; }
+  .nav-link:hover { color: var(--text); background: var(--border-light); }
+  header { padding: 84px 0 92px; border-bottom: 1px solid var(--border); }
+  .hero-split { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; align-items: center; }
+  .header-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+  .eyebrow-line { width: 32px; height: 1px; background: var(--accent); flex-shrink: 0; }
+  .eyebrow-text { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
+  h1.header-name { font-family: 'Playfair Display', serif; font-size: clamp(48px,7vw,84px); font-weight: 700; line-height: 0.92; letter-spacing: -0.02em; color: var(--text); margin-bottom: 36px; }
+  h1.header-name em { font-style: italic; font-weight: 400; color: var(--accent); }
+  .header-desc { font-size: 18px; color: var(--text-body); line-height: 1.85; }
+  .hero-image-placeholder { aspect-ratio: 4/5; background: var(--surface-warm); border: 1px solid var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); overflow: hidden; }
+  .hero-image-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+  .hero-image-placeholder span { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+  section { padding: 88px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+  .section-header { display: flex; align-items: baseline; gap: 20px; margin-bottom: 52px; }
+  .section-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; flex-shrink: 0; padding-top: 3px; }
+  h2.section-title { font-family: 'Playfair Display', serif; font-size: clamp(22px,3vw,32px); font-weight: 600; letter-spacing: -0.02em; color: var(--text); line-height: 1.15; }
+  .signals-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px; }
+  .signal-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; font-size: 17px; color: var(--text-body); line-height: 1.6; box-shadow: var(--shadow-sm); }
+  .what-i-do-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
+  .do-item h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+  .do-item p { font-size: 16px; color: var(--text-body); line-height: 1.7; }
+  .do-story { font-size: 14.5px; color: var(--text-muted); line-height: 1.75; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-light); font-style: italic; }
+  .think-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .think-model { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow-sm); }
+  .think-model h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 14px; }
+  .think-model p { font-size: 15px; color: var(--text-body); line-height: 1.8; }
+  .carousel-block { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .carousel-image { aspect-ratio: 1; background: var(--surface-warm); border-right: 1px solid var(--border); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .carousel-image img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: 1; }
+  .carousel-visual-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; z-index: 0; }
+  .carousel-arrows { position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); display: flex; justify-content: space-between; padding: 0 20px; z-index: 2; }
+  .carousel-arrow { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-sm); transition: all 0.2s; }
+  .carousel-arrow:hover { border-color: var(--accent); color: var(--accent); }
+  .carousel-dots { position: absolute; bottom: 24px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+  .dot.active { background: var(--accent); }
+  .carousel-content { padding: 64px 48px 64px 0; display: flex; flex-direction: column; justify-content: center; }
+  .carousel-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 600; color: var(--text); line-height: 1.2; margin-bottom: 24px; }
+  .carousel-desc { font-size: 16px; color: var(--text-body); line-height: 1.8; margin-bottom: 36px; }
+  .read-more { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .read-more:hover { color: var(--accent-light); }
+  .engineering-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .engineering-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 36px; display: flex; flex-direction: column; transition: all 0.22s ease; text-decoration: none; color: inherit; position: relative; }
+  .engineering-card:hover { box-shadow: var(--shadow-md); border-color: #d4cfc8; transform: translateY(-2px); }
+  .card-arrow { position: absolute; top: 36px; right: 36px; width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-dim); font-size: 13px; }
+  .engineering-card:hover .card-arrow { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+  .card-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 21px; font-weight: 600; color: var(--text); line-height: 1.2; margin-bottom: 16px; padding-right: 40px; }
+  .card-desc { font-size: 15.5px; color: var(--text-body); line-height: 1.85; }
+  .stub { background: var(--surface-warm); }
+  .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .shipped-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: all 0.25s ease; cursor: pointer; text-decoration: none; }
+  .shipped-card:hover { box-shadow: var(--shadow-md); border-color: #d4cfc8; transform: translateY(-3px); }
+  .shipped-image { width: 100%; aspect-ratio: 16/9; background: var(--surface-warm); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .shipped-image img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: 1; }
+  .shipped-image::after { content: '/Visual'; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; position: absolute; z-index: 0; }
+  .shipped-body { padding: 24px; flex-grow: 1; display: flex; flex-direction: column; }
+  .shipped-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .shipped-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
+  .shipped-card.see-all { background: var(--accent); color: white; justify-content: center; border: none; }
+  .shipped-card.see-all .shipped-title { color: white; font-size: 20px; }
+  .shipped-card.see-all .shipped-desc { color: rgba(255,255,255,0.8); }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(26,23,20,0.6); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-md); max-width: 960px; width: 100%; position: relative; transform: translateY(20px); transition: transform 0.28s ease; overflow: hidden; }
+  .modal-overlay.open .modal-box { transform: translateY(0); }
+  .modal-close { position: absolute; top: 20px; right: 20px; background: var(--surface-warm); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 14px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; z-index: 10; transition: all 0.2s; }
+  .modal-close:hover { background: var(--border-light); color: var(--text); }
+  .modal-split { display: flex; flex-direction: column; }
+  .modal-visual { aspect-ratio: 16/9; width: 100%; background: var(--surface-warm); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: center; }
+  .modal-visual::after { content: '/Visual'; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+  .modal-body { padding: 48px 40px; display: flex; flex-direction: column; gap: 16px; justify-content: center; }
+  .modal-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: var(--text); line-height: 1.2; }
+  .modal-desc { font-size: 15.5px; color: var(--text-body); line-height: 1.8; }
+  .modal-desc p { margin-bottom: 12px; }
+  .modal-desc ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .modal-desc li { position: relative; padding-left: 20px; }
+  .modal-desc li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-family: 'DM Mono', monospace; }
+  @media (max-width: 960px) { .hero-split { grid-template-columns: 1fr; gap: 40px; } .carousel-block { grid-template-columns: 1fr; gap: 0; } .carousel-image { border-right: none; border-bottom: 1px solid var(--border); } .carousel-content { padding: 40px; } .products-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .wrap { padding: 0 24px; } .engineering-grid { grid-template-columns: 1fr; } .products-grid { grid-template-columns: 1fr; } .signals-grid, .what-i-do-grid, .think-grid { grid-template-columns: 1fr; } }
+</style>
 
 <div class="wrap">
   <header>
@@ -581,16 +121,12 @@
           <span class="eyebrow-text">Technical Product Operator</span>
         </div>
         <h1 class="header-name" style="font-size: clamp(36px, 5vw, 56px); margin-bottom: 32px;">I design and ship production fintech systems.</h1>
-        <p class="header-desc" style="margin-bottom: 20px;">
-          I work across product, architecture, and infrastructure — building payment, risk, and backend systems that have to work under real constraints.
-        </p>
-        <p class="header-desc">
-          My focus is simple: systems that stay up, scale predictably, and make business sense.
-        </p>
+        <p class="header-desc" style="margin-bottom: 20px;">I work across product, architecture, and infrastructure — building payment, risk, and backend systems that have to work under real constraints.</p>
+        <p class="header-desc">My focus is simple: systems that stay up, scale predictably, and make business sense.</p>
       </div>
       <div class="hero-image-placeholder">
         <span>/Image</span>
-        <img src="images/headshot[480x600].webp" alt="Michael Headshot" />
+        <img src="/images/headshot[480x600].webp" alt="Michael Headshot" />
       </div>
     </div>
   </header>
@@ -601,10 +137,9 @@
       <h2 class="section-title">Selected Signals</h2>
     </div>
     <div class="signals-grid">
-      <div class="signal-item"><strong>400+ days</strong> continuous uptime on primary production infrastructure. 10-minute daily maintenance window, automated recovery.</div>
-      <div class="signal-item"><strong>6-week delivery</strong> — government EDMS contract for the National Universities Commission. Prototype in 2 weeks. Full production in 6. Solo.</div>
-      <div class="signal-item"><strong>1,428× ROI</strong> — ₦7K cold outreach investment → ₦10M in closed revenue. Pipeline I designed.</div>
-      <div class="signal-item"><strong>8 microservices</strong> in production across GCP, AWS, and Cloudflare. Payments, KYC, fraud, identity, bookkeeping. Built solo.</div>
+      {% for signal in site.data.signals %}
+      <div class="signal-item"><strong>{{ signal.label }}</strong> {{ signal.detail }}</div>
+      {% endfor %}
     </div>
   </section>
 
@@ -614,26 +149,13 @@
       <h2 class="section-title">What I Actually Do</h2>
     </div>
     <div class="what-i-do-grid">
+      {% for item in site.data.what_i_do %}
       <div class="do-item">
-        <h3>Design payment and financial systems</h3>
-        <p>Build and structure systems that handle real transaction flows, failure cases, and regulatory constraints.</p>
-        <p class="do-story">I watched how users interacted with payment apps before I touched architecture. One pattern kept showing up: the products people trusted always showed the destination before the amount. That observation became the entire Payment Intent Architecture.</p>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.body }}</p>
+        <p class="do-story">{{ item.story }}</p>
       </div>
-      <div class="do-item">
-        <h3>Own systems end-to-end</h3>
-        <p>From product definition to architecture to deployment decisions — not just specs.</p>
-        <p class="do-story">On the NUC government contract, I wrote the PRD, designed the architecture, built the system, and deployed it to production. Prototype in 2 weeks, delivered in 6. Solo.</p>
-      </div>
-      <div class="do-item">
-        <h3>Optimize for uptime and cost</h3>
-        <p>Make tradeoffs between reliability, performance, and infrastructure spend.</p>
-        <p class="do-story">I sized servers based on the thread utilisation of the software actually running on them — not a provider default. Deployed a private cloud that cut collaboration costs to ₦4,000/user, achieving 98%+ savings.</p>
-      </div>
-      <div class="do-item">
-        <h3>Bridge product and engineering</h3>
-        <p>Translate business needs into systems that can actually be built and maintained.</p>
-        <p class="do-story">Our users aren't accountants. So the Business OS lets them record sales and purchases in their own language — the system handles double-entry bookkeeping automatically. Users never touch a chart of accounts.</p>
-      </div>
+      {% endfor %}
     </div>
   </section>
 
@@ -643,18 +165,12 @@
       <h2 class="section-title">How I Think</h2>
     </div>
     <div class="think-grid">
+      {% for model in site.data.mental_models %}
       <div class="think-model">
-        <h3>Watch before you build</h3>
-        <p>Before I designed the payment architecture, I spent time watching how users interacted with existing payment products. The best products always showed the user where the money was going before they entered the amount. That observation became the foundation — not a framework, not a pattern. Just: users need to see where the money is going before they commit.</p>
+        <h3>{{ model.title }}</h3>
+        <p>{{ model.body }}</p>
       </div>
-      <div class="think-model">
-        <h3>Reframe the problem</h3>
-        <p>The obvious question for Business OS was "how do we make accounting easier to learn?" That's the wrong question. The right one: "what is accounting actually doing?" Answer: structured activity recording. Business owners already record activities. The product's job is to be the translation layer — accept business events, produce correct accounting. No training required.</p>
-      </div>
-      <div class="think-model">
-        <h3>Let the work negotiate scope</h3>
-        <p>On the NUC contract, the client came in with a large scope. I didn't negotiate it down. I said: pick one feature. We built it in two weeks and showed them the working thing. By the third sprint, they'd voluntarily removed 3 features from their own list — not because we asked, but because seeing the real product changed what they thought they needed. Delivered in 45 days.</p>
-      </div>
+      {% endfor %}
     </div>
   </section>
 
@@ -666,16 +182,14 @@
     <div class="carousel-block" id="pt-carousel">
       <div class="carousel-image">
         <span class="carousel-visual-label">/Carousel Visual</span>
-        <img src="images/carousel-kyc[540x540].webp" alt="Case Study Visual" id="carousel-img" />
+        <img src="/images/carousel-kyc[540x540].webp" alt="Case Study Visual" id="carousel-img" />
         <div class="carousel-arrows">
           <button class="carousel-arrow prev" id="carousel-prev" aria-label="Previous">←</button>
           <button class="carousel-arrow next" id="carousel-next" aria-label="Next">→</button>
         </div>
         <div class="carousel-dots" id="carousel-dots"></div>
       </div>
-      <div class="carousel-content" id="carousel-content">
-        <!-- populated by JS -->
-      </div>
+      <div class="carousel-content" id="carousel-content"><!-- populated by JS --></div>
     </div>
   </section>
 
@@ -685,18 +199,14 @@
       <h2 class="section-title">Engineering</h2>
     </div>
     <div class="engineering-grid">
-      <a href="infrastructure/" class="engineering-card">
+      {% for card in site.data.engineering %}
+      <a href="{{ card.href }}" class="engineering-card{% if card.stub %} stub{% endif %}">
         <span class="card-arrow" aria-hidden="true">→</span>
-        <p class="card-tag">Multi-Cloud Platform Infrastructure</p>
-        <h3 class="card-title">Business Optimization &amp; Architecture Cost</h3>
-        <p class="card-desc">I sized the servers based on the thread utilisation of the software actually running on them — not a provider default. The result: a multi-cloud production environment and the primary instance running for over 400 days straight.</p>
+        <p class="card-tag">{{ card.tag }}</p>
+        <h3 class="card-title">{{ card.title }}</h3>
+        <p class="card-desc">{{ card.desc }}</p>
       </a>
-      <a href="#" class="engineering-card stub">
-        <span class="card-arrow" aria-hidden="true">→</span>
-        <p class="card-tag">Systems Design</p>
-        <h3 class="card-title">Async vs Synchronous Execution</h3>
-        <p class="card-desc">Move work off the user's critical path. The system shouldn't wait to be queried if it can work in the background. (Case study coming soon).</p>
-      </a>
+      {% endfor %}
     </div>
   </section>
 
@@ -706,31 +216,19 @@
         <span class="section-num">06</span>
         <h2 class="section-title">Systems I've Built</h2>
       </div>
-      <a href="products/" class="read-more" style="font-size:14px; margin-top: 10px;">See all systems →</a>
+      <a href="/products/" class="read-more" style="font-size:14px; margin-top: 10px;">See all systems →</a>
     </div>
     <div class="products-grid">
-      <div class="shipped-card" data-product="edms">
-        <div class="shipped-image"><img src="images/product-edms[1280x720].webp" alt="" /></div>
+      {% for product in site.data.products limit:3 %}
+      <div class="shipped-card" data-product="{{ product.id }}">
+        <div class="shipped-image"><img src="/images/{{ product.img }}" alt="" /></div>
         <div class="shipped-body">
-          <h3 class="shipped-title">Payment Infrastructure System</h3>
-          <p class="shipped-desc">Backend system for handling transaction routing, processing, and reliability under real usage.</p>
+          <h3 class="shipped-title">{{ product.title }}</h3>
+          <p class="shipped-desc">{{ product.desc }}</p>
         </div>
       </div>
-      <div class="shipped-card" data-product="bookkeeping">
-        <div class="shipped-image"><img src="images/product-bookkeeping[1280x720].webp" alt="" /></div>
-        <div class="shipped-body">
-          <h3 class="shipped-title">Financial Record System</h3>
-          <p class="shipped-desc">Internal system for managing and structuring financial data.</p>
-        </div>
-      </div>
-      <div class="shipped-card" data-product="payment-app">
-        <div class="shipped-image"><img src="images/product-payment-app[1280x720].webp" alt="" /></div>
-        <div class="shipped-body">
-          <h3 class="shipped-title">Consumer Payment Interface</h3>
-          <p class="shipped-desc">Frontend application built to withstand unreliable networks and high transaction volume.</p>
-        </div>
-      </div>
-      <a href="products/" class="shipped-card see-all">
+      {% endfor %}
+      <a href="/products/" class="shipped-card see-all">
         <div class="shipped-body">
           <h3 class="shipped-title">See all systems →</h3>
           <p class="shipped-desc">View all 6 shipped systems, process flows, and architectural diagrams.</p>
@@ -740,7 +238,7 @@
   </section>
 </div>
 
-<!-- ─── PRODUCT MODAL ─────────────────────────────── -->
+<!-- PRODUCT MODAL -->
 <div id="product-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
   <div class="modal-box">
     <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
@@ -755,100 +253,17 @@
   </div>
 </div>
 
-<style>
-  /* ─── MODAL ──────────────────────────────────────── */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(26,23,20,0.6);
-    backdrop-filter: blur(6px);
-    z-index: 1000;
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.25s ease;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal-box {
-    background: var(--surface);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-md);
-    max-width: 960px; width: 100%;
-    position: relative;
-    transform: translateY(20px);
-    transition: transform 0.28s ease;
-    overflow: hidden;
-  }
-  .modal-overlay.open .modal-box { transform: translateY(0); }
-  .modal-close {
-    position: absolute; top: 20px; right: 20px;
-    background: var(--surface-warm); border: 1px solid var(--border);
-    width: 36px; height: 36px; border-radius: 50%;
-    cursor: pointer; font-size: 14px; color: var(--text-muted);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 10; transition: all 0.2s;
-  }
-  .modal-close:hover { background: var(--border-light); color: var(--text); }
-  .modal-split {
-    display: flex; flex-direction: column;
-  }
-  .modal-visual {
-    aspect-ratio: 16/9; width: 100%;
-    background: var(--surface-warm);
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .modal-visual::after {
-    content: '/Visual';
-    font-family: 'DM Mono', monospace;
-    font-size: 11px; color: var(--text-dim);
-    letter-spacing: 0.1em; text-transform: uppercase;
-  }
-  .modal-body {
-    padding: 48px 40px;
-    display: flex; flex-direction: column; gap: 16px;
-    justify-content: center;
-  }
-  .modal-tag {
-    font-family: 'DM Mono', monospace; font-size: 10px;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--accent);
-  }
-  .modal-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px; font-weight: 600;
-    color: var(--text); line-height: 1.2;
-  }
-  .modal-desc { font-size: 15.5px; color: var(--text-body); line-height: 1.8; }
-  .modal-desc p { margin-bottom: 12px; }
-  .modal-desc ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-  .modal-desc li { position: relative; padding-left: 20px; }
-  .modal-desc li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-family: 'DM Mono', monospace; }
-  @media (max-width: 640px) {
-    .modal-split { display: flex; flex-direction: column; }
-  }
-</style>
-
 <script>
-  // ─── CAROUSEL DATA ────────────────────────────────
+  // ─── CAROUSEL — data injected by Jekyll ────────────────
   const slides = [
+    {% for slide in site.data.carousel %}
     {
-      title: 'Product Thinking, Compliance & User Retention',
-      desc: 'I had one user story I couldn\'t stop thinking about: a user loses their phone and someone picks it up. That question led to a strict one-device policy, an async KYC pipeline that keeps users off the critical path, and a PII architecture that protects user data.',
-      href: 'kyc/',
-      img: 'images/carousel-kyc[540x540].webp'
-    },
-    {
-      title: 'Product & Engineering Thinking for Payments',
-      desc: 'Before I touched architecture, I spent time watching how users actually interacted with payment apps. One thing kept showing up: the products people trusted always showed the destination before the amount.',
-      href: 'payments/',
-      img: 'images/carousel-payments[540x540].webp'
-    },
-    {
-      title: 'Product Thinking & Engineering for Fraud Management',
-      desc: 'I noticed the fraud score was always computed at the moment a decision was needed — which meant the system only knew what it had time to check right then. I built something different: a service that watches continuously in the background.',
-      href: 'fraud/',
-      img: 'images/carousel-fraud[540x540].webp'
-    }
+      title: {{ slide.title | jsonify }},
+      desc: {{ slide.desc | jsonify }},
+      href: {{ slide.href | jsonify }},
+      img: {{ slide.img | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
   ];
 
   let current = 0;
@@ -858,62 +273,25 @@
 
   function renderCarousel() {
     const s = slides[current];
-    content.innerHTML = `
-      <h3 class="carousel-title">${s.title}</h3>
-      <p class="carousel-desc">${s.desc}</p>
-      <a href="${s.href}" class="read-more">Read More →</a>
-    `;
-    dotsEl.innerHTML = slides.map((_, i) =>
-      `<span class="dot ${i === current ? 'active' : ''}"></span>`
-    ).join('');
+    content.innerHTML = `<h3 class="carousel-title">${s.title}</h3><p class="carousel-desc">${s.desc}</p><a href="${s.href}" class="read-more">Read More →</a>`;
+    dotsEl.innerHTML = slides.map((_, i) => `<span class="dot ${i === current ? 'active' : ''}"></span>`).join('');
     imgEl.src = s.img;
   }
-
-  document.getElementById('carousel-prev').addEventListener('click', () => {
-    current = (current - 1 + slides.length) % slides.length;
-    renderCarousel();
-  });
-  document.getElementById('carousel-next').addEventListener('click', () => {
-    current = (current + 1) % slides.length;
-    renderCarousel();
-  });
+  document.getElementById('carousel-prev').addEventListener('click', () => { current = (current - 1 + slides.length) % slides.length; renderCarousel(); });
+  document.getElementById('carousel-next').addEventListener('click', () => { current = (current + 1) % slides.length; renderCarousel(); });
   renderCarousel();
 
-  // ─── PRODUCT MODAL DATA ───────────────────────────
+  // ─── PRODUCT MODAL — data injected by Jekyll ──────────
   const products = {
-    'edms': {
-      tag: 'Payment Routing',
-      title: 'Payment Infrastructure System',
-      desc: 'Backend system for handling transaction routing, processing, and reliability under real usage.',
-      bullets: [
-        'Unified all payment types (transfer, QR, bill, contactless) under a single Payment Intent abstraction',
-        'Validation runs in parallel while user decides amount — execution is near-instant on confirm',
-        'Intent ID is the idempotency key throughout — same ID for tracing, retries, and reconciliation'
-      ],
-      img: 'images/product-edms[1280x720].webp'
-    },
-    'bookkeeping': {
-      tag: 'Data Architecture',
-      title: 'Financial Record System',
-      desc: 'Users record business events in their own language. System handles double-entry bookkeeping automatically.',
-      bullets: [
-        'Users record sales and purchases naturally — system produces correct journal entries, ledger updates, and financial reports',
-        'Same data becomes loan marketplace underwriting input — richer than credit bureau data, backed by explicit user consent',
-        'Designed transparency layer for users who want to see accounting output without making it the primary experience'
-      ],
-      img: 'images/product-bookkeeping[1280x720].webp'
-    },
-    'payment-app': {
-      tag: 'Interface Engineering',
-      title: 'Consumer Payment Interface',
-      desc: 'Frontend application built to withstand unreliable networks and high transaction volume.',
-      bullets: [
-        'Built one-device policy and re-auth on migration before CBN mandated it in March 2026',
-        'Async KYC with automatic provider failover — onboarding never blocks on provider downtime',
-        'Collects user contact before KYC resolves, enabling re-engagement if verification fails'
-      ],
-      img: 'images/product-payment-app[1280x720].webp'
-    }
+    {% for product in site.data.products %}
+    '{{ product.id }}': {
+      tag: {{ product.tag | jsonify }},
+      title: {{ product.title | jsonify }},
+      desc: {{ product.desc | jsonify }},
+      bullets: {{ product.bullets | jsonify }},
+      img: '/images/{{ product.img }}'
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
   };
 
   const modal   = document.getElementById('product-modal');
@@ -931,25 +309,15 @@
         descHtml += `<ul>${p.bullets.map(b => `<li>${b}</li>`).join('')}</ul>`;
       }
       document.getElementById('modal-desc').innerHTML = descHtml;
-
       modalVis.innerHTML = `<img src="${p.img}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;z-index:1;" />`;
       modalVis.style.position = 'relative';
       modalVis.style.overflow = 'hidden';
-      
       modal.setAttribute('aria-hidden', 'false');
       modal.classList.add('open');
     });
   });
-
   closeBtn.addEventListener('click', closeModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  function closeModal() {
-    modal.classList.remove('open');
-    modal.setAttribute('aria-hidden', 'true');
-  }
+  function closeModal() { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); }
 </script>
-
-</body>
-</html>

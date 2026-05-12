@@ -1,0 +1,109 @@
+- id: kwab
+  role: "Co-Founder & Technical Lead"
+  org: "Kwab."
+  date: "2024 — Present"
+  current: true
+  skill_thread: false
+  summary: "Built a full fintech backend solo — payments, KYC, fraud, identity, bookkeeping. 8 microservices. Multi-cloud. In production."
+  bullets:
+    - "Designed Payment Intent Architecture that unified all transaction types under one flow"
+    - "Implemented async KYC with provider failover — zero onboarding drop-offs from downtime"
+    - "Anticipated CBN one-device mandate months before regulation"
+    - "150+ waitlisted users, 10 community testers, Angel round raised"
+    - "400+ day uptime on primary infrastructure"
+  images:
+    - src: "about-kwab-1[800x600].webp"
+      alt: "Kwab Platform"
+    - src: "about-kwab-2[800x600].webp"
+      alt: "Kwab Architecture"
+
+- id: tiier
+  role: "Principal Software Engineer & Founder"
+  org: "TIIER"
+  date: "2020 — Present"
+  current: false
+  skill_thread: false
+  summary: "Delivered enterprise systems for government and industrial clients. Also designed a sales pipeline that delivered a 1,428× ROI."
+  bullets:
+    - "Founded TIIER originally to make high-end compute accessible to Africans. Explored applications across AI, data engineering, and animation."
+    - "NUC EDMS — prototype in 2 weeks, production in 6 weeks. Government contract. Solo."
+    - "HSE incident tracking — field capture, automated routing, immutable audit trail"
+    - "License management infrastructure for multi-tenant client workspaces"
+    - "Client voluntarily reduced scope by 3 features after seeing working software every 2 weeks"
+    - "Designed a cold outreach pipeline from scratch: ₦7,000 investment → ₦10,000,000 in closed revenue (1,428× ROI)."
+  images:
+    - src: "about-tiier-1[800x600].webp"
+      alt: "NUC System"
+    - src: "about-tiier-2[800x600].webp"
+      alt: "HSE Interface"
+    - src: "about-sales-1[800x600].webp"
+      alt: "Sales Pipeline"
+
+- id: heirs
+  role: "IT Ops Support"
+  org: "Heirs Energies"
+  date: "Jul 2023 — Dec 2023"
+  current: false
+  skill_thread: false
+  summary: "Designed the escalation algorithm for internal approval flows."
+  bullets:
+    - "Built the logic for variable thresholds and multi-level escalation paths across department approval flows"
+    - "Improved UI and produced user guide for adoption"
+  images:
+    - src: "about-heirs-1[800x600].webp"
+      alt: "Heirs Energies Ops"
+
+- id: hardware
+  role: "Hardware & Physical Product Design"
+  org: "Independent"
+  date: "2020 — Present"
+  current: false
+  skill_thread: true
+  summary: "Won a hardware design competition. Designed production-ready furniture. A separate discipline, same thinking."
+  bullets:
+    - "Won hardware design competition — prototype display panel. Mechanical design, component selection, physical build."
+    - "Designed furniture (chair, table) in SolidWorks — fully realised 3D designs, detailed enough to manufacture"
+    - "\"The thinking that goes into physical product design and software product design are more similar than they are different. Both start with a user, a constraint, and a problem to solve.\""
+  featured_title: "WTN Challenge by Michael Ikirodah"
+  featured_url: "https://hardwarethings.org/super-display"
+  featured_url_display: "hardwarethings.org/super-display"
+  canva_embed: "https://www.canva.com/design/DAFBJQdpPds/jQ0UNlc8zeaLd9F7KG5VqA/view?embed"
+  images:
+    - src: "about-hardware-1[800x600].webp"
+      alt: "Hardware Prototype"
+    - src: "about-hardware-2[800x600].webp"
+      alt: "Hardware Competition"
+    - src: "about-hardware-3[800x600].webp"
+      alt: "SolidWorks Render 1"
+    - src: "about-hardware-4[800x600].webp"
+      alt: "SolidWorks Render 2"
+
+- id: music
+  role: "A&R Operations Lead"
+  org: "Murranno Music"
+  date: "Jun 2022 — Nov 2022"
+  current: false
+  skill_thread: false
+  summary: "Created the talent scouting process. First seven-figure deal."
+  bullets:
+    - "Developed and implemented a structured talent scouting process"
+    - "Led artist development team to secure the company's first seven-figure deal"
+    - "\"Not tech. Same instinct — find the constraint, design around it, deliver.\""
+  images:
+    - src: "about-music-1[800x600].webp"
+      alt: "Murranno Music"
+
+- id: fmn
+  role: "QA Analyst"
+  org: "The FMN Group"
+  date: "Jul 2018 — Dec 2018"
+  current: false
+  skill_thread: false
+  summary: "Found 200 cartons of defective product across 5 production lines."
+  bullets:
+    - "Championed bi-weekly QDI analysis on the factory floor"
+    - "Discovered 10+ pallets (~200 cartons) of defective products across 5 production lines"
+    - "\"Started on a factory floor. The instinct to find what's broken and fix it has been there from the beginning.\""
+  images:
+    - src: "about-fmn-1[800x600].webp"
+      alt: "FMN QA Analysis"

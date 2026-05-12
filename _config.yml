@@ -1,0 +1,27 @@
+title: "Michael — Portfolio"
+description: "Technical Product Operator. I design and ship production systems."
+url: "https://clrzr.github.io"
+baseurl: ""
+
+# Stops Jekyll treating .html files as pages unless they have front matter
+# (pages with --- front matter will still be processed)
+include:
+  - _pages
+
+# Don't output these to the built site
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - sources/
+  - master-profile.md
+  - "*.jpeg"
+  - "*.jpg"
+  - node_modules/
+  - .git/
+
+# Permalink style — keeps /about/, /products/ etc
+permalink: pretty
+
+# Use kramdown for Markdown
+markdown: kramdown

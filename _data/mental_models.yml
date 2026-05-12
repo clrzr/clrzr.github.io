@@ -1,0 +1,8 @@
+- title: "Watch before you build"
+  body: "Before I designed the payment architecture, I spent time watching how users interacted with existing payment products. The best products always showed the user where the money was going before they entered the amount. That observation became the foundation — not a framework, not a pattern. Just: users need to see where the money is going before they commit."
+
+- title: "Reframe the problem"
+  body: "The obvious question for Business OS was \"how do we make accounting easier to learn?\" That's the wrong question. The right one: \"what is accounting actually doing?\" Answer: structured activity recording. Business owners already record activities. The product's job is to be the translation layer — accept business events, produce correct accounting. No training required."
+
+- title: "Let the work negotiate scope"
+  body: "On the NUC contract, the client came in with a large scope. I didn't negotiate it down. I said: pick one feature. We built it in two weeks and showed them the working thing. By the third sprint, they'd voluntarily removed 3 features from their own list — not because we asked, but because seeing the real product changed what they thought they needed. Delivered in 45 days."

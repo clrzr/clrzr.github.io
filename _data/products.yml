@@ -1,0 +1,59 @@
+- id: "edms"
+  tag: "Payment Routing"
+  title: "Payment Infrastructure System"
+  desc: "Backend system for handling transaction routing, processing, and reliability under real usage."
+  img: "product-edms[1280x720].webp"
+  bullets:
+    - "Unified all payment types (transfer, QR, bill, contactless) under a single Payment Intent abstraction"
+    - "Validation runs in parallel while user decides amount — execution is near-instant on confirm"
+    - "Intent ID is the idempotency key throughout — same ID for tracing, retries, and reconciliation"
+
+- id: "bookkeeping"
+  tag: "Data Architecture"
+  title: "Financial Record System"
+  desc: "Users record business events in their own language. System handles double-entry bookkeeping automatically."
+  img: "product-bookkeeping[1280x720].webp"
+  bullets:
+    - "Users record sales and purchases naturally — system produces correct journal entries, ledger updates, and financial reports"
+    - "Same data becomes loan marketplace underwriting input — richer than credit bureau data, backed by explicit user consent"
+    - "Designed transparency layer for users who want to see accounting output without making it the primary experience"
+
+- id: "pm-tool"
+  tag: "Internal Tooling"
+  title: "Internal Lifecycle Platform"
+  desc: "Internal workflow and lifecycle management for tracking product delivery."
+  img: "product-pm-tool[1280x720].webp"
+  bullets:
+    - "Designed end-to-end visibility for the product lifecycle"
+    - "Structured cross-functional collaboration and state tracking"
+    - "Built deterministic workflows to replace manual handover"
+
+- id: "hse"
+  tag: "Compliance"
+  title: "Compliance Management System"
+  desc: "Health, Safety and Environment compliance auditing system."
+  img: "product-hse[1280x720].webp"
+  bullets:
+    - "Designed reporting architecture for strict compliance audits"
+    - "Built structured data capture for field operations"
+    - "Ensured traceability and non-repudiation of records"
+
+- id: "resource-tool"
+  tag: "Internal Tooling"
+  title: "Resource Allocation Engine"
+  desc: "System for forecasting and structuring team capacity across projects."
+  img: "product-resource-tool[1280x720].webp"
+  bullets:
+    - "Designed logic for predicting capacity utilization"
+    - "Built internal tracking to minimize idle downtime"
+    - "Structured reporting for cross-project cost allocation"
+
+- id: "payment-app"
+  tag: "Interface Engineering"
+  title: "Consumer Payment Interface"
+  desc: "Frontend application built to withstand unreliable networks and high transaction volume."
+  img: "product-payment-app[1280x720].webp"
+  bullets:
+    - "Built one-device policy and re-auth on migration before CBN mandated it in March 2026"
+    - "Async KYC with automatic provider failover — onboarding never blocks on provider downtime"
+    - "Collects user contact before KYC resolves, enabling re-engagement if verification fails"

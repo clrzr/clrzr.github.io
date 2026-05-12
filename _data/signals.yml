@@ -1,0 +1,11 @@
+- label: "400+ days"
+  detail: "continuous uptime on primary production infrastructure. 10-minute daily maintenance window, automated recovery."
+
+- label: "6-week delivery"
+  detail: "government EDMS contract for the National Universities Commission. Prototype in 2 weeks. Full production in 6. Solo."
+
+- label: "1,428× ROI"
+  detail: "₦7K cold outreach investment → ₦10M in closed revenue. Pipeline I designed."
+
+- label: "8 microservices"
+  detail: "in production across GCP, AWS, and Cloudflare. Payments, KYC, fraud, identity, bookkeeping. Built solo."
