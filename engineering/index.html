@@ -76,43 +76,30 @@ description: "Engineering case studies — platform infrastructure, async system
   </header>
 
   <div class="studies-list">
-
+    {% for study in site.data.engineering %}
     <div class="study-row">
-      <span class="study-num">01</span>
+      <span class="study-num">0{{ forloop.index }}</span>
       <div class="study-body">
-        <p class="study-tag">Multi-Cloud Platform Infrastructure</p>
-        <h2 class="study-title">Business Optimization &amp; Architecture Cost</h2>
-        <p class="study-desc">I sized the servers based on the thread utilisation of the software actually running on them — not a provider default. The result: a multi-cloud production environment across GCP, AWS, and Cloudflare, eight microservices, a CI/CD pipeline built from scratch, and the primary instance running for over 400 days straight.</p>
+        <p class="study-tag">{{ study.tag }}</p>
+        <h2 class="study-title">{{ study.title }}</h2>
+        <p class="study-desc">{{ study.desc }}</p>
+        {% if study.pills %}
         <div class="study-pills">
-          <span class="pill live">Live · 400+ days</span>
-          <span class="pill">GCP · AWS · Cloudflare</span>
-          <span class="pill">99%+ uptime</span>
+          {% for pill in study.pills %}
+          <span class="pill {% if pill.live %}live{% endif %}">{{ pill.label }}</span>
+          {% endfor %}
         </div>
-      </div>
-      <a href="/infrastructure/" class="study-link">Read case study →</a>
-    </div>
-
-    <div class="study-row">
-      <span class="study-num">02</span>
-      <div class="study-body">
-        <p class="study-tag">Systems Design</p>
-        <h2 class="study-title">Async vs Synchronous Execution</h2>
-        <p class="study-desc">Move work off the user's critical path. The fraud service doesn't wait to be queried at transaction time — it runs in the background and caches results downstream as signals arrive. By execution time, the answer is already there. The user never waits for work the system could have done earlier.</p>
+        {% endif %}
+        {% if study.stub %}
         <span class="stub-badge">Coming soon</span>
+        {% endif %}
       </div>
+      {% if study.stub %}
       <span class="study-link stub">Coming soon</span>
+      {% else %}
+      <a href="{{ study.href }}" class="study-link">Read case study →</a>
+      {% endif %}
     </div>
-
-    <div class="study-row">
-      <span class="study-num">03</span>
-      <div class="study-body">
-        <p class="study-tag">Performance Architecture</p>
-        <h2 class="study-title">Thread Utilisation &amp; Server Sizing</h2>
-        <p class="study-desc">A process with modest throughput requirements gets a single-core instance. A service handling high call volume with latency sensitivity gets parallelised, and the server gets sized to match. The software and the hardware were designed together, not independently.</p>
-        <span class="stub-badge">Coming soon</span>
-      </div>
-      <span class="study-link stub">Coming soon</span>
-    </div>
-
+    {% endfor %}
   </div>
 </div>

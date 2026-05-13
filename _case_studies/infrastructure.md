@@ -1,0 +1,85 @@
+---
+layout: case-study-infra
+title: "Platform Infrastructure — Case Study"
+description: "Multi-cloud production infrastructure across GCP, AWS, and Cloudflare — sized to match the software running on it, live for over 400 days."
+eyebrow: "Cloud · Infrastructure · DevOps"
+headline: "Platform"
+headline_em: "Infrastructure"
+pills:
+  - label: "Live · 400+ days"
+    live: true
+  - label: "GCP · AWS · Cloudflare"
+  - label: "99%+ uptime"
+  - label: "Multi-cloud"
+stats:
+  - value: "400+"
+    line1: "Days continuous uptime"
+    line2: "primary instance"
+  - value: "99%+"
+    line1: "Production uptime"
+    line2: "all services"
+  - value: "6–7"
+    line1: "Active VMs under"
+    line2: "ongoing management"
+  - value: "10 min"
+    line1: "Daily maintenance window"
+    line2: "automated, self-restoring"
+  - value: "3"
+    line1: "Cloud providers"
+    line2: "in production"
+sections:
+  - label: "The approach"
+    body:
+      - "Infrastructure decisions don't live in isolation from the software running on them. I designed the two together. When I was specifying instance types for the platform, I looked at what each service was actually doing at runtime before I picked anything. A process with low throughput requirements and no latency constraints doesn't need a multi-core machine. A high-call-volume service where throughput matters gets parallelised, and the server gets sized to match. Right-sizing isn't a billing exercise — it's a consequence of understanding what the software actually does."
+      - "The primary production instance has been live for over 400 days. It runs on a 10-minute daily maintenance window — automated backups and essential system tasks execute during that window, after which the instance restores itself and resumes full operation automatically. Outside that window: guaranteed uptime, 23 hours and 50 minutes every day."
+      - "The CI/CD pipeline was built from scratch using GitHub Actions. A developer pushes code. The action triggers, builds the service, packages it as a Docker image, pushes to the registry, and calls the deployment platform, which pulls the updated image and brings the service live. End to end, no manual steps."
+  - heading: "Google Cloud Platform"
+    subheading: "Primary production environment"
+    body:
+      - "GCP is the primary production environment. Compute Engine hosts stateful services — the primary instance has been running continuously for over 400 days with the automated maintenance window described above. Cloud Run hosts the containerised microservices, pulled and deployed automatically through the GitHub Actions pipeline."
+      - "Firebase supports real-time data and authentication flows. The combination of Cloud Run for stateless services and Compute Engine for stateful ones was a deliberate choice: use managed, scalable containers where you can, and reserve persistent VM compute for what genuinely requires it."
+    services:
+      - name: "Compute Engine"
+        desc: "Stateful services. Primary instance live 400+ days. 10-min automated maintenance window — self-restoring after each run."
+      - name: "Cloud Run"
+        desc: "Containerised microservices. Auto-deployed via GitHub Actions: push → build → Docker image → registry → live."
+      - name: "Firebase"
+        desc: "Real-time data and authentication flows."
+      - name: "Cost optimisation"
+        desc: "Server sizing informed by thread utilisation of the software running on it — not over-provisioned by default."
+  - heading: "Amazon Web Services"
+    subheading: "Business OS compute & document processing"
+    body:
+      - "The Business OS layer runs on AWS. EC2 handles compute. S3 handles document and file storage, and is the entry point for the document processing pipeline: files land in S3, Textract extracts structured data from them, and that data flows into the application layer automatically."
+      - "This matters for the Business OS because a core part of its value is translating informal business documentation into structured financial data. Textract is what makes that pipeline work at scale without manual intervention. Bedrock provides AI model access within platform services where it's needed."
+    services:
+      - name: "EC2"
+        desc: "Core compute for Business OS service layer."
+      - name: "S3"
+        desc: "Document and file storage. Entry point for the Textract processing pipeline."
+      - name: "Textract"
+        desc: "Automated document processing — unstructured documents in, structured data out, fed directly to the application layer."
+      - name: "Bedrock"
+        desc: "AI model deployment and integration within platform services."
+  - heading: "Cloudflare"
+    subheading: "Edge, security & auxiliary infrastructure"
+    body:
+      - "Cloudflare handles the edge layer, security, and several specific infrastructure problems its services are uniquely well-suited for. The PEP pipeline is one example: a Cloudflare Worker reaches out to Politically Exposed Persons databases on a schedule, pulls the data, cleans and structures it, and stores it in a D1 edge database. The due diligence service queries D1 during KYC verification flows — at edge latency, without routing every query through a central backend."
+      - "The Spectrum configuration solves a specific problem with Nextcloud Talk, the platform's internal video calling feature. Talk uses WebRTC for peer-to-peer connections. Where direct peer connections can't be established, TURN/STUN relay is required — but TURN/STUN relies on non-HTTP TCP/UDP traffic, which doesn't route through standard Cloudflare proxy. Spectrum proxies that traffic, keeping Talk fully functional behind the Cloudflare layer."
+    services:
+      - name: "R2 — Backup pipeline"
+        desc: "Database backups scheduled, packaged, and stored in R2. Recovery point outside the primary cloud environment — essential for genuine resilience."
+      - name: "D1 + Workers"
+        desc: "Worker pipeline pulls PEP data on schedule, cleans and structures it, stores in D1 edge database. Queried by due diligence service during KYC flows at edge latency."
+      - name: "Spectrum"
+        desc: "Proxies WebRTC TURN/STUN relay traffic (non-HTTP TCP/UDP) for Nextcloud Talk, keeping internal video calling functional through the Cloudflare layer."
+      - name: "WAF"
+        desc: "Web Application Firewall rules configured across platform application endpoints and a separate WordPress property."
+nav_prev:
+  href: "/kyc/"
+  label: "Identity, KYC & Device Safety"
+nav_next:
+  href: "/"
+  direction: "Back to start"
+  label: "All Work"
+---

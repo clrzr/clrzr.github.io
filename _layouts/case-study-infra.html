@@ -1,0 +1,82 @@
+---
+layout: base
+---
+<link rel="stylesheet" href="/css/case-study.css">
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">
+      <span class="eyebrow-line" aria-hidden="true"></span>
+      <span class="eyebrow-text">{{ page.eyebrow }}</span>
+    </div>
+    <h1 class="cs-h1">{{ page.headline }}<br /><em>{{ page.headline_em }}</em></h1>
+    <div class="pills">
+      {% for pill in page.pills %}
+      <span class="pill {% if pill.live %}live{% endif %}">{{ pill.label }}</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if page.stats %}
+  <div class="stats-row reveal">
+    {% for s in page.stats %}
+    <div class="stat">
+      <span class="stat-num">{{ s.value }}</span>
+      <span class="stat-label">{{ s.line1 }}<br/>{{ s.line2 }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% for section in page.sections %}
+  <div class="ns reveal">
+    {% if section.heading %}
+    <div class="ns-head">
+      <h2>{{ section.heading }}</h2>
+      {% if section.subheading %}<span class="ns-sub">{{ section.subheading }}</span>{% endif %}
+    </div>
+    {% else %}
+    <p class="ns-lbl">{{ section.label }}</p>
+    {% endif %}
+    <div class="ns-body">
+      <div>
+        {% for para in section.body %}
+        <p class="nt">{{ para }}</p>
+        {% endfor %}
+      </div>
+      {% if section.services %}
+      <div class="sl">
+        {% for svc in section.services %}
+        <div class="si">
+          <p class="sn">{{ svc.name }}</p>
+          <p class="sd">{{ svc.desc }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="case-nav reveal">
+    {% if page.nav_prev %}
+    <a href="{{ page.nav_prev.href }}" class="cnl">
+      <span class="cnd">← {{ page.nav_prev.direction | default: "Previous" }}</span>
+      <span class="cnt">{{ page.nav_prev.label }}</span>
+    </a>
+    {% endif %}
+    {% if page.nav_next %}
+    <a href="{{ page.nav_next.href }}" class="cnl next">
+      <span class="cnd">{{ page.nav_next.direction | default: "Next" }} →</span>
+      <span class="cnt">{{ page.nav_next.label }}</span>
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), 80); obs.unobserve(e.target); } });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>

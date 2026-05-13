@@ -20,6 +20,12 @@ exclude:
   - node_modules/
   - .git/
 
+# Collections — case studies rendered from Markdown
+collections:
+  case_studies:
+    output: true
+    permalink: /:path/
+
 # Permalink style — keeps /about/, /products/ etc
 permalink: pretty
 

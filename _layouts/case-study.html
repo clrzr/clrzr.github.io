@@ -1,0 +1,64 @@
+---
+layout: base
+---
+<link rel="stylesheet" href="/css/case-study.css">
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">
+      <span class="eyebrow-line" aria-hidden="true"></span>
+      <span class="eyebrow-text">{{ page.eyebrow }}</span>
+    </div>
+    <h1 class="cs-h1">{{ page.headline }}<br /><em>{{ page.headline_em }}</em></h1>
+    <div class="pills">
+      {% for pill in page.pills %}
+      <span class="pill {% if pill.live %}live{% endif %}">{{ pill.label }}</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="case-body">
+    <div class="narrative reveal">
+      {{ content }}
+    </div>
+
+    <aside class="sidebar reveal">
+      <div class="sc">
+        <p class="sc-title">Key decisions</p>
+        {% for d in page.decisions %}
+        <div class="di">
+          <p class="dw">{{ d.title }}</p>
+          <p class="dy">{{ d.detail }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </aside>
+  </div>
+
+  <div class="case-nav">
+    {% if page.nav_prev %}
+    <a href="{{ page.nav_prev.href }}" class="cnl">
+      <span class="cnd">← {{ page.nav_prev.direction | default: "Previous" }}</span>
+      <span class="cnt">{{ page.nav_prev.label }}</span>
+    </a>
+    {% endif %}
+    {% if page.nav_next %}
+    <a href="{{ page.nav_next.href }}" class="cnl next">
+      <span class="cnd">{{ page.nav_next.direction | default: "Next" }} →</span>
+      <span class="cnt">{{ page.nav_next.label }}</span>
+    </a>
+    {% endif %}
+  </div>
+
+  <footer class="cs-footer">
+    <span class="fn">Technical PM &amp; Systems Architect</span>
+    <span class="fnt">Hosted on GitHub Pages</span>
+  </footer>
+</div>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), 80); obs.unobserve(e.target); } });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
