@@ -315,10 +315,14 @@ description: "About Michael — Technical Product Operator designing and shippin
   }
 
   @media (max-width: 768px) {
-    .hero-split { grid-template-columns: 1fr; gap: 40px; }
-    .hero-image { display: none; }
-    .timeline { padding-left: 40px; }
-    .tl-dot { left: -40px; }
+    .hero-split { grid-template-columns: 1fr; gap: 32px; padding: 40px 0; }
+    .hero-image { display: block; max-width: 100%; aspect-ratio: 4/5; margin-top: 16px; }
+    .page-title { font-size: clamp(40px, 12vw, 80px); }
+    .timeline { padding-left: 32px; }
+    .tl-dot { left: -42px; width: 16px; height: 16px; border-width: 3px; }
+    .timeline::before { left: -35px; width: 2px; }
+    .tl-meta { gap: 12px; }
+    .tl-role { font-size: 24px; }
   }
 </style>
 

@@ -343,11 +343,12 @@ description: "I design and ship production fintech systems. Working across produ
   @media (max-width: 1024px) {
     .hero { grid-template-columns: 1fr 300px; }
     .hero-side { display: none; }
-    .hero-name { font-size: clamp(60px, 10vw, 120px); }
+    .hero-name { font-size: clamp(48px, 10vw, 120px); }
   }
   @media (max-width: 768px) {
     .hero { grid-template-columns: 1fr; padding: 40px 0; }
-    .hero-image { max-width: 300px; }
+    .hero-image { max-width: 100%; aspect-ratio: 4/5; margin-top: 24px; }
+    .hero-name { font-size: clamp(40px, 12vw, 80px); }
     .grid-2, .grid-3, .grid-4, .eng-strip, .carousel-block { grid-template-columns: 1fr; }
     .eng-panel, .carousel-image { border-right: none; border-bottom: 2px solid var(--border); }
     .eng-panel:nth-child(odd) { background: var(--bg-dark); color: var(--text-inv); }

@@ -139,6 +139,24 @@ footer {
 
 /* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
-  .wrap { padding: 0 24px; }
-  .nav-links { display: none; } /* Simplified for mobile */
+  .wrap { padding: 0 20px; }
+  
+  /* Horizontal scrolling nav for mobile */
+  .nav-inner { flex-direction: column; align-items: stretch; gap: 16px; }
+  .nav-links { 
+    display: flex; 
+    gap: 16px; 
+    overflow-x: auto; 
+    padding-bottom: 8px; 
+    margin-bottom: -8px; 
+    -webkit-overflow-scrolling: touch; 
+    scrollbar-width: none; /* Firefox */
+  }
+  .nav-links::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+  .nav-link { white-space: nowrap; flex-shrink: 0; }
+  
+  .section-header { grid-template-columns: 1fr; align-items: start; gap: 16px; }
+  .section-title { font-size: 36px; }
+  
+  footer { flex-direction: column; gap: 12px; text-align: center; }
 }
