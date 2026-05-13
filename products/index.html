@@ -162,7 +162,7 @@ description: "Systems I've shipped — EDMS, bookkeeping, payment app, and more.
   <div class="products-grid">
     {% for product in site.data.products %}
     <div class="shipped-card" data-product="{{ product.id }}">
-      <div class="shipped-image"><img src="/images/{{ product.img }}" alt="" /></div>
+      <div class="shipped-image"><img src="/images/{{ product.img | replace: '[', '%5B' | replace: ']', '%5D' }}" alt="" /></div>
       <div class="shipped-body">
         <p class="shipped-tag">{{ product.tag }}</p>
         <h2 class="shipped-title">{{ product.title }}</h2>
@@ -196,7 +196,7 @@ description: "Systems I've shipped — EDMS, bookkeeping, payment app, and more.
       title: {{ product.title | jsonify }},
       desc: {{ product.desc | jsonify }},
       bullets: {{ product.bullets | jsonify }},
-      img: '/images/{{ product.img }}'
+      img: '/images/{{ product.img | replace: "[", "%5B" | replace: "]", "%5D" }}'
     }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   };

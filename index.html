@@ -87,6 +87,10 @@ description: "I design and ship production fintech systems. Working across produ
     height: 100%;
     object-fit: cover;
     filter: grayscale(100%) contrast(1.2);
+    transition: filter 0.3s;
+  }
+  .hero-image:hover img {
+    filter: grayscale(0%) contrast(1);
   }
 
   /* ─── GRIDS ─── */
@@ -372,7 +376,8 @@ description: "I design and ship production fintech systems. Working across produ
         I design and ship production fintech systems. I work across product, architecture, and infrastructure — building payment, risk, and backend systems that have to work under real constraints.
       </div>
       <div class="hero-image">
-        <img src="/images/headshot[480x600].webp" alt="Michael Headshot" />
+        <img src="/images/headshot1%5B480x600%5D.webp" alt="Michael Headshot" />
+        <span>IMG.01</span>
       </div>
     </div>
   </header>
@@ -433,7 +438,7 @@ description: "I design and ship production fintech systems. Working across produ
     </div>
     <div class="carousel-block" id="pt-carousel">
       <div class="carousel-image">
-        <img src="/images/carousel-kyc[540x540].webp" alt="Visual" id="carousel-img" />
+        <img src="/images/carousel-kyc%5B540x540%5D.webp" alt="Visual" id="carousel-img" />
         <div class="carousel-arrows">
           <button class="carousel-arrow" id="carousel-prev">&larr;</button>
           <button class="carousel-arrow" id="carousel-next">&rarr;</button>
@@ -507,7 +512,7 @@ description: "I design and ship production fintech systems. Working across produ
       title: {{ slide.title | jsonify }},
       desc: {{ slide.desc | jsonify }},
       href: {{ slide.href | jsonify }},
-      img: {{ slide.img | jsonify }}
+      img: '/{{ slide.img | replace: "[", "%5B" | replace: "]", "%5D" }}'
     }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   ];
@@ -544,7 +549,7 @@ description: "I design and ship production fintech systems. Working across produ
       title: {{ product.title | jsonify }},
       desc: {{ product.desc | jsonify }},
       bullets: {{ product.bullets | jsonify }},
-      img: '/images/{{ product.img }}'
+      img: '/images/{{ product.img | replace: "[", "%5B" | replace: "]", "%5D" }}'
     }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   };
