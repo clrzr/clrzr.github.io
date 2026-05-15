@@ -474,7 +474,7 @@ description: "I design and ship production fintech systems. Working across produ
     <div class="grid-4">
       {% for product in site.data.products limit:3 %}
       <div class="shipped-card" data-product="{{ product.id }}">
-        <div class="shipped-image"><img src="/images/{{ product.img }}" alt="" /></div>
+        <div class="shipped-image"><img src="/images/{{ product.img | replace: '[', '%5B' | replace: ']', '%5D' }}" alt="" /></div>
         <div class="shipped-body">
           <h3 class="shipped-title">{{ product.title }}</h3>
           <p class="shipped-desc">{{ product.desc }}</p>

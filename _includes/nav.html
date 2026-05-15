@@ -1,7 +1,7 @@
 <nav>
   <div class="wrap nav-inner">
-    <a href="/" class="nav-brand">
-      Michael <span>I.</span>
+    <a href="/" class="nav-brand" id="nav-brand-wrap">
+      Michael <span id="brand-typing">Ikirodah</span><span id="brand-cursor">_</span>
     </a>
     <div class="nav-links">
       {% for link in site.data.nav %}
@@ -10,3 +10,31 @@
     </div>
   </div>
 </nav>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const textEl = document.getElementById('brand-typing');
+    const cursor = document.getElementById('brand-cursor');
+    if (!textEl || !cursor) return;
+    
+    const fullText = "Ikirodah";
+    let currentLen = fullText.length;
+    
+    // Wait before starting to backspace
+    setTimeout(() => {
+      const interval = setInterval(() => {
+        if (currentLen > 1) {
+          currentLen--;
+          textEl.textContent = fullText.substring(0, currentLen);
+        } else {
+          clearInterval(interval);
+          // Add the dot and stop cursor
+          setTimeout(() => {
+            textEl.textContent = "I.";
+            cursor.classList.add('finished');
+          }, 200);
+        }
+      }, 100); // backspace speed
+    }, 1500); // initial delay
+  });
+</script>

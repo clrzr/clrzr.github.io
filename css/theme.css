@@ -72,6 +72,19 @@ nav {
 .nav-brand span {
   color: var(--accent);
 }
+#brand-cursor {
+  animation: blink 1s step-end infinite;
+  display: inline-block;
+  margin-left: 2px;
+  font-weight: 400;
+}
+#brand-cursor.finished {
+  display: none;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
 .nav-links { display: flex; gap: 24px; }
 .nav-link {
   font-family: 'DM Mono', monospace;
