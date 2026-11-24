@@ -1,55 +1,81 @@
 ---
 layout: case-study
 title: "Kuddle — Business Operating System"
-description: "A business operating system that connects sales, fulfillment, delivery, and precise financial records."
-eyebrow: "Product / Small Business Operations"
-headline: "Kuddle"
-headline_em: "Business OS"
+description: "How Kuddle connects small-business activity, accurate books, fulfillment, and delivery."
+eyebrow: "Kuddle / Business Operating System"
+headline: "From Sale"
+headline_em: "To Delivery"
 permalink: /products/kuddle/
 ---
 
-For a small team, a good sales day can become an operations problem: more orders bring more fulfillment, delivery, and coordination, leaving less time to serve customers consistently. Kuddle connects the full loop: money received, work fulfilled, and a product or service delivered.
+In a small business, a good sales day can create an operations problem. Every new sale adds fulfillment, delivery, and coordination across a small team, pulling attention from customers and making service inconsistent. Kuddle's destination is one connected business loop: record the money, keep the work moving, deliver the product or service, and keep the books accurate without asking owners to learn accounting.
 
-## Build around business activity, not company size
+```mermaid
+flowchart LR
+    Sale["A sale happens"] --> Activity["Owner records the activity in familiar terms"]
+    Activity --> Fact["Kuddle stores the business fact"]
+    Fact --> Rules["Service applies accounting and country rules"]
+    Rules --> Ledger["Double-entry ledger updates"]
+    Ledger --> Books["Current balances and reports"]
+    Sale --> Fulfillment["Fulfill the order"]
+    Fulfillment --> Delivery["Deliver to the customer"]
+    Delivery --> NextSale["Next sale"]
+```
 
-A ledger can record a sale, but it does not coordinate the work that follows it. Kuddle's fit test is operational: a business receives money, fulfills something, and delivers a product or service. That keeps the product grounded in what a business does rather than its headcount, revenue, or industry label.
+## 1. Start with the work, not an industry label
 
-## Keep the books exact as rules change
+A bookkeeping tool can record that money arrived, but a small team also has to fulfill the order and get it to the customer. More sales increase that coordination load. Kuddle's fit test is therefore operational: does the business receive money, fulfill something, and deliver it? This lets the product serve different kinds of businesses without defining fit by headcount, revenue, or industry.
 
-The brief required financial records to be accurate from the start and remain accurate as accounting and tax rules change. Storing pre-interpreted values would make those changes difficult to apply consistently. Kuddle stores business facts and keeps interpretation in the service layer; financial events post through a double-entry journal, amounts use integer minor units, and inventory costs are derived from ledger entries rather than stored separately.
+## 2. Let owners describe activity; let the system do the accounting
 
-The trade-off is a more demanding financial model than a simple collection of editable balances. In return, the system can change how it interprets recorded facts without relying on floating-point math or rewriting the facts themselves.
+The product brief called for accuracy from day one, but its users were not accounting experts. Asking them to classify journal entries would add cognitive work and introduce another way to make mistakes. Kuddle lets owners record familiar business activity, one decision at a time; the service layer interprets those facts and posts the financial result.
 
-## Add jurisdictions without reshaping the data
+Underneath that simpler interaction is a 19-account double-entry ledger. Amounts use integer minor units rather than floating-point math, and inventory costs come from ledger entries instead of independently edited cost fields. Period-close records are cryptographically sealed with SHA-256. The trade-off is a more demanding financial model behind the interface; the result is exact, traceable accounting without asking owners to operate the ledger themselves.
 
-Starting with one jurisdiction would have reduced the initial design effort, but it risked tying the product to one set of business habits and rules. The product brief called for the option to enter new markets as signals emerged. Kuddle therefore stores activity and location as facts, while country-specific tax and commercial rules live in separate code.
+## 3. Add markets without rewriting recorded activity
 
-That separation costs more up front than hard-coding the first market. It means new jurisdiction rules can be added without redesigning the stored facts. The rules engine contains 11 jurisdictions; onboarding is currently enabled only for Nigeria.
+Starting with one jurisdiction would have reduced the first release's design work, but it could have tied the product to one country's rules and business habits. The brief required the option to enter another market when the opportunity appeared. Kuddle therefore stores activity as facts and keeps country-specific tax and commercial rules in a separate layer.
 
-## Introduce complexity when the business needs it
+That means adding a jurisdiction takes rule code rather than a new interpretation of every stored record. The rules engine contains 11 jurisdictions, but onboarding is currently enabled only in Nigeria. The up-front cost of separating the rules bought optionality; it does not mean the product is live in all 11 markets.
 
-Owners were already overloaded, and there was no useful way to explain the entire system during onboarding. Kuddle starts with six modules—Money, Relationships, Inventory, Projects, My Office, and Organization. Additional modules stay visible but locked until business activity shows readiness; they are not gated behind a paid tier. This keeps the first experience small, at the cost of not making every tool available immediately.
+## 4. Introduce capabilities as the business grows
 
-Owners meet each new capability in the context of work they are already doing, leaving onboarding and habit-building to happen over time. Insights are framed to support action, not to lecture or grade the owner.
+Owners were already overloaded, and onboarding could not usefully explain the whole system at once. Kuddle starts with six modules: Money, Relationships, Inventory, Projects, My Office, and Organization. Additional modules remain visible but locked until business activity shows readiness; access is not sold through paid feature tiers.
 
-## Let integrations record events, not own the ledger
+The trade-off is that an owner cannot turn on every capability on day one. Instead, the product uses the work already happening to introduce the next tool over time. That makes onboarding and habit-building part of the product, not a one-time tour.
 
-Payment and shipping providers can fail, and real transactions do not always happen in the order the software expects. A customer might pay before the cashier enters the order; a provider can also be unavailable while the core service is handling other work.
+## 5. Keep payment and shipping events flowing
 
-Kuddle isolates provider integrations in specialized services that record and emit signed payment or shipping facts. The core service remains the authority for interpreting those facts and updating the ledger. This introduces coordination through asynchronous events, but integrations can keep recording activity during core-service outages. A payment that arrives before its order is recorded as an unattributed inflow until the business record catches up, rather than being discarded because the events arrived out of order.
+External payment and shipping providers can fail, and the real world does not wait for the software's records to arrive in order. A customer can pay before a cashier enters an order. If provider integrations owned the business state, outages and timing differences could become ledger problems.
 
-## Enforce tenant boundaries in the database
+Kuddle uses specialized services to record signed payment and shipping facts; the core service alone interprets those facts and updates the ledger. RabbitMQ carries the events between them. This isolates provider failures from the ledger, at the cost of coordinating asynchronous events. A payment received before its order becomes an unattributed inflow until the business record catches up, rather than disappearing because the order was entered later.
 
-Multi-branch businesses need fast data entry and retrieval, with permissions enforced and regressions caught before release. Application-only filters would leave too much security responsibility in service code, while an ORM would obscure query behavior and add reflection overhead.
+```mermaid
+flowchart LR
+    PSP["Payment provider"] --> Payments["Payment fact recorder"]
+    Carrier["Shipping provider"] --> Shipping["Shipping fact recorder"]
+    Payments -->|"Signed event"| Queue["RabbitMQ"]
+    Shipping -->|"Signed event"| Queue
+    Queue --> Core["Core service interprets business effects"]
+    Browser["Web app"] --> BFF["Next.js BFF"]
+    BFF --> Core
+    Core --> Ledger["PostgreSQL and ledger"]
+```
 
-Kuddle uses PostgreSQL row-level security, separate database connection pools, handwritten parameterized SQL compiled with sqlc, and static checks in CI. This requires more explicit query work than relying on an ORM, but moves tenant filtering to the database boundary and catches prohibited query patterns before deployment.
+## 6. Enforce tenant boundaries where data is stored
 
-## Keep data sharing under the owner's control
+Owners use Kuddle to coordinate multi-branch businesses, where data must be fast to enter and retrieve, permissions must hold, and regressions should be caught before release. Application-only filters would place too much responsibility in service code; ORM abstractions would hide query behavior and add reflection overhead.
 
-Kuddle is built to change how businesses operate, not to give outside organizations automatic access to their financial activity. Tax or bank data is not shared automatically, and analytics requires consent. This means outside organizations do not receive business data by default; sharing stays the owner's choice, even when it could benefit the business.
+Kuddle moves tenant filtering into PostgreSQL with row-level security and separate connection pools. Queries are handwritten, parameterized, and compiled with sqlc; static audits in CI block unsafe patterns before deployment. This gives up some of the convenience of an ORM and requires disciplined query work, in exchange for explicit control over performance and database-enforced tenant boundaries.
 
-## Find the source of slowdowns before optimizing
+## 7. Let the business decide what leaves its workspace
 
-Users repeatedly described the app as laggy without knowing which action or device caused it. Existing monitoring and analytics showed that reports clustered among iPhone users on Safari, so the investigation focused on that experience instead of applying a broad, unfocused optimization.
+Kuddle is designed to change how businesses operate, not to give outside organizations automatic access to their financial activity. Tax or bank data is not shared by default, and analytics requires consent. The trade-off is that external organizations do not receive business data automatically; any sharing remains the owner's decision, including when it could provide value to the business.
 
-The work changed component rendering and deferred resources until they were needed. Standard mobile Largest Contentful Paint fell from 7.8 seconds to 2.4 seconds. In the documented cold 3G test with 20× CPU throttling, it fell from 31.6 seconds to about 10 seconds.
+## 8. Diagnose slowdowns from evidence
+
+Users repeatedly said the app felt laggy but could not identify the cause. Monitoring and analytics showed that complaints clustered among iPhone users on Safari. Rather than broadly optimizing without knowing the source, the investigation focused on that cohort and changed component rendering and resource loading.
+
+Standard mobile Largest Contentful Paint improved from 7.8 seconds to 2.4 seconds. In the documented cold 3G test with 20× CPU throttling, it improved from 31.6 seconds to about 10 seconds. Those measurements show the result of this investigation under those test conditions.
+
+That is the operating loop Kuddle is built around: a sale moves into fulfillment and delivery while its financial effect enters the same auditable books. As the business grows, new rules and capabilities extend the loop rather than forcing the owner to start again in another system.
