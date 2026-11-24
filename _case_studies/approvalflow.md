@@ -21,20 +21,18 @@ A requester uploads a file and starts a request. ApprovalFlow checks access, app
 
 ```mermaid
 flowchart TD
-    A["Requester uploads a file and starts a request"] --> B["Check file and workflow permissions"]
-    B --> C["Apply the selected workflow"]
-    C --> D["Route to the assigned person"]
-    D --> E{"Current step"}
-    E -->|"Review"| F["Record feedback"]
-    E -->|"Approval"| G{"Approve or deny"}
-    F --> H["Continue to the next assigned step"]
-    G -->|"Approve"| H
-    G -->|"Deny"| I["End as denied"]
-    H --> J{"More steps?"}
-    J -->|"Yes"| D
-    J -->|"No"| K["Complete the request"]
-    D -.->|"Route is incomplete and user has permission"| L["Add reviewer or append steps"]
-    L --> D
+    Start["Requester starts a request and uploads a file"] --> Access["Check file and workflow permissions"]
+    Access --> Workflow["Apply the selected workflow"]
+    Workflow --> Route["Route the current step to its assigned person"]
+    Route --> Step{"Step type"}
+    Step -->|"Review"| Feedback["Record feedback"]
+    Step -->|"Approval"| Decision{"Approve?"}
+    Feedback --> Continue["Continue to the next step"]
+    Decision -->|"Yes"| Continue
+    Decision -->|"No"| Denied["End as denied"]
+    Continue --> More{"More steps?"}
+    More -->|"Yes"| Route
+    More -->|"No"| Complete["Complete the request"]
 ```
 
 ## 2. Make feedback visible without making it final
