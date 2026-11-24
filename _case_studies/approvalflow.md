@@ -1,75 +1,84 @@
 ---
 layout: case-study
-title: "ApprovalFlow — Document Approval"
-description: "The path from a document request to a recorded decision, with role-based access and university data separation."
+title: "ApprovalFlow: Document Approval"
+description: "How a document request moves through review, approval, and an accountable decision."
 eyebrow: "ApprovalFlow / Document Workflow"
 headline: "From File"
 headline_em: "To Decision"
 permalink: /products/approvalflow/
 ---
 
-Built for a government institution serving universities, ApprovalFlow takes a document from request to an authorized decision. The path needs to make feedback count, let people correct a request that skipped required steps, and protect files whose readers differ by document—all while keeping each university's data separate.
+Every two weeks, I met with the client's technical lead for technical and design discussions. Those meetings were where we worked through how a document should move, who should be able to act, and what had to remain true across universities. ApprovalFlow was being shaped for a government institution serving universities. An ordinary user needed to get a document to a decision; the institution needed to see the sequence behind that decision, including who acted and when. Feedback could not be mistaken for approval, and the person starting a request might not know every step the document would need.
+
+The destination was a decision the institution could trace: the file, the people who acted on it, the order of those actions, and the outcome.
 
 <figure class="case-image">
   <img src="/images/approvalflow.png" alt="ApprovalFlow sign-in screen" />
   <figcaption>ApprovalFlow sign-in screen</figcaption>
 </figure>
 
-## 1. Put each document on a defined path
+## A request follows a defined path
 
-A requester uploads a file and starts a request. ApprovalFlow checks access, applies the selected workflow, and routes the current step to its assigned person. A review records feedback and continues; an approval records a decision. If the route is incomplete, a permitted participant can add another reviewer or step before the request continues.
+An ordinary user could start from an eligible file and choose an existing, custom, or temporary workflow. Before a request began, the system checked access and workflow rules. Uploads were deduplicated by content hash. Duplicate uploads by the same owner were prevented, and workspace-wide blocking of identical content could be configured. A file already in a request could not quietly become several competing approval processes.
 
 ```mermaid
 flowchart TD
-    Start["Requester starts a request and uploads a file"] --> Access["Check file and workflow permissions"]
-    Access --> Workflow["Apply the selected workflow"]
-    Workflow --> Route["Route the current step to its assigned person"]
-    Route --> Step{"Step type"}
-    Step -->|"Review"| Feedback["Record feedback"]
-    Step -->|"Approval"| Decision{"Approve?"}
+    Start["User selects an eligible file and workflow"] --> Validate["Check access and workflow rules"]
+    Validate --> Route["Route the next step to its assigned participant"]
+    Route --> Type{"Review or approval?"}
+    Type -->|"Review"| Feedback["Record feedback"]
+    Type -->|"Approval"| Decision{"Approve?"}
     Feedback --> Continue["Continue to the next step"]
-    Decision -->|"Yes"| Continue
-    Decision -->|"No"| Denied["End as denied"]
+    Decision -->|"Approve"| Continue
+    Decision -->|"Deny"| Denied["End as denied"]
     Continue --> More{"More steps?"}
     More -->|"Yes"| Route
     More -->|"No"| Complete["Complete the request"]
 ```
 
-## 2. Make feedback visible without making it final
+We made review and approval different kinds of step, not different labels for the same action. Informal requests for feedback could be deprioritized; putting review inside the tracked workflow gave it a place in the process without making it the final decision. A reviewer records feedback and the request moves on. An approver can approve or deny, and denial ends the workflow. When a workflow includes approval, validation requires approval to be the final step rather than letting a review close it.
 
-Informal requests for feedback were often deprioritized. The institution wanted reviews to travel through the same tracked process as approvals, but did not want every review to decide the request. ApprovalFlow therefore keeps review and approval as distinct step types: feedback becomes part of the process, while approval remains a separate decision point. The trade-off is that a review cannot finish a request on its own; its role can be revisited as people learn how the process works in practice.
+The process stores its ordered steps, assignees, outcomes, annotations, and timestamps. An audit log provides a separate record of events. That supports operational traceability, but does not by itself establish compliance with a particular standard or retention policy.
 
-## 3. Correct the route where the mistake is found
+The order also has to mean something. A step becomes actionable only for its assigned, authenticated participant, and only after its prerequisites are satisfied. At action time, PostgreSQL locks the step and checks that it is still pending. An action against a step that has already advanced is rejected rather than recorded as a second outcome. That makes the workflow state, not a stale screen, the authority.
 
-Requesters may not know every step a process requires. A rigid workflow would force an approver who discovers a missing step to reject or return the request before it can be corrected. Instead, participants with permission can add reviewers or append steps after work has started. The process is editable, but the permission boundary keeps that flexibility controlled.
+## The route can change without losing control
 
-## 4. Make access follow the work
+The route could still be incomplete. A requester may not know that another review is needed, or an approver may discover a missing step after the request is underway. A fixed workflow would require the request to be rejected or restarted. We allowed a participant with process-modification permission to request an additional review or append steps. That is a bounded exception to the original route: the process can respond to what people learn while it is in progress, without making every participant free to rewrite it.
 
-A paper and an annual budget do not belong in front of the same people. The institution also had people whose work was to request documents and others whose work was to approve them. Showing everyone every file and action would make users navigate decisions already determined by their responsibilities. ApprovalFlow applies access rules to files and workflow actions, so each role sees only the work it is allowed to handle.
+## Access follows each person's responsibility
 
-## 5. Separate university data at the database boundary
+As the request moves, each person should see the work they are responsible for, not every file in the workspace. Ordinary users create requests; reviewers and approvers act on assigned steps; managers and auditors have reporting or oversight access. File access is checked through the user's session and relationship to the file or workflow, so a signed file link alone does not grant access.
 
-The institution needed an on-premises deployment for its own work and a hosted environment for the universities it serves. Each university needed a separate data enclosure. Row-level security and logical tenant separation were investigated, but did not meet the requirement for physical separation.
+Dedicated Files and Steps workspaces show the relevant work. Activity records and in-app or email notifications keep participants informed as the request progresses.
 
-ApprovalFlow uses a separate PostgreSQL database for each university. A control plane authenticates users and routes requests to the right database; identity changes are coordinated across those boundaries with rollback and retries. This adds database and routing work, but the number of universities was finite, so stronger separation mattered more than designing for sharding.
+## Each workspace has its own data boundary
+
+The institution needed a self-hosted installation for its own work and hosted workspaces for the universities it served. Each workspace needed its own data enclosure. We considered shared-database isolation, including row-level security, but it did not meet the requirement for physical separation. We chose a separate PostgreSQL database per workspace.
+
+In the hosted service, a control plane resolves the workspace from the user's session and routes the request to its database. Identity changes across the control plane and tenant databases are coordinated with rollback and retries. This makes provisioning, routing, and identity synchronization more complex, but the number of universities was finite, so stronger separation mattered more than designing for sharding.
 
 ```mermaid
 flowchart LR
-    A["University data must be isolated"] --> B{"Isolation model"}
-    B --> C["Shared database with row-level policies"]
-    C --> D["Investigated; did not meet the requirement"]
-    B --> E["Separate PostgreSQL database per university"]
-    E --> F["Control plane authenticates and routes requests"]
+    subgraph Hosted["Hosted service"]
+        User["User session"] --> Control["Control plane resolves workspace"]
+        Control --> DB1["Workspace A: PostgreSQL database"]
+        Control --> DB2["Workspace B: PostgreSQL database"]
+    end
+    subgraph SelfHosted["Single-workspace self-hosted installation"]
+        LocalUser["Local user"] --> App["ApprovalFlow"]
+        App --> LocalDB["Workspace PostgreSQL database"]
+    end
 ```
 
-## 6. Keep the document usable throughout the process
+## The document stays usable in the process
 
-People wanted to read and work with files without leaving the approval workflow. PDFs and images use built-in support; editing Office documents required an additional capability, so ApprovalFlow integrates ONLYOFFICE. That keeps editing in the process, at the cost of relying on an external document editor.
+People needed to work with documents without leaving the approval flow. PDF and image files could be viewed in ApprovalFlow; Office documents needed editing as well, so we integrated ONLYOFFICE. It receives a JWT-signed, file-specific configuration, with editing explicitly controlled. Docker Compose deploys the application and ONLYOFFICE together. This keeps document work in the process, at the cost of operating an additional service.
 
-Storage had to fit changing budgets and operating capacity too. The institution could start with local files, then move to S3-compatible storage or back. Supporting both paths adds migration work, but lets the institution change where files live without specialist effort.
+Storage had to fit different operating environments too. Files can live on local storage or an S3-compatible service, with tenant-scoped paths and administrator-managed migration between targets. Supporting both makes storage more adaptable, but adds migration and operational work.
 
-## 7. Use response time to improve the process
+## The process leaves evidence of how it moved
 
-Responsiveness was an internal performance measure, so a simple pending/complete status was not enough. ApprovalFlow records how long requests and individual steps take, then reports turnaround and service-target performance. Managers can use that evidence in their reviews; the system reports the timing rather than making performance judgments.
+Responsiveness was an internal performance measure, so a simple pending or complete status was not enough. Reports derive approval, rejection, and review status; completion duration; monthly throughput; weekday timing; and per-step service-target performance from recorded process steps. Managers can use these measures to examine the work, while auditors have a separate oversight role. The system reports what happened; it does not by itself prove that approval times improved or that a particular compliance standard was met.
 
-The request's destination is a recorded approval or denial, reached through a workflow that reflects who can see and decide each step. The path can be corrected when it is wrong, without making feedback itself the final decision.
+ApprovalFlow therefore ends where the request began: with a document that needed a decision. It can pass through assigned review and approval steps, adapt when more scrutiny is needed, and finish with a recorded outcome. The same process keeps access tied to responsibility and data separated by workspace, while giving the institution evidence about how requests are handled.
