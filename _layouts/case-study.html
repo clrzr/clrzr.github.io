@@ -10,18 +10,21 @@ layout: base
       <span class="eyebrow-text">{{ page.eyebrow }}</span>
     </div>
     <h1 class="cs-h1">{{ page.headline }}<br /><em>{{ page.headline_em }}</em></h1>
+    {% if page.pills %}
     <div class="pills">
       {% for pill in page.pills %}
       <span class="pill {% if pill.live %}live{% endif %}">{{ pill.label }}</span>
       {% endfor %}
     </div>
+    {% endif %}
   </div>
 
-  <div class="case-body">
+  <div class="case-body{% unless page.decisions %} no-sidebar{% endunless %}">
     <div class="narrative reveal">
       {{ content }}
     </div>
 
+    {% if page.decisions %}
     <aside class="sidebar reveal">
       <div class="sc">
         <p class="sc-title">Key decisions</p>
@@ -33,6 +36,7 @@ layout: base
         {% endfor %}
       </div>
     </aside>
+    {% endif %}
   </div>
 
   <div class="case-nav">

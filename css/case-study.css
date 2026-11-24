@@ -81,6 +81,14 @@
   gap: 64px;
   padding: 80px 0;
 }
+.case-body.no-sidebar {
+  grid-template-columns: minmax(0, 1fr);
+}
+.case-body.no-sidebar .narrative {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+}
 .narrative {
   display: flex;
   flex-direction: column;
@@ -111,6 +119,20 @@
 .narrative p em {
   color: var(--text);
   font-style: italic;
+}
+.narrative .case-image {
+  margin: 0;
+}
+.narrative .case-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 2px solid var(--border);
+}
+.narrative .case-image figcaption {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
 }
 .narrative p strong {
   color: var(--text);
