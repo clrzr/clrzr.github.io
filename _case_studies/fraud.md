@@ -86,11 +86,11 @@ Key: user_id | score, flags, ttl")]
 
 ---
 
-## 3. Kinematic Spatiotemporal Velocity Detection
+## 3. Detecting Impossible Travel
 
-Account takeover frequently involves an attacker obtaining an authenticated session token or executing an unauthorized operation from a remote geographic region while the legitimate user's device remains active.
+An attacker may steal a valid session and use it from far away while the real user is still active.
 
-The engine detects this using **Kinematic Delta-Velocity Evaluation** rather than static IP blacklists.
+The engine compares the locations and times of recent activity to spot travel that could not happen that quickly. This can catch suspicious activity that a list of known risky IP addresses might miss.
 
 ### 3.1 Mathematical Model
 
