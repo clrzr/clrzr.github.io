@@ -1,5 +1,5 @@
 - title: "Product Thinking, Compliance & User Retention"
-  desc: "I had one user story I couldn't stop thinking about: a user loses their phone and someone picks it up. That question led to a strict one-device policy, an async KYC pipeline that keeps users off the critical path, and a PII architecture that protects user data."
+  desc: "I kept thinking about a lost phone falling into the wrong hands. That question led to one-device sign-in, identity checks in the background, and a safer way to store personal data."
   href: "/kyc/"
   img: "images/carousel-kyc[540x540].webp"
 

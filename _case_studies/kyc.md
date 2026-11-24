@@ -21,11 +21,11 @@ nav_next:
 
 ## 1. The Problem
 
-Digital financial platforms routinely suffer from two catastrophic architectural failures in identity management:
-1. **The Monolithic Synchronous KYC Gate:** Tying user onboarding directly to synchronous third-party verification APIs (e.g. government identity databases, biometric verifiers). When external upstream providers experience downtime or network latency, onboarding halts completely. The user abandons the process, and the platform retains zero contact metadata to re-engage them.
-2. **Multi-Device Session Sprawl:** Permitting authenticated sessions to persist concurrently across multiple physical devices. If a user misplaces an old device or falls victim to SIM-swap token theft, unauthorized actors retain access until the victim manually navigates complex account deactivation menus.
+Digital financial platforms often struggle with two identity problems:
+1. **Identity checks block sign-up:** When onboarding depends directly on a government database or biometric provider, any delay or outage stops the user and loses a chance to stay in touch.
+2. **Old devices stay signed in:** If a user can leave active sessions on several devices, a lost phone or stolen sign-in token may give someone continued account access.
 
-The Device Boundary & Identity Engine resolves these vulnerabilities by enforcing **decoupled asynchronous verification pipelines**, **strict singular device boundaries**, and **isolated cryptographic containment for personally identifiable information (PII)**.
+The Device Boundary & Identity Engine keeps verification work separate from account sign-up, allows only one active device, and protects personal information in a dedicated identity system.
 
 ---
 
@@ -110,7 +110,7 @@ Push Notification to Correct Data"]
 
 ## 4. Cryptographic PII Isolation: Single Owner Architecture
 
-Spreading sensitive customer PII (government identity numbers, home addresses, dates of birth) across multiple service databases exponentially expands the blast radius of any compromise.
+Storing sensitive personal information, such as government ID numbers, addresses, and birth dates, across many service databases makes a security breach much more damaging.
 
 The platform isolates identity storage within an autonomous **Identity Vault Service**:
 

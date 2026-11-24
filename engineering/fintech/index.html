@@ -232,7 +232,7 @@ permalink: /engineering/fintech/
     </div>
     <h1 class="domain-title">Fintech</h1>
     <p class="domain-lead">
-      A payment moves in milliseconds, never double-charges, isolates credentials from exposure, and settles to zero-sum balance. Achieving this requires four coordinated boundaries.
+      A payment should arrive quickly, never be charged twice, keep credentials protected, and end with the accounts in the right state. These systems rely on four coordinated parts.
     </p>
   </header>
 
@@ -271,7 +271,7 @@ permalink: /engineering/fintech/
         <div class="spec-main">
           <h3 class="spec-heading">A Ledger's Core Model</h3>
           <p class="spec-desc">
-            Tracking ownership and movement of money across pooled accounts, double-entry zero-sum equilibrium, universal hold clearing, and deterministic state recovery.
+            Tracks who owns money and how it moves across pooled accounts, keeps balances correct, holds funds during payment, and recovers reliably after failures.
           </p>
           <div class="spec-pills">
             <span class="pill">Double-Entry Balancing</span>
@@ -291,12 +291,12 @@ permalink: /engineering/fintech/
         <div class="spec-main">
           <h3 class="spec-heading">Payment Intent Architecture</h3>
           <p class="spec-desc">
-            Decoupling intent declaration from payment rails. Enforcing destination binding prior to amount commitment, parallel pre-validation, and canonical idempotency keys.
+            Separates choosing a recipient from sending payment. It verifies the recipient first, runs checks while the user enters the amount, and prevents duplicate payments.
           </p>
           <div class="spec-pills">
             <span class="pill">Intent Separation</span>
             <span class="pill">Parallel Validation</span>
-            <span class="pill">Canonical Idempotency</span>
+            <span class="pill">No Duplicate Payments</span>
             <span class="pill">Rail Decoupling</span>
           </div>
         </div>
@@ -311,7 +311,7 @@ permalink: /engineering/fintech/
         <div class="spec-main">
           <h3 class="spec-heading">Continuous Signal Risk Engine</h3>
           <p class="spec-desc">
-            Decoupling fraud evaluation from transaction latency. Asynchronous behavioral signal aggregation, kinematic delta-velocity detection, and real-time risk profile caching.
+            Checks fraud risk without making users wait. It collects activity in the background, spots impossible travel, and prepares a risk answer before payment confirmation.
           </p>
           <div class="spec-pills">
             <span class="pill">Asynchronous Pipeline</span>
@@ -331,7 +331,7 @@ permalink: /engineering/fintech/
         <div class="spec-main">
           <h3 class="spec-heading">Device Boundary &amp; Identity Engine</h3>
           <p class="spec-desc">
-            Decoupling onboarding from third-party verification outages. Multi-provider automated failover, blind-index HMAC data containment, and single-device session invalidation.
+            Keeps onboarding working when identity providers fail. It can try another provider, protect personal data, and stop old or lost devices from staying signed in.
           </p>
           <div class="spec-pills">
             <span class="pill">Single-Device Boundary</span>

@@ -21,12 +21,12 @@ nav_next:
 
 ## 1. The Problem
 
-Traditional fraud prevention architectures rely almost exclusively on **synchronous checkpoint inspection**. At the precise moment a user attempts an action (e.g., checkout or funds transfer), execution halts while a monolithic rule engine evaluates the transaction against static parameters.
+Traditional fraud systems make a decision when the user tries to act, such as checking out or sending money. The payment waits while a large rules engine checks the transaction using fixed settings.
 
-This checkpoint pattern suffers from severe structural flaws:
-1. **The Latency Trap:** Complex behavioral heuristics, IP geolocation lookups, device fingerprint cross-referencing, and graph traversal take hundreds of milliseconds. Placing this processing directly on the critical execution path degrades user conversion and increases checkout failure rates.
-2. **Context Isolation:** A checkpoint evaluates the transaction in isolation. It lacks visibility into pre-transaction behavior: the speed of navigation, the geographic trajectory of previous API calls, or subtle session shifts occurring minutes prior to payment.
-3. **Stateless Blindness:** Static rule lists cannot detect zero-day account takeovers where valid credentials are submitted from a novel, remote execution environment.
+This approach has three problems:
+1. **It adds delay:** Location lookups, device checks, and behavioural analysis can take hundreds of milliseconds. That delay happens while the user is already trying to complete a payment.
+2. **It lacks context:** A final check only sees the transaction. It may miss earlier activity, such as where the session moved from or how quickly the user reached payment.
+3. **It misses new patterns:** Fixed rule lists may not identify a compromised account using valid credentials from an unfamiliar location or device.
 
 The Continuous Signal Risk Engine resolves these issues by **decoupling signal observation from transaction gating**. Risk evaluation is an asynchronous, ongoing background process that continuously maintains an up-to-date materialized risk profile in hot memory.
 

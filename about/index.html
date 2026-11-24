@@ -194,7 +194,7 @@ description: "Technical architect designing and specifying distributed financial
       </div>
       <h1 class="about-title">Michael<br>Ikirodah</h1>
       <p class="about-lead">
-        I design and specify production financial infrastructure. My work centers on distributed transaction architecture, double-entry ledger models, and stateful primitives where data corruption or reconciliation failure is not an option.
+        I design and build financial systems that record and move money reliably. My work covers payment processing, accounting models, and systems that must handle failures without losing or duplicating money.
       </p>
     </div>
     <div class="about-portrait">
@@ -206,10 +206,10 @@ description: "Technical architect designing and specifying distributed financial
     <section class="about-block">
       <h2>Engineering Focus</h2>
       <p>
-        Building financial technology requires a different posture than building standard consumer applications. When tracking the movement and ownership of money, optimistic UI updates, fuzzy eventual consistency, and silent failure recoveries are unacceptable.
+        Building financial software requires more care than building an ordinary app. When money moves, showing success too early or hiding a failed update can lead to serious errors.
       </p>
       <p>
-        I focus on architectures that establish unambiguous mathematical boundaries: immutable transaction event streams, universal clearing accounts that isolate volatile external rail settlement from internal balances, and decoupled pipelines that maintain throughput even during third-party dependency outages.
+        I design clear boundaries around money movement: permanent records of every transaction, separate accounts for money waiting to settle, and independent parts that keep working when an external service fails.
       </p>
     </section>
 
@@ -220,21 +220,21 @@ description: "Technical architect designing and specifying distributed financial
           <span class="principle-num">PRIN.01</span>
           <h3 class="principle-title">Rules Over Heuristics</h3>
           <p class="principle-desc">
-            Enforce zero-sum equilibrium, state monotonicity, and canonical idempotency directly at the database schema and protocol boundary, rather than relying on application code.
+            Keep balances correct and prevent duplicate transactions at the database and system boundaries, rather than relying only on application code.
           </p>
         </div>
         <div class="principle-card">
           <span class="principle-num">PRIN.02</span>
           <h3 class="principle-title">Out-of-Band Work</h3>
           <p class="principle-desc">
-            Heavy verification, signal aggregation, and risk profiling must live off the transaction critical path. Transaction execution gates should be fast, deterministic cache evaluations.
+            Run heavy verification and risk checks outside the payment flow. When a payment is ready to run, it should make a fast, predictable decision from already-prepared information.
           </p>
         </div>
         <div class="principle-card">
           <span class="principle-num">PRIN.03</span>
           <h3 class="principle-title">Blast Containment</h3>
           <p class="principle-desc">
-            Strict single-responsibility boundaries—such as isolated identity vaults using blind indexing and universal hold accounts for rail clearing—limit failure blast radius.
+            Keep responsibilities separate. For example, store identity data in a dedicated system and hold incoming payments in dedicated accounts so one failure cannot spread across the system.
           </p>
         </div>
       </div>

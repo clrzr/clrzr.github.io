@@ -1,6 +1,6 @@
 - tag: "Identity & Device Safety System"
   title: "Product Thinking, Compliance & User Retention"
-  desc: "I had one user story I couldn't stop thinking about: a user loses their phone and someone picks it up. That question led to a strict one-device policy, an async KYC pipeline that keeps users off the critical path, and a PII architecture that gives sensitive data a single owner with one access path."
+  desc: "I kept thinking about a lost phone falling into the wrong hands. That question led to one-device sign-in, identity checks that run in the background, and a safer way to store personal data."
   href: "/kyc/"
 
 - tag: "Payment Intent Architecture"

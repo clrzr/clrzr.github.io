@@ -12,10 +12,10 @@ All specifications live in `_case_studies/` (rendered via Jekyll collections):
 
 | Specification | Path | Focus |
 |---|---|---|
-| **A Ledger's Core Model** | `_case_studies/ledger.md` (`/engineering/fintech/ledger/`) | Double-entry zero-sum equilibrium, pooled omnibus accounts, universal hold clearing, and state recovery. |
-| **Payment Intent Architecture** | `_case_studies/payments.md` (`/engineering/fintech/payments/`) | Decoupled intent declaration, destination-first binding, parallel pre-validation, and canonical idempotency. |
-| **Continuous Signal Risk Engine** | `_case_studies/fraud.md` (`/engineering/fintech/fraud/`) | Asynchronous behavioral signal aggregation, kinematic Haversine delta-velocity detection, and real-time risk caching. |
-| **Device Boundary & Identity Engine** | `_case_studies/kyc.md` (`/engineering/fintech/kyc/`) | Decoupled asynchronous KYC state machines, multi-provider failover, blind-index HMAC PII containment, and single-device invalidation. |
+| **A Ledger's Core Model** | `_case_studies/ledger.md` (`/engineering/fintech/ledger/`) | Double-entry accounting, pooled accounts, held funds, and reliable state recovery. |
+| **Payment Intent Architecture** | `_case_studies/payments.md` (`/engineering/fintech/payments/`) | A destination-first payment flow, checks run in parallel, and one ID used to prevent duplicate payments. |
+| **Continuous Signal Risk Engine** | `_case_studies/fraud.md` (`/engineering/fintech/fraud/`) | Behavioural signals collected in the background, impossible-travel detection, and real-time risk caching. |
+| **Device Boundary & Identity Engine** | `_case_studies/kyc.md` (`/engineering/fintech/kyc/`) | Identity checks that run in the background, provider failover, protected personal data, and one active device per account. |
 
 ---
 

@@ -2,7 +2,7 @@
 layout: system
 title: "Payment Intent Architecture"
 headline: "Payment Intent Architecture"
-subtitle: "Unified transaction orchestration, parallel validation pipelining, and canonical idempotency across arbitrary payment rails."
+subtitle: "A unified payment flow, parallel checks, and duplicate protection across different payment networks."
 eyebrow: "Fintech · Specification"
 permalink: /engineering/fintech/payments/
 pills:
@@ -10,7 +10,7 @@ pills:
     live: true
   - label: "Intent Separation"
   - label: "Parallel Pipeline"
-  - label: "Canonical Idempotency"
+  - label: "Duplicate Protection"
 nav_prev:
   href: "/engineering/fintech/ledger/"
   label: "A Ledger's Core Model"
@@ -21,12 +21,12 @@ nav_next:
 
 ## 1. The Problem
 
-Traditional payment architectures frequently conflate two fundamentally distinct operations: **the declaration of intent** and **the execution of that intent**.
+Traditional payment systems often mix two different steps: **choosing what payment to make** and **actually sending the money**.
 
 When an application couples intent declaration with immediate execution, several architectural failures emerge:
-1. **Multi-Modal Fragmentation:** Transfers, merchant QR payments, utility bills, and contactless transactions are treated as bespoke payment flows, resulting in fractured database models, duplicated validation logic, and disjointed reconciliation paths.
-2. **Critical-Path Latency Accumulation:** Balance verification, anti-fraud evaluation, recipient validation, and daily velocity checks are run sequentially while the user waits at the final confirmation step, driving checkout latency over acceptable network thresholds.
-3. **Non-Deterministic Double Execution:** Without a canonical identifier established *before* transaction parameters are finalized, network timeouts during execution force clients into ambiguous retry states where double-charging is structurally possible.
+1. **Separate payment flows:** Transfers, QR payments, bills, and contactless transactions often use separate rules and records, even though they need the same core checks.
+2. **Slow confirmation:** Balance checks, fraud checks, recipient checks, and spending limits run while the user waits to confirm, adding avoidable delay.
+3. **Risk of duplicate payment:** Without a single payment ID created before the amount is final, a network timeout can make a retry uncertain.
 
 The Payment Intent Architecture resolves these failures by decoupling the declaration of where money is going from the commitment of how much is transferred, using the `intent_id` as the immutable spine of the transaction lifecycle.
 
@@ -138,7 +138,7 @@ To understand how the Risk Engine works see [Continuous Signal Risk Engine](/eng
 
 In distributed payment networks, network partitions are inevitable. A client may submit an execution request, the server may process the transfer, and the connection may sever before the client receives the `HTTP 200` response.
 
-The architecture eliminates double execution by enforcing **Canonical Idempotency**:
+The system prevents duplicate execution with **one payment ID used throughout the process**:
 
 1. **One Transaction, One Key:** The `intent_id` serves as the immutable idempotency key across all downstream boundaries:
    - Application layer execution locking.
@@ -146,7 +146,7 @@ The architecture eliminates double execution by enforcing **Canonical Idempotenc
    - The outbound payment processor payload (`Idempotency-Key: intent_id`).
 
    To understand how the Ledger works see [A Ledger's Core Model](/engineering/fintech/ledger/).
-2. **State Monotonicity:** Intent state transitions are strictly unidirectional:
+2. **Payments only move forward:** An intent moves through one clear sequence:
    `INITIALIZED` → `EXECUTING` → `SETTLED` (or `FAILED`)
 3. **Locking Mechanism:** Execution begins with an atomic state update:
    ```sql

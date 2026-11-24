@@ -47,7 +47,7 @@
   skill_thread: false
   summary: "Designed the escalation algorithm for internal approval flows."
   bullets:
-    - "Built the logic for variable thresholds and multi-level escalation paths across department approval flows"
+    - "Built the rules for approval limits and routed requests through the right managers"
     - "Improved UI and produced user guide for adoption"
   images:
     - src: "about-heirs-1[800x600].webp"

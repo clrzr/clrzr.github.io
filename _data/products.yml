@@ -6,7 +6,7 @@
   bullets:
     - "Unified all payment types (transfer, QR, bill, contactless) under a single Payment Intent abstraction"
     - "Validation runs in parallel while user decides amount — execution is near-instant on confirm"
-    - "Intent ID is the idempotency key throughout — same ID for tracing, retries, and reconciliation"
+    - "One payment ID is used for tracking, retries, and checking the result"
 
 - id: "bookkeeping"
   tag: "Data Architecture"

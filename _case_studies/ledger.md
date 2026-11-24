@@ -26,7 +26,7 @@ nav_next:
 
 The ledger is the authoritative record for tracking ownership and movement of money.
 
-Operating separate real bank accounts for thousands of individual customers incurs prohibitive KYC and FinOps reconciliation overhead. Commercial platforms instead maintain a small, manageable number of real bank accounts (e.g. omnibus bank accounts, payment processor balances, or custodial accounts) where customers own portions of the pooled funds.
+Running a separate real bank account for every customer creates too much compliance work and operating cost. Commercial platforms instead use a small number of real bank accounts and track each customer's share of the pooled funds.
 
 The ledger's central problem is to determine **which portion of that pooled money belongs to which account**, without relying on arbitrary balance updates.
 
@@ -112,7 +112,7 @@ In this mode, the platform submits the Intent with `"settle": true` or an inline
 
 ### 1.3 Foundational Axioms & The Central Principle
 
-The entire ledger architecture rests upon three foundational axioms:
+The ledger is built on three basic rules:
 
 > **1. Every request to move money is an Intent.**
 >
