@@ -1,30 +1,35 @@
 ---
 layout: base
-title: "About — Michael"
-description: "About Michael — Technical Product Operator designing and shipping production fintech systems."
+title: "About — Michael Ikirodah"
+description: "Technical architect designing and specifying distributed financial infrastructure, ledger models, and transaction primitives."
 ---
 
 <style>
-  .hero-split {
+  .about-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .about-hero {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    grid-template-columns: 1fr 280px;
     gap: 64px;
     align-items: center;
-    padding: 80px 0;
+    padding: 90px 0 70px;
     border-bottom: 2px solid var(--border);
   }
-  .eyebrow {
+  .about-eyebrow {
     display: flex;
     align-items: center;
     gap: 16px;
     margin-bottom: 24px;
   }
-  .eyebrow-line {
+  .about-eyebrow-line {
     width: 32px;
     height: 2px;
     background: var(--accent);
   }
-  .eyebrow-text {
+  .about-eyebrow-text {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.2em;
@@ -32,453 +37,218 @@ description: "About Michael — Technical Product Operator designing and shippin
     color: var(--accent);
     font-weight: 500;
   }
-  .page-title {
+  .about-title {
     font-family: 'Oswald', sans-serif;
-    font-size: clamp(64px, 10vw, 120px);
+    font-size: clamp(56px, 9vw, 96px);
     font-weight: 700;
-    line-height: 0.9;
+    line-height: 0.95;
     letter-spacing: -0.02em;
     text-transform: uppercase;
     color: var(--text);
     margin-bottom: 24px;
+    text-wrap: balance;
   }
-  .header-bio {
+  .about-lead {
     font-size: 20px;
     color: var(--text-body);
     line-height: 1.6;
-    max-width: 600px;
     font-weight: 500;
+    text-wrap: pretty;
   }
-  .hero-image {
-    aspect-ratio: 3/4;
+  .about-portrait {
+    aspect-ratio: 4/5;
     background: var(--border);
     border: 2px solid var(--border);
-    position: relative;
     overflow: hidden;
   }
-  .hero-image img {
+  .about-portrait img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(100%) contrast(1.2);
+    filter: grayscale(100%);
     transition: filter 0.3s;
   }
-  .hero-image:hover img {
-    filter: grayscale(0%) contrast(1);
-  }
-  .hero-image::after {
-    content: 'IMG.02';
-    position: absolute;
-    bottom: 12px;
-    right: 12px;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    background: var(--bg);
-    padding: 4px 8px;
-    font-weight: 500;
-    border: 2px solid var(--border);
+  .about-portrait:hover img {
+    filter: grayscale(0%);
   }
 
-  /* ─── TIMELINE ─── */
-  .timeline-section {
-    padding: 80px 0;
+  .about-body {
+    padding: 70px 0 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
   }
-  .timeline-header {
-    margin-bottom: 64px;
+
+  .about-block {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
   }
-  .timeline-header h2 {
+  .about-block h2 {
     font-family: 'Oswald', sans-serif;
-    font-size: clamp(32px, 4vw, 48px);
+    font-size: 28px;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--text);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .about-block p {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text-body);
+    max-width: 760px;
+    text-wrap: pretty;
   }
 
-  .timeline {
-    position: relative;
-    padding-left: 64px;
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 12px;
   }
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: 7px;
-    top: 8px;
-    bottom: 0;
-    width: 4px;
-    background: var(--border);
-  }
-  .tl-entry {
-    position: relative;
-    margin-bottom: 48px;
-  }
-  .tl-entry:last-child {
-    margin-bottom: 0;
-  }
-  .tl-header {
-    cursor: pointer;
-  }
-  .tl-header:hover .tl-role {
-    color: var(--accent);
-  }
-  .tl-dot {
-    position: absolute;
-    left: -64px;
-    top: 4px;
-    width: 20px;
-    height: 20px;
-    border: 4px solid var(--border);
-    background: var(--bg);
-    transition: all 0.2s;
-  }
-  .tl-entry:hover .tl-dot {
-    background: var(--accent);
-  }
-  .tl-entry.open .tl-dot {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-  .tl-meta {
+  .principle-card {
+    background: var(--bg-raised);
+    border: 2px solid var(--border);
+    padding: 28px 24px;
     display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 12px;
   }
-  .tl-date {
+  .principle-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    font-weight: 700;
+  }
+  .principle-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.15;
+  }
+  .principle-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-body);
+  }
+
+  .contact-strip {
+    background: var(--bg-raised);
+    border: 2px solid var(--border);
+    padding: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .contact-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 24px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .contact-sub {
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+  .contact-links {
+    display: flex;
+    gap: 20px;
     font-family: 'DM Mono', monospace;
     font-size: 12px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-muted);
-    font-weight: 500;
   }
-  .tl-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 4px 10px;
+  .contact-links a {
+    padding: 10px 18px;
     border: 2px solid var(--border);
-    color: var(--text);
-    background: var(--bg-raised);
-    font-weight: 500;
-  }
-  .tl-badge.current {
-    border-color: var(--accent);
-    color: var(--bg-dark);
-    background: var(--accent);
-  }
-  .tl-role {
-    font-family: 'Oswald', sans-serif;
-    font-size: 32px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--text);
-    margin-bottom: 8px;
-    line-height: 1.1;
-    transition: color 0.2s;
-  }
-  .tl-org {
-    font-size: 18px;
-    color: var(--text-body);
-    margin-bottom: 12px;
-    font-weight: 600;
-  }
-  .tl-summary {
-    font-size: 16px;
-    color: var(--text-body);
-    line-height: 1.6;
-    max-width: 680px;
-  }
-
-  .tl-detail {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
-  }
-  .tl-entry.open .tl-detail {
-    margin-top: 32px;
-    opacity: 1;
-  }
-
-  .tl-bullets {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 32px;
-    max-width: 720px;
-  }
-  .tl-bullets li {
-    position: relative;
-    padding-left: 20px;
-    font-size: 16px;
-    color: var(--text-body);
-    line-height: 1.6;
-  }
-  .tl-bullets li::before {
-    content: '>';
-    position: absolute;
-    left: 0;
-    color: var(--accent);
-    font-family: 'DM Mono', monospace;
-    font-weight: 700;
-  }
-
-  .tl-gallery {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    padding-bottom: 16px;
-    margin-bottom: 16px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) var(--bg-raised);
-  }
-  .tl-gallery::-webkit-scrollbar { height: 6px; }
-  .tl-gallery::-webkit-scrollbar-track { background: var(--bg-raised); }
-  .tl-gallery::-webkit-scrollbar-thumb { background: var(--border); }
-  .tl-gallery img {
-    height: 180px;
-    width: auto;
-    object-fit: cover;
-    cursor: pointer;
-    border: 2px solid var(--border);
-    transition: transform 0.2s, box-shadow 0.2s;
-    filter: grayscale(100%);
-  }
-  .tl-gallery img:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 4px 4px 0 var(--accent);
-    filter: grayscale(0%);
-  }
-
-  .tl-embed {
-    width: 100%;
-    max-width: 720px;
-    aspect-ratio: 16/9;
-    border: 2px solid var(--border);
-    background: var(--border);
-    overflow: hidden;
-    margin-bottom: 32px;
-  }
-  .tl-embed iframe { width: 100%; height: 100%; border: none; }
-
-  .tl-featured {
-    display: inline-flex;
-    align-items: center;
-    gap: 24px;
-    padding: 24px 32px;
-    background: var(--bg-raised);
-    border: 2px solid var(--border);
-    border-left: 4px solid var(--accent);
-    margin-bottom: 32px;
-    transition: transform 0.2s, box-shadow 0.2s;
-    text-decoration: none;
-    color: inherit;
-    width: 100%;
-    max-width: 720px;
-  }
-  .tl-featured:hover {
-    transform: translate(-4px, -4px);
-    box-shadow: 6px 6px 0 var(--accent);
-  }
-  .tl-featured-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 8px;
-    display: block;
-    font-weight: 500;
-  }
-  .tl-featured-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 24px;
-    text-transform: uppercase;
-    font-weight: 600;
-    line-height: 1.2;
-    margin-bottom: 4px;
-  }
-  .tl-featured-url {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-  .tl-featured-arrow {
-    font-family: 'DM Mono', monospace;
-    font-size: 24px;
-    color: var(--accent);
-    margin-left: auto;
-    font-weight: 700;
-  }
-
-  .lightbox-overlay {
-    position: fixed; inset: 0; z-index: 1000;
-    background: rgba(17,17,17,0.9); backdrop-filter: blur(4px);
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-  }
-  .lightbox-overlay.active { opacity: 1; pointer-events: all; }
-  .lightbox-img {
-    max-width: 90vw; max-height: 90vh;
-    object-fit: contain;
-    border: 4px solid var(--border);
-    box-shadow: 12px 12px 0 var(--accent);
     background: var(--bg);
+    font-weight: 600;
+    transition: background 0.2s;
   }
-  .lightbox-close {
-    position: absolute; top: 24px; right: 24px;
-    width: 48px; height: 48px;
+  .contact-links a:hover {
     background: var(--accent);
-    border: 2px solid var(--border);
-    font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    z-index: 10;
   }
 
   @media (max-width: 768px) {
-    .hero-split { grid-template-columns: 1fr; gap: 32px; padding: 40px 0; }
-    .hero-image { display: block; max-width: 100%; aspect-ratio: 4/5; margin-top: 16px; }
-    .page-title { font-size: clamp(40px, 12vw, 80px); }
-    .timeline { padding-left: 32px; }
-    .tl-dot { left: -42px; width: 16px; height: 16px; border-width: 3px; }
-    .timeline::before { left: -35px; width: 2px; }
-    .tl-meta { gap: 12px; }
-    .tl-role { font-size: 24px; }
+    .about-wrap { padding: 0 20px; }
+    .about-hero { grid-template-columns: 1fr; gap: 32px; padding: 50px 0 40px; }
+    .about-portrait { max-width: 240px; }
+    .principles-grid { grid-template-columns: 1fr; }
   }
 </style>
 
-<div class="wrap">
-  <header class="hero-split">
+<div class="about-wrap">
+  <header class="about-hero">
     <div>
-      <div class="eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">About</span></div>
-      <h1 class="page-title">Technical<br>Operator</h1>
-      <p class="header-bio">I'm Michael. I build fintech systems. For the past six years, I've designed ledgers, routed payments, and managed the infrastructure that keeps them running.</p>
+      <div class="about-eyebrow">
+        <span class="about-eyebrow-line" aria-hidden="true"></span>
+        <span class="about-eyebrow-text">Background &middot; Focus</span>
+      </div>
+      <h1 class="about-title">Michael<br>Ikirodah</h1>
+      <p class="about-lead">
+        I design and specify production financial infrastructure. My work centers on distributed transaction architecture, double-entry ledger models, and stateful primitives where data corruption or reconciliation failure is not an option.
+      </p>
     </div>
-    <div class="hero-image">
-      <img src="/images/headshot2%5B480x600%5D.webp" alt="Michael Headshot" />
+    <div class="about-portrait">
+      <img src="/images/headshot2%5B480x600%5D.webp" alt="Michael Ikirodah" />
     </div>
   </header>
 
-  <section class="timeline-section">
-    <div class="timeline-header">
-      <h2>Experience</h2>
-    </div>
+  <main class="about-body">
+    <section class="about-block">
+      <h2>Engineering Focus</h2>
+      <p>
+        Building financial technology requires a different posture than building standard consumer applications. When tracking the movement and ownership of money, optimistic UI updates, fuzzy eventual consistency, and silent failure recoveries are unacceptable.
+      </p>
+      <p>
+        I focus on architectures that establish unambiguous mathematical boundaries: immutable transaction event streams, universal clearing accounts that isolate volatile external rail settlement from internal balances, and decoupled pipelines that maintain throughput even during third-party dependency outages.
+      </p>
+    </section>
 
-    <div class="timeline">
-      {% for item in site.data.timeline %}
-      <div class="tl-entry" id="tl-{{ forloop.index }}">
-        <div class="tl-dot {% if item.type == 'skill' %}skill{% endif %}"></div>
-        <div class="tl-header" data-index="{{ forloop.index }}">
-          <div class="tl-meta">
-            <span class="tl-date">{{ item.date }}</span>
-            {% if item.current %}<span class="tl-badge current">Current</span>{% endif %}
-            {% if item.type == 'skill' %}<span class="tl-badge">Skill</span>{% endif %}
-          </div>
-          <h3 class="tl-role">{{ item.role }}</h3>
-          <p class="tl-org">{{ item.org }}</p>
-          <p class="tl-summary">{{ item.summary }}</p>
+    <section class="about-block">
+      <h2>Architectural Principles</h2>
+      <div class="principles-grid">
+        <div class="principle-card">
+          <span class="principle-num">PRIN.01</span>
+          <h3 class="principle-title">Rules Over Heuristics</h3>
+          <p class="principle-desc">
+            Enforce zero-sum equilibrium, state monotonicity, and canonical idempotency directly at the database schema and protocol boundary, rather than relying on application code.
+          </p>
         </div>
-
-        <div class="tl-detail" id="tld-{{ forloop.index }}">
-          {% if item.bullets %}
-          <ul class="tl-bullets">
-            {% for bullet in item.bullets %}
-            <li>{{ bullet }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-
-          {% if item.images %}
-          <div class="tl-gallery">
-            {% for img in item.images %}
-            <img src="/images/{{ img.src | url_encode }}" alt="{{ img.alt }}" onclick="openLightbox(this.src)" loading="lazy" />
-            {% endfor %}
-          </div>
-          {% endif %}
-
-          {% if item.featured_title %}
-          <a href="{{ item.featured_url }}" class="tl-featured" target="_blank" rel="noopener">
-            <div>
-              <span class="tl-featured-label">Featured Article</span>
-              <p class="tl-featured-title">{{ item.featured_title }}</p>
-              <p class="tl-featured-url">{{ item.featured_url_display | default: item.featured_url }}</p>
-            </div>
-            <span class="tl-featured-arrow">→</span>
-          </a>
-          {% endif %}
-
-          {% if item.canva_embed %}
-          <div class="tl-embed">
-            <iframe src="{{ item.canva_embed }}" title="Embedded content" allowfullscreen></iframe>
-          </div>
-          {% endif %}
+        <div class="principle-card">
+          <span class="principle-num">PRIN.02</span>
+          <h3 class="principle-title">Out-of-Band Work</h3>
+          <p class="principle-desc">
+            Heavy verification, signal aggregation, and risk profiling must live off the transaction critical path. Transaction execution gates should be fast, deterministic cache evaluations.
+          </p>
+        </div>
+        <div class="principle-card">
+          <span class="principle-num">PRIN.03</span>
+          <h3 class="principle-title">Blast Containment</h3>
+          <p class="principle-desc">
+            Strict single-responsibility boundaries—such as isolated identity vaults using blind indexing and universal hold accounts for rail clearing—limit failure blast radius.
+          </p>
         </div>
       </div>
-      {% endfor %}
-    </div>
-  </section>
+    </section>
+
+    <section class="contact-strip">
+      <div>
+        <h3 class="contact-title">Connect &middot; Discuss</h3>
+        <p class="contact-sub">Available for technical discussions on financial architecture, infrastructure design, and ledger engineering.</p>
+      </div>
+      <div class="contact-links">
+        <a href="https://github.com/clrzr" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:contact@clrzr.com">Email</a>
+      </div>
+    </section>
+  </main>
 </div>
-
-<!-- LIGHTBOX -->
-<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
-  <button class="lightbox-close" aria-label="Close">X</button>
-  <img src="" alt="Expanded view" class="lightbox-img" id="lightbox-img" />
-</div>
-
-<script>
-  function toggleTimeline(index) {
-    const entry = document.getElementById(`tl-${index}`);
-    const detail = document.getElementById(`tld-${index}`);
-    
-    if (entry.classList.contains('open')) {
-      entry.classList.remove('open');
-      detail.style.maxHeight = null;
-    } else {
-      document.querySelectorAll('.tl-entry.open').forEach(el => {
-        el.classList.remove('open');
-        el.querySelector('.tl-detail').style.maxHeight = null;
-      });
-      entry.classList.add('open');
-      detail.style.maxHeight = detail.scrollHeight + "px";
-      setTimeout(() => { detail.style.maxHeight = "none"; }, 400);
-    }
-  }
-
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
-  
-  function openLightbox(src) {
-    lightboxImg.src = src;
-    lightbox.classList.add('active');
-  }
-  
-  function closeLightbox(e) {
-    if (e.target === lightbox || e.target.classList.contains('lightbox-close')) {
-      lightbox.classList.remove('active');
-      setTimeout(() => { lightboxImg.src = ''; }, 300);
-    }
-  }
-  
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      lightbox.classList.remove('active');
-    }
-  });
-
-  // Open first entry by default
-  document.addEventListener('DOMContentLoaded', () => {
-    toggleTimeline(1);
-    
-    // Attach event listeners to all timeline headers
-    document.querySelectorAll('.tl-header').forEach(header => {
-      header.addEventListener('click', function() {
-        const index = this.getAttribute('data-index');
-        toggleTimeline(index);
-      });
-    });
-  });
-</script>

@@ -1,26 +1,32 @@
 ---
 layout: base
-title: "Engineering — Michael"
-description: "Engineering case studies — platform infrastructure, async systems design, and multi-cloud architecture."
+title: "Engineering — Technical Architecture"
+description: "Technical architecture, distributed computing, and mission-critical specifications built for determinism and scale."
+permalink: /engineering/
 ---
 
 <style>
-  .hero-simple {
-    padding: 80px 0;
+  .eng-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .eng-hero {
+    padding: 90px 0 60px;
     border-bottom: 2px solid var(--border);
   }
-  .eyebrow {
+  .eng-eyebrow {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
-  .eyebrow-line {
-    width: 32px;
+  .eng-eyebrow-line {
+    width: 36px;
     height: 2px;
     background: var(--accent);
   }
-  .eyebrow-text {
+  .eng-eyebrow-text {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.2em;
@@ -28,61 +34,92 @@ description: "Engineering case studies — platform infrastructure, async system
     color: var(--accent);
     font-weight: 500;
   }
-  .page-title {
+  .eng-title {
     font-family: 'Oswald', sans-serif;
-    font-size: clamp(64px, 10vw, 120px);
+    font-size: clamp(48px, 7vw, 84px);
     font-weight: 700;
-    line-height: 0.9;
+    line-height: 0.95;
     letter-spacing: -0.02em;
     text-transform: uppercase;
     color: var(--text);
-    margin-bottom: 24px;
+    margin: 0 0 24px;
   }
-  .header-sub {
-    font-size: 20px;
-    color: var(--text-body);
+  .eng-lead {
+    font-size: 19px;
     line-height: 1.6;
-    max-width: 600px;
+    color: var(--text-body);
     font-weight: 500;
+    max-width: 760px;
+    margin: 0;
+    text-wrap: pretty;
   }
 
-  .studies-list {
-    padding: 80px 0;
+  /* ─── DOMAINS SECTION ─── */
+  .domains-section {
+    padding: 70px 0 100px;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(28px, 4vw, 36px);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .domain-list {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 28px;
   }
-  .study-card {
+  .domain-card {
     display: grid;
     grid-template-columns: 80px 1fr auto;
-    align-items: center;
     gap: 40px;
-    padding: 40px;
+    align-items: center;
+    padding: 40px 36px;
     background: var(--bg-raised);
     border: 2px solid var(--border);
-    transition: transform 0.2s, box-shadow 0.2s;
     text-decoration: none;
     color: inherit;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .study-card:hover {
+  .domain-card:hover {
     transform: translate(-4px, -4px);
     box-shadow: 8px 8px 0 var(--accent);
   }
-  .study-card:hover .study-title {
+  .card-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(40px, 5vw, 56px);
+    font-weight: 700;
+    color: var(--border-light);
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .domain-card:hover .card-num {
     color: var(--accent);
   }
-  .study-num {
-    font-family: 'Oswald', sans-serif;
-    font-size: 32px;
-    color: var(--border-light);
-    font-weight: 700;
-  }
-  .study-body {
+  .card-main {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
-  .study-tag {
+  .card-tag {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.15em;
@@ -90,25 +127,31 @@ description: "Engineering case studies — platform infrastructure, async system
     color: var(--accent);
     font-weight: 500;
   }
-  .study-title {
+  .card-title {
     font-family: 'Oswald', sans-serif;
-    font-size: clamp(24px, 3vw, 36px);
-    font-weight: 600;
+    font-size: clamp(24px, 3.5vw, 36px);
+    font-weight: 700;
     text-transform: uppercase;
-    line-height: 1.1;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--text);
     transition: color 0.2s;
   }
-  .study-desc {
-    font-size: 16px;
-    color: var(--text-body);
-    line-height: 1.6;
-    max-width: 600px;
+  .domain-card:hover .card-title {
+    color: var(--accent);
   }
-  .study-pills {
+  .card-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-body);
+    max-width: 680px;
+    text-wrap: pretty;
+  }
+  .card-pills {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    margin-top: 8px;
+    margin-top: 4px;
   }
   .pill {
     font-family: 'DM Mono', monospace;
@@ -116,110 +159,85 @@ description: "Engineering case studies — platform infrastructure, async system
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text);
-    border: 2px solid var(--border);
-    padding: 6px 12px;
+    border: 1px solid var(--border);
+    padding: 3px 8px;
     background: var(--bg);
     font-weight: 500;
   }
-  .pill.live {
-    color: var(--bg-dark);
-    border-color: var(--border);
-    background: var(--accent);
+  .card-action {
+    display: flex;
+    align-items: center;
   }
-  .study-link {
+  .action-btn {
     font-family: 'DM Mono', monospace;
     font-size: 12px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text);
-    padding: 12px 24px;
+    padding: 12px 20px;
     border: 2px solid var(--border);
     background: var(--bg);
     font-weight: 500;
     white-space: nowrap;
-    transition: all 0.2s;
+    transition: background 0.2s;
   }
-  .study-card:hover .study-link {
+  .domain-card:hover .action-btn {
     background: var(--accent);
-    border-color: var(--border);
-  }
-  .study-card.stub {
-    pointer-events: none;
-    opacity: 0.7;
-    background: var(--bg);
-  }
-  .study-card.stub:hover {
-    transform: none;
-    box-shadow: none;
-  }
-  .stub-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    background: var(--border);
-    color: var(--text-inv);
-    padding: 6px 12px;
-    align-self: flex-start;
-    font-weight: 500;
   }
 
-  @media (max-width: 768px) {
-    .study-card {
-      grid-template-columns: 1fr;
-      gap: 24px;
-      padding: 32px;
+  @media (max-width: 900px) {
+    .eng-wrap {
+      padding: 0 20px;
     }
-    .study-num { display: none; }
-    .study-link { align-self: flex-start; }
+    .domain-card {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 32px 24px;
+    }
+    .card-action {
+      justify-content: flex-start;
+    }
   }
 </style>
 
-<div class="wrap">
-  <header class="hero-simple">
-    <div class="eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">Architecture &amp; Systems</span></div>
-    <h1 class="page-title">Engineering</h1>
-    <p class="header-sub">Infrastructure decisions, systems architecture, and the tradeoffs I made in production — from server sizing to async design patterns.</p>
+<div class="eng-wrap">
+  <header class="eng-hero">
+    <div class="eng-eyebrow">
+      <span class="eng-eyebrow-line" aria-hidden="true"></span>
+      <span class="eng-eyebrow-text">Discipline</span>
+    </div>
+    <h1 class="eng-title">Engineering</h1>
+    <p class="eng-lead">
+      Technical architecture, distributed computing, and mission-critical specifications built for determinism, resilience, and balance.
+    </p>
   </header>
 
-  <div class="studies-list">
-    {% for study in site.data.engineering %}
-      {% if study.stub %}
-      <div class="study-card stub">
-      {% else %}
-      <a href="{{ study.href }}" class="study-card">
-      {% endif %}
-      
-      <span class="study-num">0{{ forloop.index }}</span>
-      <div class="study-body">
-        <p class="study-tag">{{ study.tag }}</p>
-        <h2 class="study-title">{{ study.title }}</h2>
-        <p class="study-desc">{{ study.desc }}</p>
-        
-        {% if study.pills %}
-        <div class="study-pills">
-          {% for pill in study.pills %}
-          <span class="pill {% if pill.live %}live{% endif %}">{{ pill.label }}</span>
-          {% endfor %}
+  <section class="domains-section">
+    <div class="section-header">
+      <h2 class="section-title">Domains</h2>
+      <span class="section-tag">Specifications &middot; Architecture</span>
+    </div>
+
+    <div class="domain-list">
+      <!-- 01: Fintech -->
+      <a href="/engineering/fintech/" class="domain-card">
+        <span class="card-num">01</span>
+        <div class="card-main">
+          <h3 class="card-title">Fintech</h3>
+          <p class="card-desc">
+            Four specifications covering double-entry accounting, payment intent pipelines, continuous risk profiling, and device-bound identity.
+          </p>
+          <div class="card-pills">
+            <span class="pill">01 Ledger Core</span>
+            <span class="pill">02 Payment Intent</span>
+            <span class="pill">03 Risk Engine</span>
+            <span class="pill">04 Device Identity</span>
+          </div>
         </div>
-        {% endif %}
-        
-        {% if study.stub %}
-        <span class="stub-badge">Coming soon</span>
-        {% endif %}
-      </div>
-      
-      {% if study.stub %}
-      <div class="study-link">Coming soon</div>
-      {% else %}
-      <div class="study-link">Read case study</div>
-      {% endif %}
-      
-      {% if study.stub %}
-      </div>
-      {% else %}
+        <div class="card-action">
+          <span class="action-btn">Explore &rarr;</span>
+        </div>
       </a>
-      {% endif %}
-    {% endfor %}
-  </div>
+    </div>
+  </section>
 </div>

@@ -1,27 +1,32 @@
 ---
 layout: base
-title: "Products — Michael"
-description: "Systems I've shipped — EDMS, bookkeeping, payment app, and more."
+title: "Products — Software & Tools"
+description: "Software and tools engineered to resolve complex domain workflows with simple, focused interfaces."
+permalink: /products/
 ---
 
 <style>
-  /* ─── SWISS GRID STYLES FOR PRODUCTS ─── */
-  .hero-simple {
-    padding: 80px 0;
+  .prod-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .prod-hero {
+    padding: 90px 0 60px;
     border-bottom: 2px solid var(--border);
   }
-  .eyebrow {
+  .prod-eyebrow {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
-  .eyebrow-line {
-    width: 32px;
+  .prod-eyebrow-line {
+    width: 36px;
     height: 2px;
     background: var(--accent);
   }
-  .eyebrow-text {
+  .prod-eyebrow-text {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.2em;
@@ -29,200 +34,250 @@ description: "Systems I've shipped — EDMS, bookkeeping, payment app, and more.
     color: var(--accent);
     font-weight: 500;
   }
-  .page-title {
+  .prod-title {
     font-family: 'Oswald', sans-serif;
-    font-size: clamp(64px, 10vw, 120px);
+    font-size: clamp(48px, 7vw, 84px);
     font-weight: 700;
-    line-height: 0.9;
+    line-height: 0.95;
     letter-spacing: -0.02em;
     text-transform: uppercase;
     color: var(--text);
-    margin-bottom: 24px;
+    margin: 0 0 24px;
   }
-  .header-sub {
-    font-size: 20px;
-    color: var(--text-body);
+  .prod-lead {
+    font-size: 19px;
     line-height: 1.6;
-    max-width: 600px;
+    color: var(--text-body);
     font-weight: 500;
+    max-width: 760px;
+    margin: 0;
+    text-wrap: pretty;
   }
 
-  .products-grid {
-    padding: 80px 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
+  /* ─── PRODUCTS SECTION ─── */
+  .prod-section {
+    padding: 70px 0 100px;
   }
-  
-  .shipped-card {
-    border: 2px solid var(--border);
-    background: var(--bg-raised);
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(28px, 4vw, 36px);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .prod-list {
     display: flex;
     flex-direction: column;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    gap: 28px;
   }
-  .shipped-card:hover {
+  .prod-card {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 40px;
+    align-items: center;
+    padding: 40px 36px;
+    background: var(--bg-raised);
+    border: 2px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .prod-card:hover {
     transform: translate(-4px, -4px);
     box-shadow: 8px 8px 0 var(--accent);
   }
-  .shipped-image {
-    aspect-ratio: 16/9;
-    border-bottom: 2px solid var(--border);
-    background: var(--border);
-    position: relative;
-    overflow: hidden;
+  .card-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(40px, 5vw, 56px);
+    font-weight: 700;
+    color: var(--border-light);
+    line-height: 1;
+    transition: color 0.2s;
   }
-  .shipped-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: grayscale(100%);
+  .prod-card:hover .card-num {
+    color: var(--accent);
   }
-  .shipped-body {
-    padding: 32px;
+  .card-main {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
-  .shipped-tag {
+  .card-tag {
     font-family: 'DM Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--accent);
-    margin-bottom: 12px;
     font-weight: 500;
   }
-  .shipped-title {
+  .card-title {
     font-family: 'Oswald', sans-serif;
-    font-size: 24px;
+    font-size: clamp(24px, 3.5vw, 36px);
+    font-weight: 700;
     text-transform: uppercase;
-    line-height: 1.1;
-    margin-bottom: 16px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    transition: color 0.2s;
   }
-  .shipped-desc {
+  .prod-card:hover .card-title {
+    color: var(--accent);
+  }
+  .card-desc {
     font-size: 15px;
+    line-height: 1.6;
     color: var(--text-body);
+    max-width: 680px;
+    text-wrap: pretty;
   }
-
-  /* ─── MODAL ─── */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(17,17,17,0.8);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.2s ease;
+  .card-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
   }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal-box {
+  .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
     background: var(--bg);
-    border: 4px solid var(--border);
-    max-width: 900px; width: 100%;
-    position: relative;
-    transform: translateY(20px);
-    transition: transform 0.2s ease;
-    box-shadow: 12px 12px 0 var(--accent);
+    font-weight: 500;
   }
-  .modal-overlay.open .modal-box { transform: translateY(0); }
-  .modal-close {
-    position: absolute; top: -20px; right: -20px;
-    width: 48px; height: 48px;
-    background: var(--accent);
+  .card-action {
+    display: flex;
+    align-items: center;
+  }
+  .action-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    padding: 12px 20px;
     border: 2px solid var(--border);
-    font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    z-index: 10;
+    background: var(--bg);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.2s;
   }
-  .modal-split { display: flex; flex-direction: column; }
-  .modal-visual { aspect-ratio: 16/9; border-bottom: 2px solid var(--border); background: var(--border); position: relative; }
-  .modal-body { padding: 40px; }
-  .modal-tag { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent); font-weight: 500; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
-  .modal-title { font-family: 'Oswald', sans-serif; font-size: 32px; text-transform: uppercase; margin-bottom: 16px; }
-  .modal-desc { font-size: 16px; line-height: 1.6; }
-  .modal-desc ul { margin-top: 16px; list-style: none; padding: 0; }
-  .modal-desc li { position: relative; padding-left: 20px; margin-bottom: 8px; }
-  .modal-desc li::before { content: '>'; position: absolute; left: 0; color: var(--accent); font-weight: 700; font-family: 'DM Mono', monospace; }
+  .prod-card:hover .action-btn {
+    background: var(--accent);
+  }
 
   @media (max-width: 900px) {
-    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
-  }
-  @media (max-width: 600px) {
-    .products-grid { grid-template-columns: 1fr; }
+    .prod-wrap {
+      padding: 0 20px;
+    }
+    .prod-card {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 32px 24px;
+    }
+    .card-action {
+      justify-content: flex-start;
+    }
   }
 </style>
 
-<div class="wrap">
-  <header class="hero-simple">
-    <div class="eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">Shipped</span></div>
-    <h1 class="page-title">Systems I've<br>Built</h1>
-    <p class="header-sub">Six systems taken from brief through to production. Click any system to see a quick overview.</p>
+<div class="prod-wrap">
+  <header class="prod-hero">
+    <div class="prod-eyebrow">
+      <span class="prod-eyebrow-line" aria-hidden="true"></span>
+      <span class="prod-eyebrow-text">Discipline</span>
+    </div>
+    <h1 class="prod-title">Products</h1>
+    <p class="prod-lead">
+      Software and tools engineered to resolve complex domain workflows with simple, focused interfaces.
+    </p>
   </header>
 
-  <div class="products-grid">
-    {% for product in site.data.products %}
-    <div class="shipped-card" data-product="{{ product.id }}">
-      <div class="shipped-image"><img src="/images/{{ product.img | replace: '[', '%5B' | replace: ']', '%5D' }}" alt="" /></div>
-      <div class="shipped-body">
-        <p class="shipped-tag">{{ product.tag }}</p>
-        <h2 class="shipped-title">{{ product.title }}</h2>
-        <p class="shipped-desc">{{ product.desc }}</p>
+  <section class="prod-section">
+    <div class="section-header">
+      <h2 class="section-title">Software</h2>
+      <span class="section-tag">Applications &middot; Production</span>
+    </div>
+
+    <div class="prod-list">
+      <!-- 01: Business OS -->
+      <div class="prod-card">
+        <span class="card-num">01</span>
+        <div class="card-main">
+          <span class="card-tag">Accounting & Operations</span>
+          <h3 class="card-title">Business OS</h3>
+          <p class="card-desc">
+            Translates real-world commercial activities into structured double-entry accounting records automatically, removing accounting complexity for small business operators.
+          </p>
+          <div class="card-pills">
+            <span class="pill">Activity Translation</span>
+            <span class="pill">Double-Entry</span>
+            <span class="pill">Compliance</span>
+          </div>
+        </div>
+        <div class="card-action">
+          <span class="action-btn">Case study coming soon</span>
+        </div>
+      </div>
+
+      <!-- 02: NUC EDMS -->
+      <div class="prod-card">
+        <span class="card-num">02</span>
+        <div class="card-main">
+          <span class="card-tag">Enterprise Workflows</span>
+          <h3 class="card-title">Electronic Document Management</h3>
+          <p class="card-desc">
+            Document routing and multi-stakeholder approval workflows built for university administration, featuring conditional branching, threshold approvals, and immutable audit logs.
+          </p>
+          <div class="card-pills">
+            <span class="pill">Approval Routing</span>
+            <span class="pill">Multi-Tenant</span>
+            <span class="pill">Audit Trail</span>
+          </div>
+        </div>
+        <div class="card-action">
+          <span class="action-btn">Case study coming soon</span>
+        </div>
+      </div>
+
+      <!-- 03: HSE Incident Tracking -->
+      <div class="prod-card">
+        <span class="card-num">03</span>
+        <div class="card-main">
+          <span class="card-tag">Industrial Safety</span>
+          <h3 class="card-title">HSE Incident Tracking</h3>
+          <p class="card-desc">
+            Rapid field hazard capture, automated severity-based escalation, and corrective action workflows designed for high-stakes operational compliance.
+          </p>
+          <div class="card-pills">
+            <span class="pill">Hazard Logging</span>
+            <span class="pill">Escalation Routing</span>
+            <span class="pill">Regulatory Closeout</span>
+          </div>
+        </div>
+        <div class="card-action">
+          <span class="action-btn">Case study coming soon</span>
+        </div>
       </div>
     </div>
-    {% endfor %}
-  </div>
+  </section>
 </div>
-
-<!-- MODAL -->
-<div id="product-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal-box">
-    <button class="modal-close" id="modal-close" aria-label="Close">X</button>
-    <div class="modal-split">
-      <div class="modal-visual" id="modal-visual"></div>
-      <div class="modal-body">
-        <p class="modal-tag" id="modal-tag"></p>
-        <h2 class="modal-title" id="modal-title"></h2>
-        <div class="modal-desc" id="modal-desc"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  const products = {
-    {% for product in site.data.products %}
-    '{{ product.id }}': {
-      tag: {{ product.tag | jsonify }},
-      title: {{ product.title | jsonify }},
-      desc: {{ product.desc | jsonify }},
-      bullets: {{ product.bullets | jsonify }},
-      img: '/images/{{ product.img | replace: "[", "%5B" | replace: "]", "%5D" }}'
-    }{% unless forloop.last %},{% endunless %}
-    {% endfor %}
-  };
-
-  const modal   = document.getElementById('product-modal');
-  const closeBtn = document.getElementById('modal-close');
-  const modalVis = document.getElementById('modal-visual');
-
-  document.querySelectorAll('.shipped-card[data-product]').forEach(card => {
-    card.addEventListener('click', () => {
-      const p = products[card.dataset.product];
-      if (!p) return;
-      document.getElementById('modal-tag').textContent   = p.tag;
-      document.getElementById('modal-title').textContent = p.title;
-      let descHtml = `<p>${p.desc}</p>`;
-      if (p.bullets && p.bullets.length > 0) {
-        descHtml += `<ul>${p.bullets.map(b => `<li>${b}</li>`).join('')}</ul>`;
-      }
-      document.getElementById('modal-desc').innerHTML = descHtml;
-      modalVis.innerHTML = `<img src="${p.img}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" />`;
-      modal.setAttribute('aria-hidden', 'false');
-      modal.classList.add('open');
-    });
-  });
-  closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-  function closeModal() { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); }
-</script>

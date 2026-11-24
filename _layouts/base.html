@@ -19,11 +19,270 @@
 {{ content }}
 
 <footer>
-  <div class="wrap" style="display: flex; justify-content: space-between; width: 100%;">
-    <span class="footer-name">Michael — Technical Product Operator</span>
-    <span class="footer-host">Built on Jekyll · Hosted on GitHub Pages</span>
+  <div class="wrap footer-inner">
+    <span class="footer-name">Michael Ikirodah</span>
+    <div class="footer-links">
+      <a href="https://github.com/clrzr" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:contact@clrzr.com">Contact</a>
+    </div>
   </div>
 </footer>
+
+<div id="diagram-modal" class="diagram-modal" aria-hidden="true">
+  <div class="diagram-modal-backdrop" id="modal-backdrop"></div>
+  <div class="diagram-modal-header">
+    <div class="diagram-modal-controls">
+      <button class="diagram-modal-btn" id="modal-zoom-in" title="Zoom In (+)">+</button>
+      <button class="diagram-modal-btn" id="modal-zoom-out" title="Zoom Out (−)">−</button>
+      <button class="diagram-modal-btn" id="modal-zoom-reset" title="Reset (0)">100%</button>
+      <span class="diagram-modal-hint">Drag to pan • Scroll to zoom • Esc to close</span>
+    </div>
+    <button class="diagram-modal-close" id="modal-close" title="Close (Esc)">✕</button>
+  </div>
+  <div class="diagram-modal-viewport" id="modal-viewport">
+    <div class="diagram-modal-canvas" id="modal-canvas"></div>
+  </div>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: 'loose',
+    theme: 'neutral',
+    themeVariables: {
+      fontFamily: 'DM Mono, monospace',
+      fontSize: '13px',
+      primaryColor: '#ffffff',
+      primaryTextColor: '#111111',
+      primaryBorderColor: '#111111',
+      lineColor: '#111111',
+      secondaryColor: '#f7f5f0',
+      tertiaryColor: '#ffffff',
+      nodeBorder: '#111111',
+      clusterBkg: '#ffffff',
+      clusterBorder: '#111111',
+      defaultLinkColor: '#111111',
+      titleColor: '#111111',
+      edgeLabelBackground: '#ffffff'
+    }
+  });
+
+  /* ── Diagram Focus & Pan/Zoom Lightbox ── */
+  let activeScale = 1.0;
+  let activePosX = 0;
+  let activePosY = 0;
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let initialFitScale = 1.0;
+
+  const modal = document.getElementById('diagram-modal');
+  const viewport = document.getElementById('modal-viewport');
+  const canvas = document.getElementById('modal-canvas');
+  const resetBtn = document.getElementById('modal-zoom-reset');
+
+  function updateTransform() {
+    canvas.style.transform = `translate(${activePosX}px, ${activePosY}px) scale(${activeScale})`;
+    if (resetBtn) resetBtn.textContent = `${Math.round(activeScale * 100)}%`;
+  }
+
+  function zoomAt(clientX, clientY, factor) {
+    const vRect = viewport.getBoundingClientRect();
+    const cursorX = clientX - vRect.left;
+    const cursorY = clientY - vRect.top;
+    const newScale = Math.min(Math.max(0.2, activeScale * factor), 5.0);
+    
+    activePosX = cursorX - (cursorX - activePosX) * (newScale / activeScale);
+    activePosY = cursorY - (cursorY - activePosY) * (newScale / activeScale);
+    activeScale = newScale;
+    updateTransform();
+  }
+
+  function zoomAtCenter(factor) {
+    const vRect = viewport.getBoundingClientRect();
+    zoomAt(vRect.left + vRect.width / 2, vRect.top + vRect.height / 2, factor);
+  }
+
+  function openDiagramModal(svg) {
+    canvas.innerHTML = '';
+    const clone = svg.cloneNode(true);
+
+    // Compute intrinsic SVG dimensions from viewBox or bounding box
+    const vb = svg.viewBox ? svg.viewBox.baseVal : null;
+    let w = (vb && vb.width > 0) ? vb.width : svg.getBoundingClientRect().width;
+    let h = (vb && vb.height > 0) ? vb.height : svg.getBoundingClientRect().height;
+    if (!w || w < 100) w = 800;
+    if (!h || h < 100) h = 500;
+
+    clone.setAttribute('width', w);
+    clone.setAttribute('height', h);
+    clone.style.width = w + 'px';
+    clone.style.height = h + 'px';
+    clone.style.maxWidth = 'none';
+    clone.style.maxHeight = 'none';
+    clone.style.display = 'block';
+
+    canvas.appendChild(clone);
+
+    modal.classList.add('is-active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    requestAnimationFrame(() => {
+      const vWidth = viewport.clientWidth;
+      const vHeight = viewport.clientHeight;
+      const cWidth = canvas.offsetWidth;
+      const cHeight = canvas.offsetHeight;
+
+      const scaleX = (vWidth - 80) / cWidth;
+      const scaleY = (vHeight - 80) / cHeight;
+      initialFitScale = Math.min(scaleX, scaleY, 1.0);
+      if (initialFitScale < 0.25) initialFitScale = 0.25;
+
+      activeScale = initialFitScale;
+      activePosX = (vWidth - cWidth * activeScale) / 2;
+      activePosY = (vHeight - cHeight * activeScale) / 2;
+      updateTransform();
+    });
+  }
+
+  function closeDiagramModal() {
+    modal.classList.remove('is-active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    canvas.innerHTML = '';
+  }
+
+  viewport.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('button')) return;
+    isDragging = true;
+    dragStartX = e.clientX - activePosX;
+    dragStartY = e.clientY - activePosY;
+    viewport.classList.add('is-dragging');
+    try { viewport.setPointerCapture(e.pointerId); } catch(_) {}
+  });
+
+  viewport.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    activePosX = e.clientX - dragStartX;
+    activePosY = e.clientY - dragStartY;
+    updateTransform();
+  });
+
+  const stopDrag = (e) => {
+    if (isDragging) {
+      isDragging = false;
+      viewport.classList.remove('is-dragging');
+      try { viewport.releasePointerCapture(e.pointerId); } catch(_) {}
+    }
+  };
+
+  viewport.addEventListener('pointerup', stopDrag);
+  viewport.addEventListener('pointercancel', stopDrag);
+
+  viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.15 : 0.87;
+    zoomAt(e.clientX, e.clientY, factor);
+  }, { passive: false });
+
+  document.getElementById('modal-zoom-in').addEventListener('click', () => zoomAtCenter(1.25));
+  document.getElementById('modal-zoom-out').addEventListener('click', () => zoomAtCenter(0.8));
+  document.getElementById('modal-zoom-reset').addEventListener('click', () => {
+    const vWidth = viewport.clientWidth;
+    const vHeight = viewport.clientHeight;
+    const cWidth = canvas.offsetWidth;
+    const cHeight = canvas.offsetHeight;
+    activeScale = initialFitScale;
+    activePosX = (vWidth - cWidth * activeScale) / 2;
+    activePosY = (vHeight - cHeight * activeScale) / 2;
+    updateTransform();
+  });
+  document.getElementById('modal-close').addEventListener('click', closeDiagramModal);
+  document.getElementById('modal-backdrop').addEventListener('click', closeDiagramModal);
+
+  document.addEventListener('keydown', (e) => {
+    if (!modal.classList.contains('is-active')) return;
+    if (e.key === 'Escape') closeDiagramModal();
+    if (e.key === '+' || e.key === '=') zoomAtCenter(1.25);
+    if (e.key === '-' || e.key === '_') zoomAtCenter(0.8);
+    if (e.key === '0') {
+      const vWidth = viewport.clientWidth;
+      const vHeight = viewport.clientHeight;
+      const cWidth = canvas.offsetWidth;
+      const cHeight = canvas.offsetHeight;
+      activeScale = initialFitScale;
+      activePosX = (vWidth - cWidth * activeScale) / 2;
+      activePosY = (vHeight - cHeight * activeScale) / 2;
+      updateTransform();
+    }
+  });
+
+  async function initMermaid() {
+    const codeBlocks = document.querySelectorAll('pre code.language-mermaid, pre.language-mermaid code, pre code.mermaid, pre.mermaid-block code');
+    if (codeBlocks.length === 0) return;
+    
+    codeBlocks.forEach(code => {
+      const pre = code.closest('pre');
+      const div = document.createElement('div');
+      div.className = 'mermaid-block';
+      div.style.margin = '32px 0';
+      div.style.padding = '24px';
+      div.style.background = 'var(--bg-raised, #ffffff)';
+      div.style.border = '2px solid var(--border, #111111)';
+      div.style.overflowX = 'auto';
+      div.style.textAlign = 'center';
+      
+      const mermaidDiv = document.createElement('div');
+      mermaidDiv.className = 'mermaid';
+      mermaidDiv.textContent = code.textContent.trim();
+      div.appendChild(mermaidDiv);
+      pre.replaceWith(div);
+    });
+
+    try {
+      await mermaid.run();
+
+      document.querySelectorAll('.mermaid-block').forEach(block => {
+        const hint = document.createElement('div');
+        hint.className = 'diagram-expand-hint';
+        hint.innerHTML = `<svg viewBox="0 0 24 24"><path d="M15 3h6v6h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H15V3zM3 9V3h6v2H6.41l4.3 4.29-1.42 1.42L5 6.41V9H3zm12 12h6v-6h-2v2.59l-4.29-4.3-1.42 1.42L17.59 19H15v2zM9 21v-2H6.41l4.3-4.29-1.42-1.42L5 17.59V15H3v6h6z"/></svg> Expand / Zoom`;
+        block.appendChild(hint);
+
+        block.addEventListener('click', () => {
+          const svg = block.querySelector('svg');
+          if (svg) openDiagramModal(svg);
+        });
+      });
+    } catch (err) {
+      console.error('Mermaid rendering error:', err);
+    }
+  }
+
+  function wrapTables() {
+    document.querySelectorAll('.system-content table').forEach(table => {
+      if (!table.parentElement.classList.contains('table-wrap')) {
+        const wrap = document.createElement('div');
+        wrap.className = 'table-wrap';
+        table.parentNode.insertBefore(wrap, table);
+        wrap.appendChild(table);
+      }
+    });
+  }
+
+  function initPage() {
+    wrapTables();
+    initMermaid();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPage);
+  } else {
+    initPage();
+  }
+</script>
 
 </body>
 </html>

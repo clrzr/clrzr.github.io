@@ -1,0 +1,349 @@
+---
+layout: base
+title: "Fintech — Technical Architecture"
+description: "Specifications for double-entry ledgers, payment intent pipelines, continuous risk engines, and identity boundaries."
+permalink: /engineering/fintech/
+---
+
+<style>
+  /* ─── DOMAIN LANDING HERO ─── */
+  .domain-hero {
+    padding: 80px 0 32px;
+  }
+  .domain-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .domain-eyebrow-line {
+    width: 36px;
+    height: 2px;
+    background: var(--accent);
+  }
+  .domain-eyebrow-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .domain-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(48px, 7vw, 84px);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin: 0 0 20px;
+  }
+  .domain-lead {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--text-body);
+    font-weight: 500;
+    max-width: 780px;
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ─── LIFECYCLE FLOW ─── */
+  .lifecycle-section {
+    padding: 16px 0 56px;
+  }
+  .lifecycle-header {
+    margin-bottom: 24px;
+  }
+  .lifecycle-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .lifecycle-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(24px, 3.5vw, 32px);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 0;
+  }
+
+  /* ─── SPECIFICATIONS SECTION ─── */
+  .specs-section {
+    padding: 48px 0 100px;
+    border-top: 2px solid var(--border);
+  }
+  .specs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 36px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .specs-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .specs-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .specs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .spec-card {
+    display: grid;
+    grid-template-columns: 70px 1fr auto;
+    gap: 36px;
+    align-items: center;
+    padding: 36px 32px;
+    background: var(--bg-raised);
+    border: 2px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .spec-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--accent);
+  }
+  .spec-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(36px, 4vw, 48px);
+    font-weight: 700;
+    color: var(--border-light);
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .spec-card:hover .spec-num {
+    color: var(--accent);
+  }
+  .spec-main {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .spec-tag-line {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .spec-heading {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    transition: color 0.2s;
+  }
+  .spec-card:hover .spec-heading {
+    color: var(--accent);
+  }
+  .spec-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-body);
+    max-width: 680px;
+    text-wrap: pretty;
+  }
+  .spec-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    background: var(--bg);
+    font-weight: 500;
+  }
+
+  .spec-action {
+    display: flex;
+    align-items: center;
+  }
+  .action-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    padding: 12px 20px;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .spec-card:hover .action-btn {
+    background: var(--accent);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .spec-card {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 32px 24px;
+    }
+    .spec-action {
+      justify-content: flex-start;
+    }
+  }
+</style>
+
+<div class="wrap">
+  <!-- DOMAIN HERO: THE GOAL -->
+  <header class="domain-hero">
+    <div class="domain-eyebrow">
+      <span class="domain-eyebrow-line" aria-hidden="true"></span>
+      <span class="domain-eyebrow-text"><a href="/engineering/" style="color: inherit; text-decoration: none; border-bottom: 1px solid var(--accent); padding-bottom: 2px;">Engineering</a> / Fintech</span>
+    </div>
+    <h1 class="domain-title">Fintech</h1>
+    <p class="domain-lead">
+      A payment moves in milliseconds, never double-charges, isolates credentials from exposure, and settles to zero-sum balance. Achieving this requires four coordinated boundaries.
+    </p>
+  </header>
+
+  <!-- THE FLOW: TRANSACTION LIFECYCLE -->
+  <section class="lifecycle-section">
+    <div class="lifecycle-header">
+      <span class="lifecycle-tag">Transaction Flow</span>
+      <h2 class="lifecycle-title">Lifecycle &amp; Boundaries</h2>
+    </div>
+
+<pre><code class="language-mermaid">flowchart LR
+    ID["04. Device Boundary & Identity\n(Cryptographic Proof)"]
+    INT["02. Payment Intent\n(Idempotent Binding)"]
+    RSK["03. Risk Engine\n(In-Memory Gate)"]
+    LEDG["01. Ledger Core\n(Two-Phase Hold & Commit)"]
+
+    ID -->|"Signed Token"| INT
+    INT -->|"Pre-Flight Eval"| RSK
+    RSK -->|"Pass (sub-25ms)"| LEDG
+    RSK -->|"Reject"| REJ["Execution Aborted\nZero Balance Drift"]
+    LEDG --> SETTL["Settled\nAudited Zero-Sum"]
+</code></pre>
+  </section>
+
+  <!-- SPECIFICATIONS: WHAT IT TOOK TO GET IT -->
+  <section class="specs-section">
+    <div class="specs-header">
+      <h2 class="specs-title">Specifications</h2>
+      <span class="specs-tag">4 Documents</span>
+    </div>
+
+    <div class="specs-list">
+      <!-- 01: A Ledger's Core Model -->
+      <a href="/engineering/fintech/ledger/" class="spec-card">
+        <span class="spec-num">01</span>
+        <div class="spec-main">
+          <h3 class="spec-heading">A Ledger's Core Model</h3>
+          <p class="spec-desc">
+            Tracking ownership and movement of money across pooled accounts, double-entry zero-sum equilibrium, universal hold clearing, and deterministic state recovery.
+          </p>
+          <div class="spec-pills">
+            <span class="pill">Double-Entry Balancing</span>
+            <span class="pill">Hold &amp; Settle</span>
+            <span class="pill">Universal Clearing</span>
+            <span class="pill">Deterministic Recovery</span>
+          </div>
+        </div>
+        <div class="spec-action">
+          <span class="action-btn">Read &rarr;</span>
+        </div>
+      </a>
+
+      <!-- 02: Payment Intent Architecture -->
+      <a href="/engineering/fintech/payments/" class="spec-card">
+        <span class="spec-num">02</span>
+        <div class="spec-main">
+          <h3 class="spec-heading">Payment Intent Architecture</h3>
+          <p class="spec-desc">
+            Decoupling intent declaration from payment rails. Enforcing destination binding prior to amount commitment, parallel pre-validation, and canonical idempotency keys.
+          </p>
+          <div class="spec-pills">
+            <span class="pill">Intent Separation</span>
+            <span class="pill">Parallel Validation</span>
+            <span class="pill">Canonical Idempotency</span>
+            <span class="pill">Rail Decoupling</span>
+          </div>
+        </div>
+        <div class="spec-action">
+          <span class="action-btn">Read &rarr;</span>
+        </div>
+      </a>
+
+      <!-- 03: Continuous Signal Risk Engine -->
+      <a href="/engineering/fintech/fraud/" class="spec-card">
+        <span class="spec-num">03</span>
+        <div class="spec-main">
+          <h3 class="spec-heading">Continuous Signal Risk Engine</h3>
+          <p class="spec-desc">
+            Decoupling fraud evaluation from transaction latency. Asynchronous behavioral signal aggregation, kinematic delta-velocity detection, and real-time risk profile caching.
+          </p>
+          <div class="spec-pills">
+            <span class="pill">Asynchronous Pipeline</span>
+            <span class="pill">Kinematic Velocity</span>
+            <span class="pill">Memory Cache</span>
+            <span class="pill">Zero Cold-Path Latency</span>
+          </div>
+        </div>
+        <div class="spec-action">
+          <span class="action-btn">Read &rarr;</span>
+        </div>
+      </a>
+
+      <!-- 04: Device Boundary & Identity Engine -->
+      <a href="/engineering/fintech/kyc/" class="spec-card">
+        <span class="spec-num">04</span>
+        <div class="spec-main">
+          <h3 class="spec-heading">Device Boundary &amp; Identity Engine</h3>
+          <p class="spec-desc">
+            Decoupling onboarding from third-party verification outages. Multi-provider automated failover, blind-index HMAC data containment, and single-device session invalidation.
+          </p>
+          <div class="spec-pills">
+            <span class="pill">Single-Device Boundary</span>
+            <span class="pill">Decoupled Verification</span>
+            <span class="pill">Blind Index HMAC</span>
+            <span class="pill">Active Session Revocation</span>
+          </div>
+        </div>
+        <div class="spec-action">
+          <span class="action-btn">Read &rarr;</span>
+        </div>
+      </a>
+    </div>
+  </section>
+</div>

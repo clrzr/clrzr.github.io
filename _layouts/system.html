@@ -1,0 +1,182 @@
+---
+layout: base
+---
+<link rel="stylesheet" href="/css/case-study.css">
+<style>
+  .system-spec-wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .system-hero {
+    padding: 80px 0 60px;
+    border-bottom: 2px solid var(--border);
+  }
+  .system-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(48px, 8vw, 88px);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 24px;
+    text-wrap: balance;
+  }
+  .system-subtitle {
+    font-size: 20px;
+    color: var(--text-body);
+    line-height: 1.6;
+    max-width: 780px;
+    margin-bottom: 32px;
+    font-weight: 500;
+    text-wrap: pretty;
+  }
+  .system-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 60px 0 100px;
+  }
+  .system-content {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--text-body);
+  }
+  .system-content h1,
+  .system-content h2,
+  .system-content h3,
+  .system-content h4 {
+    color: var(--text);
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin-top: 56px;
+    margin-bottom: 20px;
+    line-height: 1.15;
+  }
+  .system-content h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(48px, 8vw, 88px);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--text);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 20px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    text-wrap: balance;
+  }
+  .system-content h2 { font-size: 30px; border-bottom: 1px solid var(--border-light); padding-bottom: 12px; }
+  .system-content h3 { font-size: 22px; }
+  .system-content h4 { font-size: 18px; color: var(--accent); }
+  .system-content p { margin-bottom: 24px; text-wrap: pretty; }
+  .system-content ul, .system-content ol {
+    margin-bottom: 24px;
+    padding-left: 24px;
+  }
+  .system-content li {
+    margin-bottom: 8px;
+    line-height: 1.65;
+  }
+  .system-content blockquote {
+    border-left: 4px solid var(--accent);
+    background: var(--bg-raised);
+    padding: 20px 24px;
+    margin: 32px 0;
+    border-radius: 0;
+    border-top: 1px solid var(--border-light);
+    border-right: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+  }
+  .system-content blockquote p:last-child {
+    margin-bottom: 0;
+  }
+  .system-content pre {
+    background: var(--bg-dark);
+    color: var(--text-inv);
+    padding: 20px 24px;
+    border: 2px solid var(--border);
+    overflow-x: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 32px 0;
+  }
+  .system-content code {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-light);
+    padding: 2px 6px;
+  }
+  .system-content pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+  }
+  .system-content hr {
+    border: none;
+    border-top: 1px solid var(--border-light);
+    margin: 64px 0;
+  }
+
+  @media (max-width: 768px) {
+    .system-spec-wrap { padding: 0 20px; }
+    .system-hero { padding: 60px 0 40px; }
+    .system-title { font-size: clamp(36px, 10vw, 56px); }
+  }
+</style>
+
+<div class="system-spec-wrap">
+  {% if page.headline %}
+  <header class="system-hero">
+    <div class="eyebrow">
+      <span class="eyebrow-line" aria-hidden="true"></span>
+      <span class="eyebrow-text">
+        {% if page.eyebrow contains "Fintech" or page.eyebrow contains "Financial Infrastructure" %}
+          <a href="/engineering/" style="color: inherit; text-decoration: none; border-bottom: 1px solid var(--accent); padding-bottom: 2px;">Engineering</a> / <a href="/engineering/fintech/" style="color: inherit; text-decoration: none; border-bottom: 1px solid var(--accent); padding-bottom: 2px;">Fintech</a> &middot; Specification
+        {% else %}
+          {{ page.eyebrow | default: "Specification" }}
+        {% endif %}
+      </span>
+    </div>
+    <h1 class="system-title">{{ page.headline }}</h1>
+    {% if page.subtitle %}
+    <p class="system-subtitle">{{ page.subtitle }}</p>
+    {% endif %}
+    <div class="pills">
+      {% for pill in page.pills %}
+      <span class="pill {% if pill.live %}live{% endif %}">{{ pill.label }}</span>
+      {% endfor %}
+    </div>
+  </header>
+  {% endif %}
+
+  <main class="system-layout">
+    <article class="system-content">
+      {{ content }}
+    </article>
+  </main>
+
+  <nav class="case-nav" aria-label="Specification navigation">
+    {% if page.nav_prev %}
+    <a href="{{ page.nav_prev.href }}" class="cnl">
+      <span class="cnd">&larr; {{ page.nav_prev.direction | default: "Previous" }}</span>
+      <span class="cnt">{{ page.nav_prev.label }}</span>
+    </a>
+    {% endif %}
+    <a href="/engineering/fintech/" class="cnl" style="align-items: center; text-align: center;">
+      <span class="cnd">Overview</span>
+      <span class="cnt" style="font-size: 20px;">Fintech</span>
+    </a>
+    {% if page.nav_next %}
+    <a href="{{ page.nav_next.href }}" class="cnl next">
+      <span class="cnd">{{ page.nav_next.direction | default: "Next" }} &rarr;</span>
+      <span class="cnt">{{ page.nav_next.label }}</span>
+    </a>
+    {% endif %}
+  </nav>
+</div>

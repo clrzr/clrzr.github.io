@@ -1,66 +1,153 @@
 ---
-layout: case-study
-title: "Fraud Management System — Case Study"
-description: "How I built a fraud system that watches continuously in the background, so the risk score is already there by the time a transaction reaches execution."
-eyebrow: "Case Study · Fraud Prevention · Risk Systems"
-headline: "Fraud Management"
-headline_em: "System"
+layout: system
+title: "Continuous Signal Risk Engine"
+headline: "Continuous Signal Risk Engine"
+subtitle: "Out-of-band behavioral signal aggregation, kinematic delta-velocity evaluation, and real-time risk caching for zero-latency transaction gating."
+eyebrow: "Fintech · Specification"
+permalink: /engineering/fintech/fraud/
 pills:
-  - label: "Production"
+  - label: "Specification"
     live: true
-  - label: "Continuous risk profiling"
-  - label: "GPS velocity detection"
-  - label: "Async signal pipeline"
-decisions:
-  - title: "Fraud service async — never on the critical path"
-    detail: "Synchronous fraud checks add latency to every transaction. Running continuously in the background means execution is a cache lookup, not a computation."
-  - title: "Cached score as primary path, live fallback if cold"
-    detail: "Fast by default. If the cache is cold, a direct call to the fraud service is the fallback. Either way, the payment system honours the result without override."
-  - title: "Profile recalculated on every signal, not on request"
-    detail: "Every incoming signal updates the profile and emits a new score downstream. Dependent services always have the most current view."
-  - title: "Velocity check on location delta, not location alone"
-    detail: "Distance without time is meaningless. The check is whether the distance is physically possible given elapsed time — targeting compromise, not travel."
+  - label: "Asynchronous Pipeline"
+  - label: "Kinematic Velocity"
+  - label: "Zero-Latency Gating"
 nav_prev:
-  href: "/"
-  direction: "Back"
-  label: "All Work"
-nav_next:
-  href: "/payments/"
+  href: "/engineering/fintech/payments/"
   label: "Payment Intent Architecture"
+nav_next:
+  href: "/engineering/fintech/kyc/"
+  label: "Device Boundary & Identity Engine"
 ---
 
-## What I was trying to fix
+## 1. The Problem
 
-The approach I inherited was a checkpoint model: at the moment a user tried to do something, the system checked a static list and either let them through or blocked them. It was reactive, narrow, and had a fundamental weakness — it only knew what it had been explicitly told to look for. A novel attack pattern that didn't match any existing rule passed straight through.
+Traditional fraud prevention architectures rely almost exclusively on **synchronous checkpoint inspection**. At the precise moment a user attempts an action (e.g., checkout or funds transfer), execution halts while a monolithic rule engine evaluates the transaction against static parameters.
 
-The second problem was timing. By the time a user reached a payment execution checkpoint, the system was seeing that action in isolation. It had no record of the login five minutes earlier, the location the intent was created from, or the device shift in between. It was making a binary decision with almost no context about what had led to that moment.
+This checkpoint pattern suffers from severe structural flaws:
+1. **The Latency Trap:** Complex behavioral heuristics, IP geolocation lookups, device fingerprint cross-referencing, and graph traversal take hundreds of milliseconds. Placing this processing directly on the critical execution path degrades user conversion and increases checkout failure rates.
+2. **Context Isolation:** A checkpoint evaluates the transaction in isolation. It lacks visibility into pre-transaction behavior: the speed of navigation, the geographic trajectory of previous API calls, or subtle session shifts occurring minutes prior to payment.
+3. **Stateless Blindness:** Static rule lists cannot detect zero-day account takeovers where valid credentials are submitted from a novel, remote execution environment.
 
-## The question I reframed
+The Continuous Signal Risk Engine resolves these issues by **decoupling signal observation from transaction gating**. Risk evaluation is an asynchronous, ongoing background process that continuously maintains an up-to-date materialized risk profile in hot memory.
 
-I reframed what the system needed to ask. Instead of *is this transaction suspicious?* the question became: *is this transaction suspicious for this user, right now, given everything we know about them?*
+---
 
-That shift — from static rules to contextual understanding — changed everything about the architecture. If the system needed to evaluate actions in context, it had to be continuously building a picture of who the user was. Their patterns. Their behaviours. Their normal. And that picture had to update at every meaningful action, not just at payment time.
+## 2. Architecture of the Signal Pipeline
 
-> The fraud system is not a checkpoint. It is a continuously running background process that happens to inform checkpoints.
+The pipeline treats every operational event across the platform as an immutable signal. Telemetry is emitted out-of-band, ingested by an event bus, and aggregated into an active entity profile.
 
-## What I built
+```mermaid
+flowchart TD
+    subgraph EmittingSources["Operational Services (Non-Blocking)"]
+        S1["Auth Service
+(Login, Biometric, MFA)"]
+        S2["Device Telemetry
+(Fingerprint, OS, Network)"]
+        S3["Payment Service
+(Intent Init, Amount, Currency)"]
+    end
 
-Every meaningful action in the system emits a signal to the fraud service — not the raw data, but the signal. The fact of what happened, when, and the context around it. A user logs in: timestamp, device identifier, location. A user initiates a payment: intent creation and location at that moment. A user confirms a transaction: location again, at confirmation.
+    subgraph Ingestion["Signal Pipeline (Out-of-Band)"]
+        EB["Event Stream / Ingestion Bus
+(Kafka / Event Queue)"]
+        PE["Stateful Profiling Engine
+(Rolling Aggregate Windows)"]
+        VE["Kinematic Velocity Engine
+(Spatiotemporal Delta Checks)"]
+    end
 
-None of this puts the fraud service on the critical path of those actions. It receives signals asynchronously, processes them, and updates the user's risk profile in the background. As signals arrive, the profile recalculates in real time. The service doesn't wait to be asked — it emits the updated score downstream the moment a profile changes. The payment service receives it and caches it.
+    subgraph Serving["Low-Latency Serving Layer"]
+        RC[("Real-Time Risk Cache
+(Redis Cluster / In-Memory Store)
+Key: user_id | score, flags, ttl")]
+    end
 
-By the time a transaction reaches execution, the fraud service has already been watching. The risk score the payment system consults is not computed at the moment of execution. It's the result of everything that happened before.
+    subgraph ExecutionPath["Transaction Critical Path (O(1))"]
+        TX["Transaction Execution Gate
+(Intent Execution Route)"]
+    end
 
-## The GPS velocity check
+    S1 -.->|"Async Signal"| EB
+    S2 -.->|"Async Signal"| EB
+    S3 -.->|"Async Signal"| EB
 
-When a payment intent is created, the device location is captured. When the user confirms the transaction, the location is captured again. The system evaluates the distance between those two points relative to the time elapsed between them.
+    EB --> PE
+    PE --> VE
+    VE -->|"Compute & Materialize"| RC
 
-If a user created a payment intent in Lagos and confirmed it from Abuja four minutes later, something is wrong. The check isn't about distance alone — it's about whether that distance is physically possible given the time between the two events. No human moves 500km in four minutes.
+    TX -->|"Direct Cache Read (< 2ms)"| RC
+```
 
-This catches a specific attack: device compromise, where an attacker on a separate device attempts to confirm a transaction the legitimate user initiated. The legitimate user is still in Lagos. The attacker, with access to the session, is somewhere else entirely. The velocity check surfaces that discrepancy as a risk signal before execution reaches the payment provider.
+### 2.1 Separation of Concerns
 
-## The difference in practice
+- **Telemetry Ingestion:** Services fire and forget telemetry signals. Signal delivery failure never blocks an upstream operational service.
+- **Continuous Recalculation:** The profiling engine evaluates rolling metrics (event frequency, geographic hops, IP subnet volatility, and device changes) across sliding time windows (5 minutes, 1 hour, 24 hours).
+- **Downstream Materialization:** As new signals update the user's risk posture, the updated score, classification flags, and confidence bounds are immediately written to the in-memory cache.
 
-The difference between the original model and this one is the difference between what the system was told and what the system has observed. By execution time, this system has seen the login, processed the GPS signals, and watched the session pattern unfold. The risk score isn't a spot check — it's a continuous assessment that surfaces at the moment it's needed.
+---
 
-That is the difference between a fraud system that reacts and one that actually understands risk.
+## 3. Kinematic Spatiotemporal Velocity Detection
+
+Account takeover frequently involves an attacker obtaining an authenticated session token or executing an unauthorized operation from a remote geographic region while the legitimate user's device remains active.
+
+The engine detects this using **Kinematic Delta-Velocity Evaluation** rather than static IP blacklists.
+
+### 3.1 Mathematical Model
+
+When an operational event `E₂` is recorded at time `t₂` with GPS coordinates `(φ₂, λ₂)`, the engine retrieves the prior authenticated event `E₁` at `(t₁, φ₁, λ₁)`.
+
+1. The great-circle surface distance `d(E₁, E₂)` is calculated using the Haversine formula:
+   ```text
+   a = sin²(Δφ / 2) + cos(φ₁) · cos(φ₂) · sin²(Δλ / 2)
+   d = 2R · atan2(√a, √(1 − a))
+   ```
+   *(where `R` is the Earth's radius, approximately 6,371 km)*.
+
+2. The required travel velocity is evaluated against physical bounds:
+   ```text
+   v_required = d(E₁, E₂) / (t₂ − t₁)
+   ```
+
+```mermaid
+flowchart LR
+    A["Event E1
+Lagos (06°27'N, 03°23'E)
+t = 00:00:00"] --> B{"Calculate Delta
+Δd = 530 km
+Δt = 4 min"}
+    B --> C["Required Velocity:
+7,950 km/h"]
+    C --> D{"v > v_max
+(900 km/h commercial air)"}
+    D -->|"Violates Physical Laws"| E["EMIT: CRITICAL_IMPOSSIBLE_TRAVEL
+Freeze Session & Lock Critical Rails"]
+```
+
+If `v_required > v_max` (where `v_max` represents the physical limits of commercial air transit, ~900 km/h), the engine flags an impossible travel violation. This check operates independently of IP spoofing or VPN obfuscation because it evaluates physical GPS coordinate deltas against elapsed wall-clock time.
+
+---
+
+## 4. Zero-Latency Transaction Gating: Cache-First Serving
+
+When a transaction enters the execution boundary (the intent execution route), the transaction processor does not compute risk. It queries the materialized risk cache:
+
+1. **Hot Path (O(1) Cache Hit):**
+   - The transaction processor issues a direct lookup: `GET risk:user:{user_id}`.
+   - Response latency is < 2ms.
+   - If `score <= threshold` and no critical block flags exist, the transaction proceeds to ledger hold reservation.
+2. **Cold Path (Cache Miss / Eviction Fallback):**
+   - If the user's cache key is cold, the processor executes a synchronous fallback RPC to the profiling engine with a strict 100ms timeout.
+   - If the fallback RPC times out, the engine applies a deterministic fail-safe policy: allow low-value transactions within standard daily bounds, but flag for expedited post-settlement audit.
+
+To understand how the Ledger works see [A Ledger's Core Model](/engineering/fintech/ledger/).
+
+---
+
+## 5. Rules
+
+| Rule | Statement | Enforcement |
+| :--- | :--- | :--- |
+| **Critical-Path Isolation** | Signal ingestion and scoring failures must never prevent upstream services from operating. | Asynchronous messaging decoupling with isolated circuit breakers. |
+| **Physical Feasibility** | No account may authorize transactions across geographic distances requiring speeds exceeding physical bounds. | Kinematic Haversine velocity computation on sequential geolocation telemetry. |
+| **Sub-5ms Evaluation** | Transaction gating lookups must resolve in < 5ms under standard load. | In-memory key-value materialization of pre-calculated risk profiles. |
+| **Credential Cleanliness** | Raw security credentials (passwords, PINs, card CVVs) must never enter the signal stream. | Ingress schema sanitization rejecting prohibited payload fields. |

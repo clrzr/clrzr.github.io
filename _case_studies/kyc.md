@@ -1,73 +1,163 @@
 ---
-layout: case-study
-title: "Identity, KYC & Device Safety — Case Study"
-description: "Three architectural decisions that started as product and safety calls: one-device policy, async KYC, and PII isolation with a single owner."
-eyebrow: "Case Study · Identity · KYC · Device Safety"
-headline: "Identity, KYC"
-headline_em: "& Device Safety"
+layout: system
+title: "Device Boundary & Identity Engine"
+headline: "Device Boundary & Identity Engine"
+subtitle: "Decoupled asynchronous KYC state machines, cryptographic PII isolation, and strict single-device session invalidation."
+eyebrow: "Fintech · Specification"
+permalink: /engineering/fintech/kyc/
 pills:
-  - label: "Production"
+  - label: "Specification"
     live: true
-  - label: "Async KYC pipeline"
-  - label: "One-device policy"
-  - label: "PII isolation"
-decisions:
-  - title: "One device at a time — hard enforcement"
-    detail: "New device activation immediately invalidates the previous one. Full re-auth required. 24-hour transaction cap on new devices. Built from a user story, not a compliance checklist."
-  - title: "Async KYC with automatic provider failover"
-    detail: "Local format and duplicate check runs instantly. KYC job runs in background. Provider error triggers automatic switch to backup — the user never sees it happen."
-  - title: "Partial access over hard blocking on KYC failure"
-    detail: "Wrong KYC data doesn't eject the user. They can explore the app, can't transact, and see a persistent correction prompt. The system keeps the door open."
-  - title: "Collect contact details before KYC resolves"
-    detail: "The async flow means onboarding completes before verification finishes. Email and phone are captured regardless of KYC outcome — so provider downtime never means a user is lost silently."
-  - title: "Single PII owner — hash for index, AES for storage"
-    detail: "No other service queries identity data directly. Blast radius structurally contained. Searchability and security both preserved without tradeoff."
+  - label: "Single-Device Boundary"
+  - label: "Decoupled Verification"
+  - label: "Cryptographic Isolation"
 nav_prev:
-  href: "/payments/"
-  label: "Payment Intent Architecture"
+  href: "/engineering/fintech/fraud/"
+  label: "Continuous Signal Risk Engine"
 nav_next:
-  href: "/infrastructure/"
-  label: "Platform Infrastructure"
+  href: "/engineering/fintech/ledger/"
+  label: "A Ledger's Core Model"
 ---
 
-## Three questions that drove the architecture
+## 1. The Problem
 
-When I was thinking through identity, onboarding, and user data for the platform, I kept coming back to three specific questions that the standard "pass KYC, get access" model didn't answer well.
+Digital financial platforms routinely suffer from two catastrophic architectural failures in identity management:
+1. **The Monolithic Synchronous KYC Gate:** Tying user onboarding directly to synchronous third-party verification APIs (e.g. government identity databases, biometric verifiers). When external upstream providers experience downtime or network latency, onboarding halts completely. The user abandons the process, and the platform retains zero contact metadata to re-engage them.
+2. **Multi-Device Session Sprawl:** Permitting authenticated sessions to persist concurrently across multiple physical devices. If a user misplaces an old device or falls victim to SIM-swap token theft, unauthorized actors retain access until the victim manually navigates complex account deactivation menus.
 
-**What happens to a user's money if they lose their phone?** **What happens to a user's relationship with the product if KYC goes down during onboarding?** **What's the blast radius if something goes wrong elsewhere in the system?** Each question led somewhere interesting.
+The Device Boundary & Identity Engine resolves these vulnerabilities by enforcing **decoupled asynchronous verification pipelines**, **strict singular device boundaries**, and **isolated cryptographic containment for personally identifiable information (PII)**.
 
-## Problem one — the lost phone scenario
+---
 
-This one started with a user story I couldn't stop thinking about: a user loses their main device. Someone picks it up. The app is still authenticated. What happens to their money?
+## 2. Strict Single-Device Boundary & State Invalidation
 
-If the app is still authenticated on that device, the answer is uncomfortable. So before writing a single line of architecture, I had to answer a harder question: when a user migrates to a new device, should the old one retain any access at all? The answer was no. Obviously no. But most systems at the time weren't enforcing it — the standard pattern was to let multiple devices stay active, with deactivation as an optional user action. Relying on a panicked user to remember to deactivate a lost device is not a safety mechanism. It is the absence of one.
+A financial application must enforce strict physical device exclusivity. An account may possess exactly one active, authorized device token at any given millisecond.
 
-The solution was a strict one-device policy. A mobile financial services application is only active on one device at a time. The moment a user activates on a new device, the previous one is automatically invalidated — no action required from the user, no grace period, no overlap. Migration requires full re-authentication: not just a PIN, but the kind of verification that confirms the person holding the new device is actually the account owner. On a new device, a ₦20,000 transaction cap applies for the first 24 hours. Trust is re-established gradually, not assumed.
+```mermaid
+stateDiagram-v2
+    [*] --> DeviceA_Active: Initial Registration / Provisioning
+    
+    DeviceA_Active --> Migration_Initiated: Device B Requests Activation
+(Valid Primary Credentials)
+    
+    state Migration_Initiated {
+        [*] --> StrongAuth_Challenge: Biometric / Hardware Bound OTP
+        StrongAuth_Challenge --> Validation_Success: Challenge Verified
+    }
 
-> This was a product and safety decision before it became regulation. The CBN formally mandated exactly this pattern in March 2026. The system had been built this way for years prior — not because the regulation existed, but because the user story demanded it.
+    Migration_Initiated --> DeviceB_Active: 1. Invalidate Device A Session
+2. Issue Device B Token
+3. Engage 24h Restriction Window
+    DeviceA_Active --> DeviceA_Revoked: Immediate Server-Side Revocation
 
-## Problem two — KYC downtime was a retention problem
+    state DeviceB_Active {
+        [*] --> Restricted_24H: Max Transaction Cap (e.g. ₦20,000)
+        Restricted_24H --> Unrestricted: Elapsed Time > 24 Hours
+    }
+```
 
-KYC providers in Nigeria go down. When they do, the standard response is: user cannot proceed, come back later. Most teams treat this as an infrastructure problem. It is actually a retention problem — and the numbers are worse than they look.
+### 2.1 Invalidation Mechanics
 
-A user who just downloaded the app, completed onboarding, and hit a wall at KYC has no context for what went wrong. They don't know a provider is down. They don't know it's temporary. What they know is that the app stopped working. That impression — *this app is broken* — is almost impossible to recover from. Most users will not come back.
+1. **Zero-Grace Revocation:** When Device B completes verified activation, the central authentication store immediately marks Device A's session token as `REVOKED`. Subsequent API requests from Device A receive an immediate `401 Unauthorized` and trigger local secure storage wipe on the client.
+2. **Progressive Trust Gating:** Trust is not assumed instantaneously upon migration. A new device operates under a **24-hour progressive trust window**, enforcing:
+   - A strict transaction amount cap (e.g., maximum ₦20,000 daily cumulative outflow).
+   - Temporary restriction on security credential alterations (password, PIN, and email modifications).
+   - Immediate out-of-band notification dispatched to verified recovery contact channels.
 
-There's also a quieter problem: because the failure is synchronous, the system never collected anything useful from the user. No email address. No phone number. No way to reach them if the issue resolved itself an hour later. The relationship ends before it begins, and the system has no record of who was lost or why.
+---
 
-The insight was simple: decouple onboarding from KYC synchronicity. When a user submits their identity data — BVN, NIN — the system runs two fast local checks immediately. Does this ID already exist in the system? Does it look structurally valid? Both checks run against already-indexed data and return in milliseconds. If they pass, the user moves through onboarding without waiting.
+## 3. Decoupled Asynchronous KYC State Machine
 
-The KYC verification job runs in the background as an async process. Three outcomes are handled cleanly: if the provider succeeds, the user is fully provisioned. If the provider fails due to a system error, the job automatically switches to a backup provider and retries — the user never knows. If the user's data is wrong, they proceed with limited access and a persistent notification guiding them to correct it. When they fix it, verification runs again.
+External identity verification providers exhibit high latency and unpredictable availability. The architecture completely decouples client onboarding from synchronous verification.
 
-The consequence that matters most: by letting the user move through onboarding before KYC resolves, the system successfully collects their email address and phone number. If something goes wrong downstream, the system can now reach them. The door stays open. A synchronous failure loses the user silently. An async flow keeps the conversation going.
+```mermaid
+flowchart TD
+    subgraph ClientOnboarding["1. Fast Ingress (Synchronous)"]
+        A["User Submits Identity Data
+(National ID, BVN, NIN, Contact)"] --> B{"Local Deterministic Checks
+• Regex Format Validation
+• Checksum Calculation
+• Blind-Index Duplicate Check"}
+        B -->|"Fail"| C["Reject with Structural Error"]
+        B -->|"Pass"| D["Capture Contact Channels
+(Email & Phone Recorded)"]
+        D --> E["Provision Account State:
+RESTRICTED_EXPLORATORY"]
+    end
 
-## Problem three — PII needs its own architecture
+    subgraph AsyncPipeline["2. Asynchronous Verification Engine"]
+        E -.->|"Enqueue Task"| Q["Verification Job Queue"]
+        Q --> W["Worker Process"]
+        W --> V1{"Primary Provider Call"}
+        V1 -->|"Success"| S["Transition: VERIFIED_PROVISIONED
+Unlock Account Limits"]
+        V1 -->|"Provider Down (5xx / Timeout)"| V2{"Failover to Secondary Provider"}
+        V2 -->|"Success"| S
+        V2 -->|"Exhausted"| R["Enqueue Delayed Exponential Retry"]
+        V1 -->|"Data Mismatch (4xx)"| F["Transition: ACTION_REQUIRED
+Push Notification to Correct Data"]
+    end
+```
 
-User PII — names, identity numbers, addresses, government IDs — is the most sensitive data in a financial system. The default approach spreads it around: a field here, a reference there, queried directly by whatever service needs it at the time. The blast radius of any compromise is the entire system.
+### 3.1 Onboarding Resilience
 
-I gave PII a single owner. One service. One access path. Every other service routes requests through it — no other service queries the identity database directly, no PII fields stored elsewhere. Within that service, data is hashed for indexing (searches are fast without exposing raw values) and AES-encrypted at rest. Searchability and security are not in tension. Both are preserved.
+1. **Deterministic Local Ingress:** Format, length, check-digit algorithms, and duplicate detection execute locally against indexed data in < 10ms. If valid, the user's primary contact details (phone and email) are persisted immediately.
+2. **Exploratory Non-Blocking State:** The user enters an active application session under the `RESTRICTED_EXPLORATORY` tier. They can explore products, view catalogs, and configure preferences, but funds outflow is locked.
+3. **Automated Multi-Provider Failover:** Background workers query the primary verification API. If a connection error or 5xx status occurs, the pipeline automatically switches to a secondary standby provider. The user never experiences an interface crash.
+4. **Data Capture Guarantee:** Even if all external verification providers experience an extended outage, the platform has successfully captured the user's identity claims and verified communication channels. When providers recover, verification completes without user intervention.
 
-If something fails elsewhere in the system, user data is not part of the collateral. The blast radius is contained by the architecture, not managed after the fact.
+---
 
-## The through line
+## 4. Cryptographic PII Isolation: Single Owner Architecture
 
-Three different problems. Three different solutions. But the same underlying instinct in each one: don't make the user pay for system failures, and don't make safety an afterthought dressed up as a feature. Device safety was a product decision before it became regulation. Async KYC was a retention decision before it was a technical pattern. PII isolation was a trust decision before it was a compliance requirement. The architecture is just what those decisions look like in code.
+Spreading sensitive customer PII (government identity numbers, home addresses, dates of birth) across multiple service databases exponentially expands the blast radius of any compromise.
+
+The platform isolates identity storage within an autonomous **Identity Vault Service**:
+
+```mermaid
+flowchart LR
+    subgraph Services["Consumer Services"]
+        P["Payments Service"]
+        F["Fraud Service"]
+        A["Accounting Service"]
+    end
+
+    subgraph Boundary["Secure Cryptographic Boundary"]
+        IV["Identity Vault Service"]
+        
+        subgraph Storage["Vault Database"]
+            BI[("Blind Index Table
+HMAC-SHA256(National_ID, Key_A)")]
+            ES[("Encrypted Store
+AES-256-GCM(Data, Key_B)")]
+        end
+    end
+
+    P -->|"Request by user_id"| IV
+    F -->|"Query by Blind Index"| IV
+    A -.->|"Prohibited Access"| IV
+    
+    IV --> BI
+    IV --> ES
+```
+
+### 4.1 Cryptographic Storage Primitives
+
+1. **Single Access Path:** No service other than the Identity Vault possesses direct database credentials to PII tables. All consumers interface via strict internal gRPC APIs with mutual TLS (mTLS).
+2. **Blind Indexing for Queryability:** To search for duplicate records (e.g., checking if a National Identity Number is already registered) without storing plain text:
+   ```text
+   IndexHash = HMAC-SHA256(RawID, IndexKey)
+   ```
+   Lookups execute against the deterministic HMAC index in O(1) time without decrypting the dataset.
+3. **Envelope Encryption at Rest:** PII fields are encrypted using authenticated `AES-256-GCM`. Encryption keys are rotated regularly via hardware security modules (HSM) and decoupled from standard operational database backups.
+
+---
+
+## 5. Rules
+
+| Rule | Statement | Enforcement |
+| :--- | :--- | :--- |
+| **Strict Device Singularity** | Exactly one active device session token may exist per user account. | Atomic token invalidation in central session store upon new activation. |
+| **Non-Blocking Ingress** | External provider outages must never prevent capture of user contact channels. | Asynchronous job queuing with local structural pre-validation. |
+| **PII Blast Isolation** | No service outside the Identity Vault may hold unencrypted government identity numbers. | Network and database level access control with blind-index HMAC queries. |
+| **Progressive Migration Trust** | Any migration to a novel hardware identifier imposes temporary limits on transaction velocity. | Stateful 24-hour progressive trust window flag on session tokens. |

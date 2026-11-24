@@ -1,581 +1,288 @@
 ---
 layout: base
-title: "Michael — Technical Product Operator"
-description: "I design and ship production fintech systems. Working across product, architecture, and infrastructure."
+title: "Michael Ikirodah"
+description: "Solving complex problems from first principles and surfacing them as simple, dependable outputs."
 ---
 
 <style>
-  /* ─── SWISS GRID STYLES ─── */
-  .hero {
+  .about-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .about-hero {
     display: grid;
-    grid-template-columns: 60px 1fr 340px;
-    gap: 40px;
-    padding: 80px 0 120px;
+    grid-template-columns: 1fr 280px;
+    gap: 64px;
+    align-items: center;
+    padding: 90px 0 70px;
     border-bottom: 2px solid var(--border);
   }
-  .hero-side {
-    position: relative;
-    border-right: 2px solid var(--border);
-  }
-  .hero-rotated {
-    position: absolute;
-    top: 0;
-    right: 20px;
-    transform: rotate(180deg);
-    writing-mode: vertical-rl;
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    font-weight: 500;
-  }
-  .hero-center {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: relative;
-  }
-  .hero-name {
+  .about-title {
     font-family: 'Oswald', sans-serif;
-    font-size: clamp(80px, 12vw, 180px);
+    font-size: clamp(56px, 9vw, 96px);
     font-weight: 700;
-    line-height: 0.85;
-    letter-spacing: -0.03em;
-    color: var(--text);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
     text-transform: uppercase;
-    margin: 0;
+    color: var(--text);
+    margin-bottom: 24px;
+    text-wrap: balance;
   }
-  .hero-strikethrough {
-    width: 100%;
-    height: 6px;
-    background: var(--accent);
-    margin: 20px 0;
-  }
-  .hero-right {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-  }
-  .hero-desc {
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 1.6;
+  .about-lead {
+    font-size: 20px;
     color: var(--text-body);
+    line-height: 1.6;
+    font-weight: 500;
+    text-wrap: pretty;
   }
-  .hero-image {
+  .about-portrait {
     aspect-ratio: 4/5;
     background: var(--border);
     border: 2px solid var(--border);
-    position: relative;
     overflow: hidden;
   }
-  .hero-image::after {
-    content: 'IMG.01';
-    position: absolute;
-    bottom: 12px;
-    right: 12px;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    background: var(--bg);
-    padding: 4px 8px;
-    font-weight: 500;
-    border: 2px solid var(--border);
-  }
-  .hero-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: grayscale(100%) contrast(1.2);
-    transition: filter 0.3s;
-  }
-  .hero-image:hover img {
-    filter: grayscale(0%) contrast(1);
-  }
-
-  /* ─── GRIDS ─── */
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-  }
-  .grid-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
-  }
-  .grid-4 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-  }
-
-  /* ─── CARD STYLES ─── */
-  .card {
-    border: 2px solid var(--border);
-    background: var(--bg-raised);
-    padding: 32px;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .card:hover {
-    transform: translate(-4px, -4px);
-    box-shadow: 6px 6px 0 var(--accent);
-  }
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 16px;
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 12px;
-  }
-  .card-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 24px;
-    font-weight: 600;
-    text-transform: uppercase;
-    line-height: 1.2;
-  }
-  .card-tag {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--accent);
-    font-weight: 500;
-  }
-  .card-body {
-    font-size: 15px;
-    color: var(--text-body);
-  }
-  .card-story {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 2px dashed var(--border-light);
-    font-size: 14px;
-    font-style: italic;
-    color: var(--text-muted);
-  }
-
-  /* ─── ALTERNATING PANELS (Engineering) ─── */
-  .eng-strip {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border: 2px solid var(--border);
-  }
-  .eng-panel {
-    padding: 48px;
-    border-right: 2px solid var(--border);
-    text-decoration: none;
-    color: inherit;
-    transition: background 0.2s;
-  }
-  .eng-panel:nth-child(even) { border-right: none; }
-  .eng-panel:nth-child(4n+1), .eng-panel:nth-child(4n+4) {
-    background: var(--bg-dark);
-    color: var(--text-inv);
-  }
-  .eng-panel:nth-child(4n+1) .eng-desc, .eng-panel:nth-child(4n+4) .eng-desc {
-    color: var(--text-inv-body);
-  }
-  .eng-panel:hover {
-    background: var(--accent);
-    color: var(--bg-dark);
-  }
-  .eng-panel:hover .eng-desc { color: var(--bg-dark); }
-  .eng-tag {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    margin-bottom: 16px;
-    font-weight: 500;
-  }
-  .eng-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 32px;
-    text-transform: uppercase;
-    line-height: 1.1;
-    margin-bottom: 16px;
-  }
-  .eng-desc {
-    font-size: 16px;
-    color: var(--text-body);
-  }
-
-  /* ─── CAROUSEL ─── */
-  .carousel-block {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border: 2px solid var(--border);
-    background: var(--bg-raised);
-  }
-  .carousel-image {
-    aspect-ratio: 1;
-    border-right: 2px solid var(--border);
-    position: relative;
-    overflow: hidden;
-  }
-  .carousel-image img {
+  .about-portrait img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     filter: grayscale(100%);
+    transition: filter 0.3s;
   }
-  .carousel-arrows {
-    position: absolute;
-    bottom: 24px;
-    right: 24px;
+  .about-portrait:hover img {
+    filter: grayscale(0%);
+  }
+
+  .contact-links {
     display: flex;
-    gap: 8px;
-    z-index: 10;
+    gap: 16px;
+    margin-top: 28px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
-  .carousel-arrow {
-    width: 48px;
-    height: 48px;
-    background: var(--bg);
+  .contact-links a {
+    padding: 10px 18px;
     border: 2px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-weight: 700;
-    transition: all 0.2s;
+    background: var(--bg);
+    font-weight: 600;
+    transition: background 0.2s;
   }
-  .carousel-arrow:hover { background: var(--accent); color: var(--bg-dark); }
-  .carousel-content {
-    padding: 64px;
+  .contact-links a:hover {
+    background: var(--accent);
+  }
+
+  /* ─── WORK / DISCIPLINES ─── */
+  .work-section {
+    padding: 70px 0 100px;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(28px, 4vw, 36px);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .work-list {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 28px;
   }
-  .carousel-title {
+
+  .work-card {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 40px;
+    align-items: center;
+    padding: 40px 36px;
+    background: var(--bg-raised);
+    border: 2px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .work-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--accent);
+  }
+  .card-num {
     font-family: 'Oswald', sans-serif;
-    font-size: 36px;
-    text-transform: uppercase;
-    margin-bottom: 24px;
-    line-height: 1.1;
+    font-size: clamp(40px, 5vw, 56px);
+    font-weight: 700;
+    color: var(--border-light);
+    line-height: 1;
+    transition: color 0.2s;
   }
-  .carousel-desc { font-size: 18px; margin-bottom: 32px; }
-  .carousel-dots { display: flex; gap: 8px; margin-top: auto; }
-  .dot { width: 12px; height: 12px; border: 2px solid var(--border); }
-  .dot.active { background: var(--accent); border-color: var(--accent); }
-  
-  .read-more {
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    text-transform: uppercase;
-    font-weight: 500;
-    text-decoration: underline;
-    text-underline-offset: 4px;
+  .work-card:hover .card-num {
     color: var(--accent);
   }
-  .read-more:hover { color: var(--border); }
 
-  /* ─── SHIPPED PRODUCTS ─── */
-  .shipped-card {
-    border: 2px solid var(--border);
-    background: var(--bg-raised);
+  .card-main {
     display: flex;
     flex-direction: column;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    gap: 10px;
   }
-  .shipped-card:hover {
-    transform: translate(-4px, -4px);
-    box-shadow: 6px 6px 0 var(--accent);
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
   }
-  .shipped-image {
-    aspect-ratio: 16/9;
-    border-bottom: 2px solid var(--border);
-    background: var(--border);
-    position: relative;
+  .card-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(24px, 3vw, 34px);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    transition: color 0.2s;
   }
-  .shipped-image img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); }
-  .shipped-body { padding: 24px; }
-  .shipped-title { font-family: 'Oswald', sans-serif; font-size: 20px; text-transform: uppercase; margin-bottom: 8px; }
-  .shipped-desc { font-size: 14px; color: var(--text-body); }
-  .shipped-card.see-all {
-    background: var(--accent);
-    justify-content: center;
-    padding: 32px;
-    text-decoration: none;
-    color: var(--bg-dark);
+  .work-card:hover .card-title {
+    color: var(--accent);
   }
-  .shipped-card.see-all .shipped-title { font-size: 24px; }
-  .shipped-card.see-all .shipped-desc { color: var(--bg-dark); font-weight: 500; }
-
-  /* ─── MODAL ─── */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(17,17,17,0.8);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.2s ease;
+  .card-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-body);
+    max-width: 680px;
+    text-wrap: pretty;
   }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal-box {
+  .card-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
     background: var(--bg);
-    border: 4px solid var(--border);
-    max-width: 900px; width: 100%;
-    position: relative;
-    transform: translateY(20px);
-    transition: transform 0.2s ease;
-    box-shadow: 12px 12px 0 var(--accent);
+    font-weight: 500;
   }
-  .modal-overlay.open .modal-box { transform: translateY(0); }
-  .modal-close {
-    position: absolute; top: -20px; right: -20px;
-    width: 48px; height: 48px;
-    background: var(--accent);
-    border: 2px solid var(--border);
-    font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    z-index: 10;
-  }
-  .modal-split { display: flex; flex-direction: column; }
-  .modal-visual { aspect-ratio: 16/9; border-bottom: 2px solid var(--border); background: var(--border); position: relative; }
-  .modal-body { padding: 40px; }
-  .modal-tag { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent); font-weight: 500; margin-bottom: 8px; }
-  .modal-title { font-family: 'Oswald', sans-serif; font-size: 32px; text-transform: uppercase; margin-bottom: 16px; }
-  .modal-desc { font-size: 16px; line-height: 1.6; }
-  .modal-desc ul { margin-top: 16px; list-style: none; padding: 0; }
-  .modal-desc li { position: relative; padding-left: 20px; margin-bottom: 8px; }
-  .modal-desc li::before { content: '>'; position: absolute; left: 0; color: var(--accent); font-weight: 700; font-family: 'DM Mono', monospace; }
 
-  @media (max-width: 1024px) {
-    .hero { grid-template-columns: 1fr 300px; }
-    .hero-side { display: none; }
-    .hero-name { font-size: clamp(48px, 10vw, 120px); }
+  .card-action {
+    display: flex;
+    align-items: center;
   }
+  .action-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    padding: 12px 20px;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .work-card:hover .action-btn {
+    background: var(--accent);
+  }
+
+  /* ─── RESPONSIVE ─── */
   @media (max-width: 768px) {
-    .hero { grid-template-columns: 1fr; padding: 40px 0; }
-    .hero-image { max-width: 100%; aspect-ratio: 4/5; margin-top: 24px; }
-    .hero-name { font-size: clamp(40px, 12vw, 80px); }
-    .grid-2, .grid-3, .grid-4, .eng-strip, .carousel-block { grid-template-columns: 1fr; }
-    .eng-panel, .carousel-image { border-right: none; border-bottom: 2px solid var(--border); }
-    .eng-panel:nth-child(odd) { background: var(--bg-dark); color: var(--text-inv); }
-    .eng-panel:nth-child(even) { background: var(--bg-raised); color: var(--text); }
+    .about-wrap { padding: 0 20px; }
+    .about-hero { grid-template-columns: 1fr; gap: 32px; padding: 50px 0 40px; }
+    .about-portrait { max-width: 240px; }
+    .work-card {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 32px 24px;
+    }
+    .card-num { display: none; }
+    .action-btn { align-self: flex-start; }
   }
 </style>
 
-<div class="wrap">
-  
-  <header class="hero">
-    <div class="hero-side">
-      <div class="hero-rotated">Technical Product Operator</div>
-    </div>
-    <div class="hero-center">
-      <h1 class="hero-name">Michael</h1>
-      <div class="hero-strikethrough"></div>
-      <h1 class="hero-name" style="color: var(--border-light);">Operator</h1>
-    </div>
-    <div class="hero-right">
-      <div class="hero-desc">
-        I design and ship production fintech systems. I work across product, architecture, and infrastructure — building payment, risk, and backend systems that have to work under real constraints.
+<div class="about-wrap">
+  <header class="about-hero">
+    <div>
+      <h1 class="about-title">Michael<br>Ikirodah</h1>
+      <p class="about-lead">
+        Solving complex problems from first principles and surfacing them as simple, dependable outputs.
+      </p>
+      <div class="contact-links">
+        <a href="https://github.com/clrzr" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:contact@clrzr.com">Email</a>
       </div>
-      <div class="hero-image">
-        <img src="/images/headshot1%5B480x600%5D.webp" alt="Michael Headshot" />
-        <span>IMG.01</span>
-      </div>
+    </div>
+    <div class="about-portrait">
+      <img src="/images/headshot2%5B480x600%5D.webp" alt="Michael Ikirodah" />
     </div>
   </header>
 
-  <section id="selected-signals">
+  <section class="work-section" id="work">
     <div class="section-header">
-      <span class="section-num">01</span>
-      <h2 class="section-title">Selected Signals</h2>
+      <h2 class="section-title">Work</h2>
+      <span class="section-tag">Disciplines &middot; Production</span>
     </div>
-    <div class="grid-2">
-      {% for signal in site.data.signals %}
-      <div class="card">
-        <div class="card-body"><strong>{{ signal.label }}</strong>: {{ signal.detail }}</div>
-      </div>
-      {% endfor %}
-    </div>
-  </section>
 
-  <section id="what-i-do">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <h2 class="section-title">What I Actually Do</h2>
-    </div>
-    <div class="grid-2">
-      {% for item in site.data.what_i_do %}
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">{{ item.title }}</h3>
+    <div class="work-list">
+      <!-- 01: Engineering -->
+      <a href="/engineering/" class="work-card">
+        <span class="card-num">01</span>
+        <div class="card-main">
+          <h3 class="card-title">Engineering</h3>
+          <p class="card-desc">
+            Technical architecture, distributed computing, and mission-critical specifications built for determinism and scale.
+          </p>
+          <div class="card-pills">
+            <span class="pill">Architecture</span>
+            <span class="pill">Fintech</span>
+            <span class="pill">Distributed Core</span>
+          </div>
         </div>
-        <div class="card-body">{{ item.body }}</div>
-        <div class="card-story">{{ item.story }}</div>
-      </div>
-      {% endfor %}
-    </div>
-  </section>
-
-  <section id="how-i-think">
-    <div class="section-header">
-      <span class="section-num">03</span>
-      <h2 class="section-title">How I Think</h2>
-    </div>
-    <div class="grid-3">
-      {% for model in site.data.mental_models %}
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">{{ model.title }}</h3>
+        <div class="card-action">
+          <span class="action-btn">Explore &rarr;</span>
         </div>
-        <div class="card-body">{{ model.body }}</div>
-      </div>
-      {% endfor %}
-    </div>
-  </section>
-
-  <section id="product-thinking">
-    <div class="section-header">
-      <span class="section-num">04</span>
-      <h2 class="section-title">Product Thinking</h2>
-    </div>
-    <div class="carousel-block" id="pt-carousel">
-      <div class="carousel-image">
-        <img src="/images/carousel-kyc%5B540x540%5D.webp" alt="Visual" id="carousel-img" />
-        <div class="carousel-arrows">
-          <button class="carousel-arrow" id="carousel-prev">&larr;</button>
-          <button class="carousel-arrow" id="carousel-next">&rarr;</button>
-        </div>
-      </div>
-      <div class="carousel-content" id="carousel-content">
-        <!-- JS populated -->
-      </div>
-    </div>
-  </section>
-
-  <section id="engineering">
-    <div class="section-header">
-      <span class="section-num">05</span>
-      <h2 class="section-title">Engineering</h2>
-    </div>
-    <div class="eng-strip">
-      {% for card in site.data.engineering %}
-      <a href="{{ card.href }}" class="eng-panel">
-        <div class="eng-tag">{{ card.tag }}</div>
-        <h3 class="eng-title">{{ card.title }}</h3>
-        <p class="eng-desc">{{ card.desc }}</p>
       </a>
-      {% endfor %}
-    </div>
-  </section>
 
-  <section id="shipped">
-    <div class="section-header">
-      <span class="section-num">06</span>
-      <h2 class="section-title">Systems I've Built</h2>
-    </div>
-    <div class="grid-4">
-      {% for product in site.data.products limit:3 %}
-      <div class="shipped-card" data-product="{{ product.id }}">
-        <div class="shipped-image"><img src="/images/{{ product.img | replace: '[', '%5B' | replace: ']', '%5D' }}" alt="" /></div>
-        <div class="shipped-body">
-          <h3 class="shipped-title">{{ product.title }}</h3>
-          <p class="shipped-desc">{{ product.desc }}</p>
+      <!-- 02: Products -->
+      <a href="/products/" class="work-card">
+        <span class="card-num">02</span>
+        <div class="card-main">
+          <h3 class="card-title">Products</h3>
+          <p class="card-desc">
+            Software and tools engineered to resolve complex domain workflows with simple, focused interfaces.
+          </p>
+          <div class="card-pills">
+            <span class="pill">Software</span>
+            <span class="pill">Workflow Architecture</span>
+            <span class="pill">Tools</span>
+          </div>
         </div>
-      </div>
-      {% endfor %}
-      <a href="/products/" class="shipped-card see-all">
-        <h3 class="shipped-title">See all systems &rarr;</h3>
-        <p class="shipped-desc">View all 6 shipped systems, process flows, and architectural diagrams.</p>
+        <div class="card-action">
+          <span class="action-btn">Explore &rarr;</span>
+        </div>
       </a>
     </div>
   </section>
 </div>
-
-<!-- PRODUCT MODAL -->
-<div id="product-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal-box">
-    <button class="modal-close" id="modal-close" aria-label="Close">X</button>
-    <div class="modal-split">
-      <div class="modal-visual" id="modal-visual"></div>
-      <div class="modal-body">
-        <div class="modal-tag" id="modal-tag"></div>
-        <h2 class="modal-title" id="modal-title"></h2>
-        <div class="modal-desc" id="modal-desc"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  // ─── CAROUSEL ───
-  const slides = [
-    {% for slide in site.data.carousel %}
-    {
-      title: {{ slide.title | jsonify }},
-      desc: {{ slide.desc | jsonify }},
-      href: {{ slide.href | jsonify }},
-      img: '/{{ slide.img | replace: "[", "%5B" | replace: "]", "%5D" }}'
-    }{% unless forloop.last %},{% endunless %}
-    {% endfor %}
-  ];
-
-  let current = 0;
-  const content = document.getElementById('carousel-content');
-  const imgEl   = document.getElementById('carousel-img');
-
-  function renderCarousel() {
-    const s = slides[current];
-    let dotsHtml = '<div class="carousel-dots">';
-    slides.forEach((_, i) => {
-      dotsHtml += `<div class="dot ${i === current ? 'active' : ''}"></div>`;
-    });
-    dotsHtml += '</div>';
-
-    content.innerHTML = `
-      <h3 class="carousel-title">${s.title}</h3>
-      <p class="carousel-desc">${s.desc}</p>
-      <a href="${s.href}" class="read-more">Read Full Case Study</a>
-      ${dotsHtml}
-    `;
-    imgEl.src = s.img;
-  }
-  document.getElementById('carousel-prev').addEventListener('click', () => { current = (current - 1 + slides.length) % slides.length; renderCarousel(); });
-  document.getElementById('carousel-next').addEventListener('click', () => { current = (current + 1) % slides.length; renderCarousel(); });
-  renderCarousel();
-
-  // ─── MODAL ───
-  const products = {
-    {% for product in site.data.products %}
-    '{{ product.id }}': {
-      tag: {{ product.tag | jsonify }},
-      title: {{ product.title | jsonify }},
-      desc: {{ product.desc | jsonify }},
-      bullets: {{ product.bullets | jsonify }},
-      img: '/images/{{ product.img | replace: "[", "%5B" | replace: "]", "%5D" }}'
-    }{% unless forloop.last %},{% endunless %}
-    {% endfor %}
-  };
-
-  const modal   = document.getElementById('product-modal');
-  const closeBtn = document.getElementById('modal-close');
-  const modalVis = document.getElementById('modal-visual');
-
-  document.querySelectorAll('.shipped-card[data-product]').forEach(card => {
-    card.addEventListener('click', () => {
-      const p = products[card.dataset.product];
-      if (!p) return;
-      document.getElementById('modal-tag').textContent   = p.tag;
-      document.getElementById('modal-title').textContent = p.title;
-      let descHtml = `<p>${p.desc}</p>`;
-      if (p.bullets && p.bullets.length > 0) {
-        descHtml += `<ul>${p.bullets.map(b => `<li>${b}</li>`).join('')}</ul>`;
-      }
-      document.getElementById('modal-desc').innerHTML = descHtml;
-      modalVis.innerHTML = `<img src="${p.img}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" />`;
-      modal.setAttribute('aria-hidden', 'false');
-      modal.classList.add('open');
-    });
-  });
-  closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-  function closeModal() { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); }
-</script>

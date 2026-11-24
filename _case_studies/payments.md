@@ -1,65 +1,188 @@
 ---
-layout: case-study
-title: "Payment Intent Architecture — Case Study"
-description: "How I designed a unified payment architecture around a single observation: users always need to see where the money is going before they say how much."
-eyebrow: "Case Study · Payments · System Design"
-headline: "Payment Intent"
-headline_em: "Architecture"
+layout: system
+title: "Payment Intent Architecture"
+headline: "Payment Intent Architecture"
+subtitle: "Unified transaction orchestration, parallel validation pipelining, and canonical idempotency across arbitrary payment rails."
+eyebrow: "Fintech · Specification"
+permalink: /engineering/fintech/payments/
 pills:
-  - label: "Production"
+  - label: "Specification"
     live: true
-  - label: "Idempotent by design"
-  - label: "All payment types unified"
-  - label: "Parallel async validation"
-decisions:
-  - title: "Intent creation synchronous and instant"
-    detail: "The user gets a response immediately. Heavy validation begins in background while they're still deciding — not after they've committed to an amount."
-  - title: "Validation pipeline is idempotent"
-    detail: "Cached data: use it. Missing data: fetch and cache. Same code path regardless of timing. Same guarantees whether the pipeline ran once or three times."
-  - title: "PIN + eligibility check run in parallel"
-    detail: "Both checks are independent at execution. Running concurrently halves the latency at the most time-sensitive moment in the flow."
-  - title: "Intent ID as canonical idempotency key"
-    detail: "Every retry, log entry, and reconciliation trace references one ID. Double-execution isn't handled by defensive checks — it is structurally impossible."
-  - title: "One model for all payment types"
-    detail: "New payment type = new adapter, not a new flow. Frontend always deals with the same primitives. There is only ever one flow to debug."
+  - label: "Intent Separation"
+  - label: "Parallel Pipeline"
+  - label: "Canonical Idempotency"
 nav_prev:
-  href: "/fraud/"
-  label: "Fraud Management System"
+  href: "/engineering/fintech/ledger/"
+  label: "A Ledger's Core Model"
 nav_next:
-  href: "/kyc/"
-  label: "Identity, KYC & Device Safety"
+  href: "/engineering/fintech/fraud/"
+  label: "Continuous Signal Risk Engine"
 ---
 
-## What I was trying to solve
+## 1. The Problem
 
-I needed a way for a mobile payment application to handle QR payments, transfers, bill payments, and contactless — all within a single unified process flow. The reason I cared about a single flow was what it would mean for the people building on top of it. If the frontend team handles different primitives for every payment type, you end up with fragmented implementation, fragmented testing, fragmented debugging. Every new payment type becomes its own special case to maintain.
+Traditional payment architectures frequently conflate two fundamentally distinct operations: **the declaration of intent** and **the execution of that intent**.
 
-What I wanted was simple: the frontend deals with the same primitives regardless of what the user is trying to do, and on the backend, every transaction is traceable through the same shape.
+When an application couples intent declaration with immediate execution, several architectural failures emerge:
+1. **Multi-Modal Fragmentation:** Transfers, merchant QR payments, utility bills, and contactless transactions are treated as bespoke payment flows, resulting in fractured database models, duplicated validation logic, and disjointed reconciliation paths.
+2. **Critical-Path Latency Accumulation:** Balance verification, anti-fraud evaluation, recipient validation, and daily velocity checks are run sequentially while the user waits at the final confirmation step, driving checkout latency over acceptable network thresholds.
+3. **Non-Deterministic Double Execution:** Without a canonical identifier established *before* transaction parameters are finalized, network timeouts during execution force clients into ambiguous retry states where double-charging is structurally possible.
 
-## What I noticed before touching architecture
+The Payment Intent Architecture resolves these failures by decoupling the declaration of where money is going from the commitment of how much is transferred, using the `intent_id` as the immutable spine of the transaction lifecycle.
 
-Before I touched architecture, I spent time watching how users interacted with existing payment products. One pattern became impossible to ignore. The products users loved most consistently did one thing others didn't — they showed the user where the money was going *before* the user entered the amount. Before confirmation. Before any commitment at all.
+---
 
-Transfer, bill payment, QR scan — it didn't matter. The best products always surfaced the destination first. The ones that skipped this step were the ones users didn't trust. That wasn't a UX observation. It was a structural signal about how users think about moving money: *they need to know where it's going before they decide how much.*
+## 2. The Core Rule: Destination Binding Precedes Amount Commitment
 
-If that's always true — and observation said it was — then the architecture should be built around it, not against it.
+In any money movement operation, user trust and operational integrity require that the recipient entity is resolved and cryptographically bound before financial parameters are committed.
 
-> Every payment type follows the same fundamental user behaviour: destination first, then amount. That observation became the architectural foundation.
+```mermaid
+flowchart TD
+    subgraph Client["Client Application"]
+        A["1. Select Recipient / Scan QR"] --> B["2. Submit Destination"]
+        E["4. Display Recipient Name & Prompt Amount"] --> F["5. Submit Amount & Credential"]
+    end
 
-## What I built
+    subgraph IntentEngine["Intent & Orchestration Layer"]
+        B --> C["Create Intent Record
+(State: INITIALIZED)"]
+        C --> D["Resolve Recipient Metadata
+(Bind destination_id)"]
+        D --> E
+        
+        C -.->|"Trigger in Background"| G["Parallel Pre-Validation
+(Limits, Balances, Risk Cache)"]
+        
+        F --> H{"Atomic Authorization Check"}
+        G -.->|"Pre-warmed Cache"| H
+        H -->|"Pass"| I["Lock Funds via Ledger HOLD"]
+        I --> J["Dispatch Physical Rail Adapter"]
+    end
 
-Every payment begins with a Payment Intent. The user submits their destination. The system resolves it and returns immediately — an intent ID and the confirmed destination name. The user sees exactly where the money is going before they touch the amount field.
+    subgraph Rails["Execution Rails"]
+        J --> K["Bank Transfer / Card / Clearing Rail"]
+    end
+```
 
-That synchronous exchange is fast by design. And while the user is reading the destination name — while they're still deciding — the system is already running validation in parallel. Transaction limits from the fraud service, wallet balance, daily volume — all fetched concurrently in the background, not one after another.
+### 2.1 The Two-Phase Lifecycle
 
-By the time the user submits an amount, most of the work is already done. At execution, a final parallel check runs: PIN verification and transaction eligibility simultaneously. Both pass, execution happens. The Intent ID is the idempotency key throughout — every retry, audit log, and reconciliation trace references the same ID. Race conditions and double-execution are eliminated by design, not defensive code.
+1. **Phase 1: Intent Declaration**
+   The client submits the destination identifier (e.g. account number, merchant alias, phone number, or dynamic QR payload). The service:
+   - Generates a globally unique, cryptographically random `intent_id`.
+   - Resolves the recipient institution and verified account name.
+   - Binds the resolved recipient metadata to the intent record.
+   - Transitions the intent to `INITIALIZED`.
+   - Returns the verified entity name and `intent_id` to the client.
 
-## What this means in practice
+2. **Phase 2: Intent Execution**
+   The client submits the transfer amount and the authorization credential (e.g. PIN or biometric signature). The service:
+   - Verifies the state of `intent_id` is strictly `INITIALIZED`.
+   - Executes authorization and reservation in a single atomic database boundary.
+   - Transitions the intent to `EXECUTING` (preventing any duplicate submission).
+   - Locks funds by placing a hold reservation against the source account in the ledger.
+   - Dispatches the physical payment rail adapter.
 
-For the frontend team: every payment type looks identical. Create an intent, receive a destination name, submit the amount, confirm. The implementation is consistent, testing is consistent, and there is only one flow to trace when something goes wrong. Adding a new payment type means writing a new adapter on the backend — not redesigning the flow.
+To understand how the Ledger works see [A Ledger's Core Model](/engineering/fintech/ledger/).
 
-For the user: in a market where trust in digital payments is still being earned, always knowing where the money is going before committing is not a feature. It is the product.
+---
 
-## The principle
+## 3. Parallel Asynchronous Pre-Validation Pipeline
 
-The Intent model works because it separates two things most payment systems conflate: the expression of user intent and the execution of that intent. Keeping those two moments distinct creates space for validation, reduces latency by moving work earlier in the flow, and gives the system a stable reference point for tracing, auditing, and idempotency. One abstraction. Every payment type. No special cases.
+A critical advantage of separating intent declaration from execution is that it creates an asynchronous computation window while the human user reviews the destination and inputs the amount (typically 3 to 10 seconds).
+
+The Intent Engine exploits this window to execute heavy validation out-of-band:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant Client
+    participant Intent as Intent Engine
+    participant Risk as Risk Cache
+    participant Ledger as Ledger Service
+    participant Limits as Velocity Engine
+
+    User->>Client: Selects destination
+    Client->>Intent: Declare Intent (destination)
+    Intent-->>Client: 200 OK (intent_id, resolved_name)
+    
+    par Async Pre-Validation
+        Intent->>Risk: Query cached risk score (O(1))
+        Intent->>Ledger: Fetch available balance & reservation capacity
+        Intent->>Limits: Check daily/monthly rolling velocity limits
+    end
+
+    Note over User,Client: User reads recipient name and types amount (3-8s window)
+    
+    User->>Client: Confirms amount and enters PIN
+    Client->>Intent: Execute Intent (amount, credential)
+    
+    Note over Intent: Validation results already in memory / hot cache
+    Intent->>Intent: Verify PIN + Check pre-computed eligibility
+    Intent->>Ledger: Atomic HOLD reservation
+    Intent-->>Client: 202 Accepted (Processing)
+```
+
+By the time the execution request arrives at the server:
+- The user's rolling daily and monthly velocity limits are already evaluated.
+- The pre-computed risk score is already resident in hot cache.
+- The ledger account status is verified active and unblocked.
+
+The final confirmation request executes in minimal time (< 150ms) because it evaluates pre-computed results rather than initiating cold database queries.
+
+To understand how the Risk Engine works see [Continuous Signal Risk Engine](/engineering/fintech/fraud/). To understand how the Ledger works see [A Ledger's Core Model](/engineering/fintech/ledger/).
+
+---
+
+## 4. Canonical Idempotency & Failure Semantics
+
+In distributed payment networks, network partitions are inevitable. A client may submit an execution request, the server may process the transfer, and the connection may sever before the client receives the `HTTP 200` response.
+
+The architecture eliminates double execution by enforcing **Canonical Idempotency**:
+
+1. **One Transaction, One Key:** The `intent_id` serves as the immutable idempotency key across all downstream boundaries:
+   - Application layer execution locking.
+   - The Ledger `HOLD` reservation record (`hold_id = intent_id`).
+   - The outbound payment processor payload (`Idempotency-Key: intent_id`).
+
+   To understand how the Ledger works see [A Ledger's Core Model](/engineering/fintech/ledger/).
+2. **State Monotonicity:** Intent state transitions are strictly unidirectional:
+   `INITIALIZED` → `EXECUTING` → `SETTLED` (or `FAILED`)
+3. **Locking Mechanism:** Execution begins with an atomic state update:
+   ```sql
+   UPDATE payment_intents
+   SET status = 'EXECUTING',
+       amount = :amount,
+       executed_at = NOW()
+   WHERE id = :intent_id
+     AND status = 'INITIALIZED';
+   ```
+   If zero rows are affected, the request is rejected immediately as a duplicate or invalid transition.
+
+---
+
+## 5. Universal Rail Abstraction
+
+Regardless of the underlying payment rail (ACH, RTGS, Card, Intra-bank, or Internal Ledger transfer), the upstream API contract and state machine remain identical.
+
+| Payment Rail | Destination Resolver | Execution Adapter | Settlement Trigger |
+| :--- | :--- | :--- | :--- |
+| **Inter-Bank Transfer** | NIP / Clearing Name Inquiry | Direct Banking API / Rail Client | External webhook or clearing settlement file |
+| **Merchant QR** | Dynamic/Static EMVCo Payload Parser | Merchant Acquiring Switch | Immediate ledger balance transfer |
+| **Utility / Bill Pay** | Biller Customer Lookup API | Aggregator Settlement Adapter | Biller synchronous confirmation token |
+| **P2P Internal** | Ledger Account Alias Directory | Internal Ledger `/intents/settle` | Instantaneous double-entry ledger balance swap |
+
+A new payment rail requires only the implementation of a new `RailAdapter` interface. Upstream client applications, validation pipelines, risk engines, and ledger accounting models require zero code modifications.
+
+To understand how the Risk Engine works see [Continuous Signal Risk Engine](/engineering/fintech/fraud/). To understand how the Ledger works see [A Ledger's Core Model](/engineering/fintech/ledger/).
+
+---
+
+## 6. Rules
+
+| Rule | Statement | Enforcement |
+| :--- | :--- | :--- |
+| **Destination Immutability** | An intent's destination entity cannot be altered after initialization. | Database column level immutability after insert. |
+| **Single Execution** | Exactly one execution attempt may transition an intent from `INITIALIZED`. | Atomic database conditional row-lock (`CAS`). |
+| **Zero Blind Transfers** | Amount cannot be committed without prior recipient resolution. | Schema constraint requiring resolved `destination_id` prior to amount assignment. |
+| **Universal Idempotency** | Repeating an execution call with the same `intent_id` returns identical outcomes without re-triggering funds movement. | Persistent ledger idempotency key mapping. |
