@@ -10,14 +10,12 @@ permalink: /products/approvalflow/
 
 ApprovalFlow had to make document decisions traceable without making workflows brittle. A request needed to preserve who acted and when, distinguish review from authorization, and allow additional steps when a process proved incomplete. I worked through these constraints with the client's technical lead in recurring technical and design reviews, shaping the workflow rules and data boundaries around them.
 
-The architecture centers on three boundaries: a request advances through explicit states, each workspace owns a separate database, and files remain protected by application-level authorization even when an external editor needs access to them.
+The architecture separates the approval workflow, workspace data, file authorization, and commercial licensing. Requests advance through explicit states, each workspace owns a separate database, and files remain protected by application-level authorization even when an external editor needs access to them. Licensing sits outside the request path, so entitlement can change independently of workflow state.
 
 <figure class="case-image">
   <img src="/images/approvalflow.png" alt="ApprovalFlow sign-in screen" />
   <figcaption>ApprovalFlow sign-in screen</figcaption>
 </figure>
-
-## A workflow is a state machine, not a status field
 
 A document request is represented as an approval record with an ordered set of process steps. Each step has an assignee, type, outcome, and position. This gives the system a precise account of who may act next and what that action means.
 
@@ -43,13 +41,9 @@ Request creation writes the approval record, its ordered steps, and the file's t
 
 The ordered model is deliberately narrower than a general workflow engine. It supports sequential steps and controlled insertion of more work, rather than parallel branches or arbitrary conditional routing. That keeps the path and its outcome straightforward to inspect, while limiting the kinds of process variation the system can represent.
 
-## A defined workflow can still adapt
-
 The original sequence cannot anticipate every missing review. Freezing it would require restarting a request when someone discovers a needed step; allowing all participants to rewrite it would weaken accountability.
 
 ApprovalFlow permits a participant with process-modification permission to insert a review or append steps after a request has started. This preserves progress while keeping changes within an explicit permission boundary. The trade-off is that the workflow can evolve during execution, so its final sequence may differ from the one selected at submission.
-
-## Tenant isolation is a database boundary
 
 The institution needed a self-hosted installation for its own work and hosted workspaces for the universities it served. Each workspace required a separate data enclosure. Shared-database isolation, including row-level security, was considered, but did not satisfy the requirement for physical separation.
 
@@ -68,7 +62,24 @@ flowchart LR
 
 This makes the tenant boundary clear in the data layer and supports both hosted and self-hosted operation. It also means provisioning databases, running migrations, managing connections, and keeping identity state aligned require more operational work. Some identity updates use coordinated retries and rollback across the control plane and tenant databases; other user-management paths do not use that centralized synchronization service, so consistency handling is not uniform across every path.
 
-## Files remain behind the application's access checks
+Commercial access is managed by a separate licensing service. ApprovalFlow requests the effective license for a client and workspace, then caches the returned entitlement. When the commercial agreement changes, the licensing service can revoke or change that entitlement and send a signed webhook that prompts ApprovalFlow to refresh its license state. This gives the company a way to adjust product access when financial commitments are not met, without making licensing part of each approval transaction.
+
+```mermaid
+sequenceDiagram
+    participant Admin as Licensing administrator
+    participant License as Licensing service
+    participant App as ApprovalFlow
+    participant Workspace as Workspace database
+
+    Admin->>License: Change or revoke workspace entitlement
+    App->>License: Request effective license
+    License-->>App: Signed entitlement
+    License-->>App: Signed license-change webhook
+    App->>License: Refresh license state
+    App->>Workspace: Apply current product access
+```
+
+Separating commercial entitlement from approval state keeps the workflow record focused on document decisions, while licensing remains a company-controlled access boundary. The application also caches license state and can fall back to a cached or default snapshot when refresh fails, so the exact timing and user-visible effect of a revocation depend on the refresh and fallback behavior.
 
 Files are stored locally or in an S3-compatible service through a storage abstraction. Tenant-scoped paths keep files within their workspace. Administrators can migrate files between storage targets, which supports different operating environments without changing the approval model.
 
@@ -78,13 +89,9 @@ The file record and stored bytes live in different systems, so they cannot be co
 
 For Office documents, ApprovalFlow integrates ONLYOFFICE. It receives a signed, file-specific configuration, while ApprovalFlow continues to check the user's session and relationship to the file when serving it. A signed file token alone does not grant access. This keeps authorization with the application and editing inside the workflow, with the operational cost of running an additional document service.
 
-## Notifications follow the workflow, but do not own it
-
-Workflow state is committed to PostgreSQL first. Notification work is queued separately in an outbox, using deterministic identifiers so repeated processing does not create duplicate in-app activity records. This keeps delayed email or notification delivery from changing the recorded approval outcome.
+The same separation applies to notifications. Workflow state is committed to PostgreSQL first. Notification work is queued separately in an outbox, using deterministic identifiers so repeated processing does not create duplicate in-app activity records. This keeps delayed email or notification delivery from changing the recorded approval outcome.
 
 The outbox includes retry state and backoff. The repository does not show a periodic worker that guarantees every pending notification will be replayed, and email failures are logged. In practice, the workflow remains authoritative even when a notification is delayed; notification delivery depends on the outbox processor being invoked.
-
-## Turn process history into operational measures
 
 Because each step and timestamp is recorded, reports can derive approval, rejection, and review status, completion duration, monthly throughput, weekday timing, and per-step service-target performance. Managers can inspect how the process is moving, while auditors have a separate oversight role.
 
